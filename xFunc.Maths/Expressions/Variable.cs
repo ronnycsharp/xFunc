@@ -155,6 +155,9 @@ namespace xFunc.Maths.Expressions
             {
                 return name;
             }
+			set {
+				name = value;
+			}
         }
 
         /// <summary>
