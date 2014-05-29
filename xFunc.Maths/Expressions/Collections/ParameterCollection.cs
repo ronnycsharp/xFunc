@@ -76,8 +76,6 @@ namespace xFunc.Maths.Expressions.Collections
             consts.Add(Parameter.CreateConstant("e", Math.E));
             consts.Add(Parameter.CreateConstant("g", 9.80665));
             consts.Add(Parameter.CreateConstant("c", 299792458));
-            consts.Add(Parameter.CreateConstant("true", 1));
-            consts.Add(Parameter.CreateConstant("false", 0));
         }
 
         /// <summary>
@@ -201,7 +199,7 @@ namespace xFunc.Maths.Expressions.Collections
 #if NET40_OR_GREATER || PORTABLE
             if (string.IsNullOrWhiteSpace(key))
 #elif NET20_OR_GREATER
-            if (StringExtension.IsNullOrWhiteSpace(key))
+            if (StringExtention.IsNullOrWhiteSpace(key))
 #endif
                 throw new ArgumentNullException("key");
 
@@ -210,14 +208,6 @@ namespace xFunc.Maths.Expressions.Collections
                 return;
 
             Remove(el);
-        }
-
-        /// <summary>
-        /// Clears this collection.
-        /// </summary>
-        public void Clear()
-        {
-            collection.Clear();
         }
 
         /// <summary>

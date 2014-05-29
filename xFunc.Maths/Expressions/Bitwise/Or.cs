@@ -23,6 +23,9 @@ namespace xFunc.Maths.Expressions.Bitwise
     public class Or : BinaryExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Or"/> class.
+        /// </summary>
         internal Or() { }
 
         /// <summary>
@@ -86,6 +89,20 @@ namespace xFunc.Maths.Expressions.Bitwise
         public override IExpression Clone()
         {
             return new Or(left.Clone(), right.Clone());
+        }
+
+        /// <summary>
+        /// Always throws <see cref="NotSupportedException" />.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Throws an exception.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public override IExpression Differentiate(Variable variable)
+        {
+            throw new NotSupportedException();
         }
 
     }

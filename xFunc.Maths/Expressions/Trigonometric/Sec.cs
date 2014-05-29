@@ -24,6 +24,9 @@ namespace xFunc.Maths.Expressions.Trigonometric
     public class Sec : TrigonometricExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Sec"/> class.
+        /// </summary>
         internal Sec() { }
 
         /// <summary>
@@ -97,7 +100,25 @@ namespace xFunc.Maths.Expressions.Trigonometric
 
             return 1 / Math.Cos(radian);
         }
-        
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        protected override IExpression _Differentiation(Variable variable)
+        {
+            var tan = new Tan(argument.Clone());
+            var sec = new Sec(argument.Clone());
+            var mul1 = new Mul(tan, sec);
+            var mul2 = new Mul(argument.Clone().Differentiate(variable), mul1);
+
+            return mul2;
+        }
+
         /// <summary>
         /// Clones this instance.
         /// </summary>

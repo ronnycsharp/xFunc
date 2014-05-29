@@ -26,6 +26,9 @@ namespace xFunc.Maths.Expressions
     public class GCD : DifferentParametersExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GCD"/> class.
+        /// </summary>
         internal GCD()
             : base(null, -1)
         {
@@ -100,7 +103,33 @@ namespace xFunc.Maths.Expressions
         {
             return new GCD(CloneArguments(), arguments.Length);
         }
-        
+
+        /// <summary>
+        /// Always throws <see cref="NotSupportedException" />.
+        /// </summary>
+        /// <returns>
+        /// Throws an exception.
+        /// </returns>
+        /// <exception cref="NotSupportedException">Always.</exception>
+        public override IExpression Differentiate()
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Always throws <see cref="NotSupportedException" />.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Throws an exception.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public override IExpression Differentiate(Variable variable)
+        {
+            throw new NotSupportedException();
+        }
+
         /// <summary>
         /// Gets the minimum count of parameters.
         /// </summary>

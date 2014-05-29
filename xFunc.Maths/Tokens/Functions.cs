@@ -175,6 +175,10 @@ namespace xFunc.Maths.Tokens
         /// </summary>
         Round,
         /// <summary>
+        /// round-unary
+        /// </summary>
+        RoundUnary,
+        /// <summary>
         /// floor
         /// </summary>
         Floor,
@@ -182,19 +186,6 @@ namespace xFunc.Maths.Tokens
         /// ceil
         /// </summary>
         Ceil,
-
-        /// <summary>
-        /// if
-        /// </summary>
-        If,
-        /// <summary>
-        /// for
-        /// </summary>
-        For,
-        /// <summary>
-        /// while
-        /// </summary>
-        While,
 
         /// <summary>
         /// deriv

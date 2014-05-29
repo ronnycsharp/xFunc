@@ -24,6 +24,9 @@ namespace xFunc.Maths.Expressions.Trigonometric
     public class Arcsin : TrigonometricExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Arcsin"/> class.
+        /// </summary>
         internal Arcsin() { }
 
         /// <summary>
@@ -93,6 +96,24 @@ namespace xFunc.Maths.Expressions.Trigonometric
             var radian = (double)argument.Calculate(parameters);
 
             return Math.Asin(radian) / Math.PI * 200;
+        }
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        protected override IExpression _Differentiation(Variable variable)
+        {
+            var involution = new Pow(argument.Clone(), new Number(2));
+            var sub = new Sub(new Number(1), involution);
+            var sqrt = new Sqrt(sub);
+            var division = new Div(argument.Clone().Differentiate(variable), sqrt);
+
+            return division;
         }
 
         /// <summary>

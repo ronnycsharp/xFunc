@@ -23,6 +23,9 @@ namespace xFunc.Maths.Expressions.Bitwise
     public class XOr : BinaryExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XOr"/> class.
+        /// </summary>
         internal XOr() { }
 
         /// <summary>
@@ -87,7 +90,21 @@ namespace xFunc.Maths.Expressions.Bitwise
         {
             return new XOr(left.Clone(), right.Clone());
         }
-        
+
+        /// <summary>
+        /// Always throws <see cref="NotSupportedException" />.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Throws an exception.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public override IExpression Differentiate(Variable variable)
+        {
+            throw new NotSupportedException();
+        }
+
     }
 
 }

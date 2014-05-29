@@ -14,9 +14,9 @@
 // limitations under the License.
 using System;
 using xFunc.Maths.Expressions;
+using xFunc.Maths.Expressions.Bitwise;
 using xFunc.Maths.Expressions.Hyperbolic;
 using xFunc.Maths.Expressions.Matrices;
-using xFunc.Maths.Expressions.Programming;
 using xFunc.Maths.Expressions.Trigonometric;
 using xFunc.Maths.Tokens;
 
@@ -77,42 +77,14 @@ namespace xFunc.Maths
                     return new Fact();
                 case Operations.Assign:
                     return new Define();
-                case Operations.ConditionalAnd:
+                case Operations.Not:
+                    return new Not();
+                case Operations.And:
                     return new And();
-                case Operations.ConditionalOr:
+                case Operations.Or:
                     return new Or();
-                case Operations.Equal:
-                    return new Equal();
-                case Operations.NotEqual:
-                    return new NotEqual();
-                case Operations.LessThan:
-                    return new LessThan();
-                case Operations.LessOrEqual:
-                    return new LessOrEqual();
-                case Operations.GreaterThan:
-                    return new GreaterThan();
-                case Operations.GreaterOrEqual:
-                    return new GreaterOrEqual();
-                case Operations.AddAssign:
-                    return new AddAssign();
-                case Operations.SubAssign:
-                    return new SubAssign();
-                case Operations.MulAssign:
-                    return new MulAssign();
-                case Operations.DivAssign:
-                    return new DivAssign();
-                case Operations.Increment:
-                    return new Inc();
-                case Operations.Decrement:
-                    return new Dec();
-                case Operations.BitwiseNot:
-                    return new Expressions.Bitwise.Not();
-                case Operations.BitwiseAnd:
-                    return new Expressions.Bitwise.And();
-                case Operations.BitwiseOr:
-                    return new Expressions.Bitwise.Or();
-                case Operations.BitwiseXOr:
-                    return new Expressions.Bitwise.XOr();
+                case Operations.XOr:
+                    return new XOr();
                 default:
                     return null;
             }
@@ -201,6 +173,8 @@ namespace xFunc.Maths
                     return new Product();
                 case Functions.Round:
                     return new Round();
+                case Functions.RoundUnary:
+                    return new RoundUnary();
                 case Functions.Floor:
                     return new Floor();
                 case Functions.Ceil:
@@ -221,12 +195,6 @@ namespace xFunc.Maths
                     return new Determinant();
                 case Functions.Inverse:
                     return new Inverse();
-                case Functions.If:
-                    return new If();
-                case Functions.For:
-                    return new For();
-                case Functions.While:
-                    return new While();
                 case Functions.Undefine:
                     return new Undefine();
                 default: 

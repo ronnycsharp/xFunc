@@ -24,6 +24,9 @@ namespace xFunc.Maths.Expressions
     public class Derivative : DifferentParametersExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Derivative"/> class.
+        /// </summary>
         internal Derivative()
             : base(null, -1) { }
 
@@ -104,7 +107,48 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters)
         {
-            throw new NotSupportedException();
+            return Differentiate().Calculate(parameters);
+        }
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <returns>
+        /// Returns a derivative of the expression.
+        /// </returns>
+        public override IExpression Differentiate()
+        {
+            if (countOfParams == 1)
+                return _Differentiate(new Variable("x"));
+
+            return _Differentiate(Variable);
+        }
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        /// <remarks>
+        /// This method ignores the local <paramref name="variable" />.
+        /// </remarks>
+        public override IExpression Differentiate(Variable variable)
+        {
+            if (countOfParams == 1)
+                return _Differentiate(new Variable("x"));
+
+            return _Differentiate(this.Variable);
+        }
+
+        private IExpression _Differentiate(Variable variable)
+        {
+            if (Expression is Derivative)
+                return Expression.Differentiate(variable).Differentiate(variable);
+
+            return Expression.Differentiate(variable);
         }
 
         /// <summary>
@@ -148,7 +192,15 @@ namespace xFunc.Maths.Expressions
         {
             get
             {
-                return countOfParams == 2 ? (Variable)arguments[1] : null;
+                return (Variable)arguments[1];
+            }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("value");
+
+                arguments[1] = value;
+                arguments[1].Parent = this;
             }
         }
 

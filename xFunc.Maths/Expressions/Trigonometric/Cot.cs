@@ -24,6 +24,9 @@ namespace xFunc.Maths.Expressions.Trigonometric
     public class Cot : TrigonometricExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Cot"/> class.
+        /// </summary>
         internal Cot() { }
 
         /// <summary>
@@ -95,6 +98,24 @@ namespace xFunc.Maths.Expressions.Trigonometric
             var radian = (double)argument.Calculate(parameters) * Math.PI / 200;
 
             return MathExtentions.Cot(radian);
+        }
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        protected override IExpression _Differentiation(Variable variable)
+        {
+            var sine = new Sin(argument.Clone());
+            var involution = new Pow(sine, new Number(2));
+            var division = new Div(argument.Clone().Differentiate(variable), involution);
+            var unMinus = new UnaryMinus(division);
+
+            return unMinus;
         }
 
         /// <summary>

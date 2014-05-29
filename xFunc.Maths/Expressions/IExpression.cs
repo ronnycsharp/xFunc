@@ -18,7 +18,7 @@ namespace xFunc.Maths.Expressions
 {
 
     /// <summary>
-    /// Defines methods to calculate mathematical expressions.
+    /// Defines methods to calculate and to differentiate mathematical expressions.
     /// </summary>
     public interface IExpression
     {
@@ -35,6 +35,18 @@ namespace xFunc.Maths.Expressions
         /// <returns>A result of the calculation.</returns>
         /// <seealso cref="ExpressionParameters"/>
         object Calculate(ExpressionParameters parameters);
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <returns>Returns a derivative of the expression.</returns>
+        IExpression Differentiate();
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>Returns a derivative of the expression of several variables.</returns>
+        /// <seealso cref="Variable"/>
+        IExpression Differentiate(Variable variable);
 
         /// <summary>
         /// Clones this instance of the <see cref="IExpression"/>.

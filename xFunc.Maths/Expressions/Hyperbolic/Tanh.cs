@@ -24,6 +24,9 @@ namespace xFunc.Maths.Expressions.Hyperbolic
     public class Tanh : HyperbolicExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Tanh"/> class.
+        /// </summary>
         internal Tanh() { }
 
         /// <summary>
@@ -77,7 +80,24 @@ namespace xFunc.Maths.Expressions.Hyperbolic
         {
             return new Tanh(argument.Clone());
         }
-        
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        protected override IExpression _Differentiation(Variable variable)
+        {
+            var cosh = new Cosh(argument.Clone());
+            var inv = new Pow(cosh, new Number(2));
+            var div = new Div(argument.Clone().Differentiate(variable), inv);
+
+            return div;
+        }
+
     }
 
 }

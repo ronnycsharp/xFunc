@@ -24,6 +24,9 @@ namespace xFunc.Maths.Expressions.Hyperbolic
     public class Cosh : HyperbolicExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Cosh"/> class.
+        /// </summary>
         internal Cosh() { }
 
         /// <summary>
@@ -76,6 +79,22 @@ namespace xFunc.Maths.Expressions.Hyperbolic
         public override IExpression Clone()
         {
             return new Cosh(argument.Clone());
+        }
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        protected override IExpression _Differentiation(Variable variable)
+        {
+            var sinh = new Sinh(argument.Clone());
+            var mul = new Mul(argument.Clone().Differentiate(variable), sinh);
+
+            return mul;
         }
 
     }

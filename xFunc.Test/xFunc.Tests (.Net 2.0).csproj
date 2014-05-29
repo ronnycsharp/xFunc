@@ -35,6 +35,11 @@
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
@@ -42,13 +47,6 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Converters\TemperatureTest.cs" />
-    <Compile Include="Converters\TimeTest.cs" />
-    <Compile Include="Converters\AreaTest.cs" />
-    <Compile Include="Converters\LengthTest.cs" />
-    <Compile Include="Converters\MassTest.cs" />
-    <Compile Include="Converters\PowerTest.cs" />
-    <Compile Include="Converters\VolumeTest.cs" />
     <Compile Include="Expressions\Logics\AndTest.cs" />
     <Compile Include="Expressions\Logics\EqualityTest.cs" />
     <Compile Include="Expressions\Logics\ImplicationTest.cs" />
@@ -58,27 +56,12 @@
     <Compile Include="Expressions\Logics\OrTest.cs" />
     <Compile Include="Expressions\Logics\UndefineTest.cs" />
     <Compile Include="Expressions\Logics\XOrTest.cs" />
-    <Compile Include="Expressions\Maths\AbsTest.cs" />
-    <Compile Include="Expressions\Maths\AddTest.cs" />
+    <Compile Include="Expressions\Maths\AbsoluteTest.cs" />
+    <Compile Include="Expressions\Maths\AdditionTest.cs" />
     <Compile Include="Expressions\Maths\Bitwise\XOrTest.cs" />
     <Compile Include="Expressions\Maths\Bitwise\OrTest.cs" />
     <Compile Include="Expressions\Maths\Bitwise\NotTest.cs" />
     <Compile Include="Expressions\Maths\Bitwise\AndTest.cs" />
-    <Compile Include="Expressions\Maths\Programming\ForTest.cs" />
-    <Compile Include="Expressions\Maths\Programming\IfTest.cs" />
-    <Compile Include="Expressions\Maths\Programming\LessThanTest.cs" />
-    <Compile Include="Expressions\Maths\Programming\GreaterTest.cs" />
-    <Compile Include="Expressions\Maths\Programming\LessOrEqualTest.cs" />
-    <Compile Include="Expressions\Maths\Programming\GreaterOrEqualTest.cs" />
-    <Compile Include="Expressions\Maths\Programming\AndTest.cs" />
-    <Compile Include="Expressions\Maths\Programming\OrTest.cs" />
-    <Compile Include="Expressions\Maths\Programming\IncTest.cs" />
-    <Compile Include="Expressions\Maths\Programming\DecTest.cs" />
-    <Compile Include="Expressions\Maths\Programming\AddAssignTest.cs" />
-    <Compile Include="Expressions\Maths\Programming\SubAssignTest.cs" />
-    <Compile Include="Expressions\Maths\Programming\MulAssignTest.cs" />
-    <Compile Include="Expressions\Maths\Programming\DivAssignTest.cs" />
-    <Compile Include="Expressions\Maths\Programming\WhileTest.cs" />
     <Compile Include="Expressions\Maths\Trigonometric\ArccosTest.cs" />
     <Compile Include="Expressions\Maths\Trigonometric\ArcsinTest.cs" />
     <Compile Include="Expressions\Maths\Trigonometric\ArctanTest.cs" />
@@ -98,16 +81,16 @@
     <Compile Include="Expressions\Maths\Trigonometric\TangentTest.cs" />
     <Compile Include="Expressions\Maths\Trigonometric\SineTest.cs" />
     <Compile Include="Expressions\Maths\Trigonometric\CosineTest.cs" />
-    <Compile Include="Expressions\Maths\DivTest.cs" />
-    <Compile Include="Expressions\Maths\ExpTest.cs" />
-    <Compile Include="Expressions\Maths\PowTest.cs" />
+    <Compile Include="Expressions\Maths\DivisionTest.cs" />
+    <Compile Include="Expressions\Maths\ExponentialTest.cs" />
+    <Compile Include="Expressions\Maths\ExponentiationTest.cs" />
     <Compile Include="Expressions\Maths\LgTest.cs" />
     <Compile Include="Expressions\Maths\LnTest.cs" />
     <Compile Include="Expressions\Maths\LogTest.cs" />
-    <Compile Include="Expressions\Maths\MulTest.cs" />
+    <Compile Include="Expressions\Maths\MultiplicationTest.cs" />
     <Compile Include="Expressions\Maths\RootTest.cs" />
     <Compile Include="Expressions\Maths\SqrtTest.cs" />
-    <Compile Include="Expressions\Maths\SubTest.cs" />
+    <Compile Include="Expressions\Maths\SubtractionTest.cs" />
     <Compile Include="Expressions\Maths\DefineTest.cs" />
     <Compile Include="Expressions\Maths\Trigonometric\SecantTest.cs" />
     <Compile Include="Expressions\Maths\Trigonometric\CosecantTest.cs" />
@@ -126,8 +109,6 @@
     <Compile Include="Expressions\Maths\Matrices\VectorTest.cs" />
     <Compile Include="Expressions\Maths\DelegateExpressionTest.cs" />
     <Compile Include="Expressions\Maths\RoundTest.cs" />
-    <Compile Include="Expressions\Maths\FloorTest.cs" />
-    <Compile Include="Expressions\Maths\CeilTest.cs" />
     <Compile Include="Expressions\Maths\UserFunctionTest.cs" />
     <Compile Include="LogicParameterCollectionTest.cs" />
     <Compile Include="MathLexerMock.cs" />
@@ -147,10 +128,6 @@
     <ProjectReference Include="..\xFunc.Maths\xFunc.Maths %28.Net 2.0%29.csproj">
       <Project>{91ad4fbf-d01a-4bd3-b3e9-caf885cc208c}</Project>
       <Name>xFunc.Maths</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\xFunc.UnitConverters\xFunc.UnitConverters %28.Net 2.0%29.csproj">
-      <Project>{2ecaad28-e0ce-40be-8eb0-0d055c908133}</Project>
-      <Name>xFunc.UnitConverters %28.Net 2.0%29</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

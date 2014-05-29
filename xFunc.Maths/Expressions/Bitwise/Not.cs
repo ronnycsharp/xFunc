@@ -23,6 +23,9 @@ namespace xFunc.Maths.Expressions.Bitwise
     public class Not : UnaryExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Not"/> class.
+        /// </summary>
         internal Not() { }
 
         /// <summary>
@@ -80,6 +83,20 @@ namespace xFunc.Maths.Expressions.Bitwise
         public override IExpression Clone()
         {
             return new Not(argument.Clone());
+        }
+
+        /// <summary>
+        /// Always throws <see cref="NotSupportedException" />.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Throws an exception.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        protected override IExpression _Differentiation(Variable variable)
+        {
+            throw new NotSupportedException();
         }
 
     }

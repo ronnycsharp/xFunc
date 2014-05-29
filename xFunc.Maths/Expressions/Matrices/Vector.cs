@@ -27,6 +27,9 @@ namespace xFunc.Maths.Expressions.Matrices
     public class Vector : DifferentParametersExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Vector"/> class.
+        /// </summary>
         internal Vector()
             : base(null, -1)
         {
@@ -140,7 +143,33 @@ namespace xFunc.Maths.Expressions.Matrices
         {
             throw new NotSupportedException();
         }
-        
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <returns>
+        /// Returns a derivative of the expression.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public override IExpression Differentiate()
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public override IExpression Differentiate(Variable variable)
+        {
+            throw new NotSupportedException();
+        }
+
         /// <summary>
         /// Clones this instance of the <see cref="IExpression" />.
         /// </summary>

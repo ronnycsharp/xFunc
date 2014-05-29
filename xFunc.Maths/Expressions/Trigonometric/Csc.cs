@@ -24,6 +24,9 @@ namespace xFunc.Maths.Expressions.Trigonometric
     public class Csc : TrigonometricExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Csc"/> class.
+        /// </summary>
         internal Csc() { }
 
         /// <summary>
@@ -97,7 +100,26 @@ namespace xFunc.Maths.Expressions.Trigonometric
 
             return MathExtentions.Csc(radian);
         }
-        
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        protected override IExpression _Differentiation(Variable variable)
+        {
+            var unary = new UnaryMinus(argument.Clone().Differentiate(variable));
+            var cot = new Cot(argument.Clone());
+            var csc = new Csc(argument.Clone());
+            var mul1 = new Mul(cot, csc);
+            var mul2 = new Mul(unary, mul1);
+
+            return mul2;
+        }
+
         /// <summary>
         /// Clones this instance.
         /// </summary>

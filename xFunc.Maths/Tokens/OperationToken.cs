@@ -81,43 +81,30 @@ namespace xFunc.Maths.Tokens
         {
             switch (operation)
             {
-                case Operations.ConditionalAnd:
-                case Operations.ConditionalOr:
-                    return 8;
-                case Operations.Equal:
-                case Operations.NotEqual:
-                case Operations.LessThan:
-                case Operations.LessOrEqual:
-                case Operations.GreaterThan:
-                case Operations.GreaterOrEqual:
-                    return 9;
                 case Operations.Addition:
+                    return 10;
                 case Operations.Subtraction:
                     return 10;
                 case Operations.Multiplication:
+                    return 11;
                 case Operations.Division:
                     return 11;
                 case Operations.Exponentiation:
                     return 12;
-                case Operations.Factorial:
-                    return 13;
                 case Operations.UnaryMinus:
                     return 14;
+                case Operations.Factorial:
+                    return 13;
                 case Operations.Assign:
                     return 0;
-                case Operations.BitwiseNot:
-                case Operations.BitwiseAnd:
-                case Operations.BitwiseOr:
-                case Operations.BitwiseXOr:
+                case Operations.Not:
                     return 15;
-                case Operations.AddAssign:
-                case Operations.SubAssign:
-                case Operations.MulAssign:
-                case Operations.DivAssign:
-                    return 16;
-                case Operations.Increment:
-                case Operations.Decrement:
-                    return 17;
+                case Operations.And:
+                    return 15;
+                case Operations.Or:
+                    return 15;
+                case Operations.XOr:
+                    return 15;
                 default:
                     return -1;
             }

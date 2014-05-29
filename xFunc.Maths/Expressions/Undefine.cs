@@ -25,6 +25,9 @@ namespace xFunc.Maths.Expressions
 
         private IExpression key;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Undefine"/> class.
+        /// </summary>
         internal Undefine() { }
 
         /// <summary>
@@ -116,7 +119,33 @@ namespace xFunc.Maths.Expressions
 
             return double.NaN;
         }
-        
+
+        /// <summary>
+        /// Always throws <see cref="NotSupportedException"/>.
+        /// </summary>
+        /// <returns>
+        /// Throws exception.
+        /// </returns>
+        /// <exception cref="NotSupportedException">Always.</exception>
+        public IExpression Differentiate()
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Always throws <see cref="NotSupportedException" />.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Throws exception.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public IExpression Differentiate(Variable variable)
+        {
+            throw new NotSupportedException();
+        }
+
         /// <summary>
         /// Clones this instance.
         /// </summary>

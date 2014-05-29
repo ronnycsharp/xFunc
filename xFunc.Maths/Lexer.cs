@@ -82,7 +82,7 @@ namespace xFunc.Maths
 #if NET40_OR_GREATER || PORTABLE
             if (string.IsNullOrWhiteSpace(function))
 #elif NET20_OR_GREATER
-            if (StringExtension.IsNullOrWhiteSpace(function))
+            if (StringExtention.IsNullOrWhiteSpace(function))
 #endif
                 throw new ArgumentNullException("function", Resource.NotSpecifiedFunction);
 
@@ -115,29 +115,6 @@ namespace xFunc.Maths
                 }
                 else if (letter == '+')
                 {
-                    if (CheckNextSymbol(function, i, '+'))
-                    {
-                        var lastToken = tokens.LastOrDefault();
-                        if (lastToken == null || (lastToken as VariableToken) == null)
-                            throw new LexerException(string.Format(Resource.NotSupportedSymbol, letter));
-
-                        tokens.Add(new OperationToken(Operations.Increment));
-                        i += 2;
-
-                        continue;
-                    }
-                    if (CheckNextSymbol(function, i, '='))
-                    {
-                        var lastToken = tokens.LastOrDefault();
-                        if (lastToken == null || (lastToken as VariableToken) == null)
-                            throw new LexerException(string.Format(Resource.NotSupportedSymbol, letter));
-
-                        tokens.Add(new OperationToken(Operations.AddAssign));
-                        i += 2;
-
-                        continue;
-                    }
-
                     if (i - 1 >= 0)
                     {
                         char pre = function[i - 1];
@@ -157,29 +134,6 @@ namespace xFunc.Maths
                 }
                 else if (letter == '-')
                 {
-                    if (CheckNextSymbol(function, i, '-'))
-                    {
-                        var lastToken = tokens.LastOrDefault();
-                        if (lastToken == null || (lastToken as VariableToken) == null)
-                            throw new LexerException(string.Format(Resource.NotSupportedSymbol, letter));
-
-                        tokens.Add(new OperationToken(Operations.Decrement));
-                        i += 2;
-
-                        continue;
-                    }
-                    if (CheckNextSymbol(function, i, '='))
-                    {
-                        var lastToken = tokens.LastOrDefault();
-                        if (lastToken == null || (lastToken as VariableToken) == null)
-                            throw new LexerException(string.Format(Resource.NotSupportedSymbol, letter));
-
-                        tokens.Add(new OperationToken(Operations.SubAssign));
-                        i += 2;
-
-                        continue;
-                    }
-
                     if (i - 1 >= 0)
                     {
                         char pre = function[i - 1];
@@ -203,34 +157,10 @@ namespace xFunc.Maths
                 }
                 else if (letter == '*')
                 {
-                    if (CheckNextSymbol(function, i, '='))
-                    {
-                        var lastToken = tokens.LastOrDefault();
-                        if (lastToken == null || (lastToken as VariableToken) == null)
-                            throw new LexerException(string.Format(Resource.NotSupportedSymbol, letter));
-
-                        tokens.Add(new OperationToken(Operations.MulAssign));
-                        i += 2;
-
-                        continue;
-                    }
-
                     tokens.Add(new OperationToken(Operations.Multiplication));
                 }
                 else if (letter == '/')
                 {
-                    if (CheckNextSymbol(function, i, '='))
-                    {
-                        var lastToken = tokens.LastOrDefault();
-                        if (lastToken == null || (lastToken as VariableToken) == null)
-                            throw new LexerException(string.Format(Resource.NotSupportedSymbol, letter));
-
-                        tokens.Add(new OperationToken(Operations.DivAssign));
-                        i += 2;
-
-                        continue;
-                    }
-
                     tokens.Add(new OperationToken(Operations.Division));
                 }
                 else if (letter == '^')
@@ -247,46 +177,23 @@ namespace xFunc.Maths
                     if (lastToken != null)
                     {
                         var symbol = lastToken as SymbolToken;
-                        if ((symbol != null && symbol.Symbol == Symbols.CloseBracket) || lastToken is NumberToken || lastToken is VariableToken)
+                        if ((symbol != null && symbol.Symbol == Symbols.CloseBracket) || lastToken is NumberToken)
                             throw new LexerException(string.Format(Resource.NotSupportedSymbol, letter));
                     }
 
-                    tokens.Add(new OperationToken(Operations.BitwiseNot));
+                    tokens.Add(new OperationToken(Operations.Not));
                 }
                 else if (letter == '&')
                 {
-                    if (CheckNextSymbol(function, i, '&'))
-                    {
-                        tokens.Add(new OperationToken(Operations.ConditionalAnd));
-                        i += 2;
-
-                        continue;
-                    }
-
-                    tokens.Add(new OperationToken(Operations.BitwiseAnd));
+                    tokens.Add(new OperationToken(Operations.And));
                 }
                 else if (letter == '|')
                 {
-                    if (CheckNextSymbol(function, i, '|'))
-                    {
-                        tokens.Add(new OperationToken(Operations.ConditionalOr));
-                        i += 2;
-
-                        continue;
-                    }
-
-                    tokens.Add(new OperationToken(Operations.BitwiseOr));
+                    tokens.Add(new OperationToken(Operations.Or));
                 }
-                else if (letter == ':' && CheckNextSymbol(function, i, '='))
+                else if (letter == ':' && i + 1 < function.Length && function[i + 1] == '=')
                 {
                     tokens.Add(new OperationToken(Operations.Assign));
-                    i += 2;
-
-                    continue;
-                }
-                else if (letter == '=' && CheckNextSymbol(function, i, '='))
-                {
-                    tokens.Add(new OperationToken(Operations.Equal));
                     i += 2;
 
                     continue;
@@ -297,7 +204,7 @@ namespace xFunc.Maths
                     if (lastToken != null)
                     {
                         var symbol = lastToken as SymbolToken;
-                        if ((symbol != null && symbol.Symbol == Symbols.CloseBracket) || lastToken is NumberToken || lastToken is VariableToken)
+                        if ((symbol != null && symbol.Symbol == Symbols.CloseBracket) || lastToken is NumberToken)
                         {
                             tokens.Add(new OperationToken(Operations.Factorial));
                             i++;
@@ -306,39 +213,7 @@ namespace xFunc.Maths
                         }
                     }
 
-                    if (CheckNextSymbol(function, i, '='))
-                    {
-                        tokens.Add(new OperationToken(Operations.NotEqual));
-                        i += 2;
-
-                        continue;
-                    }
-
                     throw new LexerException(string.Format(Resource.NotSupportedSymbol, letter));
-                }
-                else if (letter == '<')
-                {
-                    if (CheckNextSymbol(function, i, '='))
-                    {
-                        tokens.Add(new OperationToken(Operations.LessOrEqual));
-                        i += 2;
-
-                        continue;
-                    }
-
-                    tokens.Add(new OperationToken(Operations.LessThan));
-                }
-                else if (letter == '>')
-                {
-                    if (CheckNextSymbol(function, i, '='))
-                    {
-                        tokens.Add(new OperationToken(Operations.GreaterOrEqual));
-                        i += 2;
-
-                        continue;
-                    }
-
-                    tokens.Add(new OperationToken(Operations.GreaterThan));
                 }
                 else if (char.IsDigit(letter))
                 {
@@ -783,28 +658,28 @@ namespace xFunc.Maths
 
                     if (sub.StartsWith("not("))
                     {
-                        tokens.Add(new OperationToken(Operations.BitwiseNot));
+                        tokens.Add(new OperationToken(Operations.Not));
                         i += 3;
 
                         continue;
                     }
                     if (sub.StartsWith("and"))
                     {
-                        tokens.Add(new OperationToken(Operations.BitwiseAnd));
+                        tokens.Add(new OperationToken(Operations.And));
                         i += 3;
 
                         continue;
                     }
                     if (sub.StartsWith("or"))
                     {
-                        tokens.Add(new OperationToken(Operations.BitwiseOr));
+                        tokens.Add(new OperationToken(Operations.Or));
                         i += 2;
 
                         continue;
                     }
                     if (sub.StartsWith("xor"))
                     {
-                        tokens.Add(new OperationToken(Operations.BitwiseXOr));
+                        tokens.Add(new OperationToken(Operations.XOr));
                         i += 3;
 
                         continue;
@@ -851,15 +726,19 @@ namespace xFunc.Maths
 
                         continue;
                     }
-                    if (sub.StartsWith("floor("))
-                    {
+                    if (sub.StartsWith("roundunary(")) {
+                        tokens.Add(new FunctionToken(Functions.RoundUnary));
+                        i += 10;
+
+                        continue;
+                    }
+                    if (sub.StartsWith("floor(")) {
                         tokens.Add(new FunctionToken(Functions.Floor));
                         i += 5;
 
                         continue;
                     }
-                    if (sub.StartsWith("ceil("))
-                    {
+                    if (sub.StartsWith("ceil(")) {
                         tokens.Add(new FunctionToken(Functions.Ceil));
                         i += 4;
 
@@ -890,27 +769,6 @@ namespace xFunc.Maths
                     {
                         tokens.Add(new FunctionToken(Functions.Inverse));
                         i += 7;
-
-                        continue;
-                    }
-                    if (sub.StartsWith("if("))
-                    {
-                        tokens.Add(new FunctionToken(Functions.If));
-                        i += 2;
-
-                        continue;
-                    }
-                    if (sub.StartsWith("for("))
-                    {
-                        tokens.Add(new FunctionToken(Functions.For));
-                        i += 3;
-
-                        continue;
-                    }
-                    if (sub.StartsWith("while("))
-                    {
-                        tokens.Add(new FunctionToken(Functions.While));
-                        i += 5;
 
                         continue;
                     }
@@ -1026,11 +884,6 @@ namespace xFunc.Maths
             }
 
             return tokens;
-        }
-
-        private bool CheckNextSymbol(string str, int index, char symbol)
-        {
-            return index + 1 < str.Length && str[index + 1] == symbol;
         }
 
     }

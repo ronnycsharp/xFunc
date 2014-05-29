@@ -364,13 +364,13 @@
     <value>Відображає вікно з усіма введеними функціями.</value>
   </data>
   <data name="FuncScreenTitTitle" xml:space="preserve">
-    <value>Функції (Ctrl+Alt+F)</value>
+    <value>Функції</value>
   </data>
   <data name="VarScreenTitText" xml:space="preserve">
     <value>Відображає вікно з усіма введеними змінними.</value>
   </data>
   <data name="VarScreenTitTitle" xml:space="preserve">
-    <value>Змінні (Ctrl+Alt+V)</value>
+    <value>Змінні</value>
   </data>
   <data name="ArccosecantToolTip" xml:space="preserve">
     <value>Арккосеканс числа. Приклад: arccsc(90) або arccosec(90)</value>
@@ -662,98 +662,5 @@
   </data>
   <data name="RoundToolTip" xml:space="preserve">
     <value>Функція округлення. Приклад: round(number, digits).</value>
-  </data>
-  <data name="CeilToolTip" xml:space="preserve">
-    <value>Повертає найменше ціле число, яке більше або дорівнює заданому числу. Приклад: ceil(5.55555).</value>
-  </data>
-  <data name="FloorToolTip" xml:space="preserve">
-    <value>Повертає найбільше ціле число, яке менше або дорівнює вказаному числу. Приклад: floor(5.55555).</value>
-  </data>
-  <data name="ProgExpanderHeader" xml:space="preserve">
-    <value>Програмування</value>
-  </data>
-  <data name="WhileToolTip" xml:space="preserve">
-    <value>Цикл while. Приклад: while(x := x + 1, x &lt; 10).</value>
-  </data>
-  <data name="ForToolTip" xml:space="preserve">
-    <value>Цикл for. Приклад: for(z := z + 1, x := 0, x &lt; 10, x := x + 1).</value>
-  </data>
-  <data name="IfToolTip" xml:space="preserve">
-    <value>Умова if. Приклад: if(x &lt; 2, sin(x), cos(x)).</value>
-  </data>
-  <data name="EqualToolTip" xml:space="preserve">
-    <value>Оператор рівності. Приклад: x == 10.</value>
-  </data>
-  <data name="NotEqualToolTip" xml:space="preserve">
-    <value>Оператор нерівності. Приклад: x != 10.</value>
-  </data>
-  <data name="LessThanToolTip" xml:space="preserve">
-    <value>Оператор порівняння "менше". Приклад: x &lt;10.</value>
-  </data>
-  <data name="GreaterThanToolTip" xml:space="preserve">
-    <value>Оператор порівняння "більше". Приклад: x&gt; 10.</value>
-  </data>
-  <data name="LessOrEqualToolTip" xml:space="preserve">
-    <value>Оператор порівняння "менше або дорівнює". Приклад: x &lt;= 10.</value>
-  </data>
-  <data name="GreaterOrEqualToolTip" xml:space="preserve">
-    <value>Оператор порівняння "більше або дорівнює". Приклад: x&gt; = 10.</value>
-  </data>
-  <data name="ConditionalAndToolTip" xml:space="preserve">
-    <value>Умовний оператор І. Приклад: x == 0 &amp;&amp; y != 0.</value>
-  </data>
-  <data name="ConditionalOrToolTip" xml:space="preserve">
-    <value>Умовний оператор АБО. Приклад: x == 0 || y != 0.</value>
-  </data>
-  <data name="AddAssignToolTip" xml:space="preserve">
-    <value>Оператор "+=". Приклад: x += 2.</value>
-  </data>
-  <data name="SubAssignToolTip" xml:space="preserve">
-    <value>Оператор "-=". Приклад: x -= 2.</value>
-  </data>
-  <data name="MulAssignToolTip" xml:space="preserve">
-    <value>Оператор "*=". Приклад: x *= 2.</value>
-  </data>
-  <data name="DivAssignToolTip" xml:space="preserve">
-    <value>Оператор "/=". Приклад: x /= 2.</value>
-  </data>
-  <data name="ToolsGroupHeader" xml:space="preserve">
-    <value>Інструменти</value>
-  </data>
-  <data name="ConverterButtonHeader" xml:space="preserve">
-    <value>Конвертер величин</value>
-  </data>
-  <data name="ConverterScreenTipTitle" xml:space="preserve">
-    <value>Конвертер величин (Ctrl+Alt+C)</value>
-  </data>
-  <data name="ConverterScreenTipText" xml:space="preserve">
-    <value>Перетворює дані з однієї одиниці вимірювання в іншу.</value>
-  </data>
-  <data name="ConverterTitle" xml:space="preserve">
-    <value>Конвертер величин</value>
-  </data>
-  <data name="ConverterTypeText" xml:space="preserve">
-    <value>_Тип конвертора:</value>
-  </data>
-  <data name="ValueText" xml:space="preserve">
-    <value>_Значення:</value>
-  </data>
-  <data name="UnitsText" xml:space="preserve">
-    <value>_Одиниці:</value>
-  </data>
-  <data name="FromText" xml:space="preserve">
-    <value>З:</value>
-  </data>
-  <data name="ToText" xml:space="preserve">
-    <value>В:</value>
-  </data>
-  <data name="ConverterCalculateText" xml:space="preserve">
-    <value>Розрахувати</value>
-  </data>
-  <data name="SettingsSaveUF" xml:space="preserve">
-    <value>Зберігати функції користувача.</value>
-  </data>
-  <data name="SaveAsMenu" xml:space="preserve">
-    <value>Зберегти як</value>
   </data>
 </root>

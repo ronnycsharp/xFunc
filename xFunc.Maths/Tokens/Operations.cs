@@ -53,63 +53,6 @@ namespace xFunc.Maths.Tokens
         Factorial,
 
         /// <summary>
-        /// &amp;&amp;
-        /// </summary>
-        ConditionalAnd,
-        /// <summary>
-        /// ||
-        /// </summary>
-        ConditionalOr,
-        /// <summary>
-        /// ==
-        /// </summary>
-        Equal,
-        /// <summary>
-        /// !=
-        /// </summary>
-        NotEqual,
-        /// <summary>
-        /// &lt;
-        /// </summary>
-        LessThan,
-        /// <summary>
-        /// &lt;=
-        /// </summary>
-        LessOrEqual,
-        /// <summary>
-        /// &gt;
-        /// </summary>
-        GreaterThan,
-        /// <summary>
-        /// &gt;=
-        /// </summary>
-        GreaterOrEqual,
-        /// <summary>
-        /// The increment (++)
-        /// </summary>
-        Increment,
-        /// <summary>
-        /// The decrement (--)
-        /// </summary>
-        Decrement,
-        /// <summary>
-        /// +=
-        /// </summary>
-        AddAssign,
-        /// <summary>
-        /// -=
-        /// </summary>
-        SubAssign,
-        /// <summary>
-        /// *=
-        /// </summary>
-        MulAssign,
-        /// <summary>
-        /// /=
-        /// </summary>
-        DivAssign,
-
-        /// <summary>
         /// :=
         /// </summary>
         Assign,
@@ -117,19 +60,19 @@ namespace xFunc.Maths.Tokens
         /// <summary>
         /// ~, not
         /// </summary>
-        BitwiseNot,
+        Not,
         /// <summary>
         /// &amp;, and
         /// </summary>
-        BitwiseAnd,
+        And,
         /// <summary>
         /// |, or
         /// </summary>
-        BitwiseOr,
+        Or,
         /// <summary>
         /// xor
         /// </summary>
-        BitwiseXOr
+        XOr
 
     }
 

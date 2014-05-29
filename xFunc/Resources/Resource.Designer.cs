@@ -106,15 +106,6 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The &quot;+=&quot; operator. Example: x += 2..
-        /// </summary>
-        public static string AddAssignToolTip {
-            get {
-                return ResourceManager.GetString("AddAssignToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string AddFuncCancel {
@@ -439,15 +430,6 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Returns the smallest integer greater than or equal to the specified number. Example: ceil(5.5555)..
-        /// </summary>
-        public static string CeilToolTip {
-            get {
-                return ResourceManager.GetString("CeilToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Clear.
         /// </summary>
         public static string ClearButtonHeader {
@@ -493,83 +475,11 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The conditional-AND operator. Example: x == 0 &amp;&amp; y != 0..
-        /// </summary>
-        public static string ConditionalAndToolTip {
-            get {
-                return ResourceManager.GetString("ConditionalAndToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The conditional-OR operator. Example: x == 0 || y != 0..
-        /// </summary>
-        public static string ConditionalOrToolTip {
-            get {
-                return ResourceManager.GetString("ConditionalOrToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Constants.
         /// </summary>
         public static string ConstantsExpanderHeader {
             get {
                 return ResourceManager.GetString("ConstantsExpanderHeader", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unit Converter.
-        /// </summary>
-        public static string ConverterButtonHeader {
-            get {
-                return ResourceManager.GetString("ConverterButtonHeader", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Calculate.
-        /// </summary>
-        public static string ConverterCalculateText {
-            get {
-                return ResourceManager.GetString("ConverterCalculateText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Converts data from one unit to another..
-        /// </summary>
-        public static string ConverterScreenTipText {
-            get {
-                return ResourceManager.GetString("ConverterScreenTipText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unit Converter (Ctrl+Alt+C).
-        /// </summary>
-        public static string ConverterScreenTipTitle {
-            get {
-                return ResourceManager.GetString("ConverterScreenTipTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unit Converter.
-        /// </summary>
-        public static string ConverterTitle {
-            get {
-                return ResourceManager.GetString("ConverterTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to _Converter Type:.
-        /// </summary>
-        public static string ConverterTypeText {
-            get {
-                return ResourceManager.GetString("ConverterTypeText", resourceCulture);
             }
         }
         
@@ -781,24 +691,6 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The &quot;/=&quot; operator. Example: x /= 2..
-        /// </summary>
-        public static string DivAssignToolTip {
-            get {
-                return ResourceManager.GetString("DivAssignToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The equality operator. Example: x == 10..
-        /// </summary>
-        public static string EqualToolTip {
-            get {
-                return ResourceManager.GetString("EqualToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Error.
         /// </summary>
         public static string ErrorHeader {
@@ -880,33 +772,6 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Returns the largest integer less than or equal to the specified number. Example: floor(5.55555)..
-        /// </summary>
-        public static string FloorToolTip {
-            get {
-                return ResourceManager.GetString("FloorToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The For loop. Example: for(z := z + 1, x := 0, x &lt; 10, x := x + 1)..
-        /// </summary>
-        public static string ForToolTip {
-            get {
-                return ResourceManager.GetString("ForToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to From:.
-        /// </summary>
-        public static string FromText {
-            get {
-                return ResourceManager.GetString("FromText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string FuncNameHeader {
@@ -925,7 +790,7 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Functions (Ctrl+Alt+F).
+        ///   Looks up a localized string similar to Functions.
         /// </summary>
         public static string FuncScreenTitTitle {
             get {
@@ -1006,24 +871,6 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The &quot;greater than or equal&quot; operator. Example: x &gt;= 10..
-        /// </summary>
-        public static string GreaterOrEqualToolTip {
-            get {
-                return ResourceManager.GetString("GreaterOrEqualToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The &quot;greater than&quot; operator. Example: x &gt; 10..
-        /// </summary>
-        public static string GreaterThanToolTip {
-            get {
-                return ResourceManager.GetString("GreaterThanToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Home Page:.
         /// </summary>
         public static string HomePageTextBox {
@@ -1051,15 +898,6 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The If condition. Example: if(x &lt; 2, sin(x), cos(x))..
-        /// </summary>
-        public static string IfToolTip {
-            get {
-                return ResourceManager.GetString("IfToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Perhaps, variables have entered incorrectly..
         /// </summary>
         public static string IndexOutOfRangeExceptionError {
@@ -1083,24 +921,6 @@ namespace xFunc.Resources {
         public static string LCMToolTip {
             get {
                 return ResourceManager.GetString("LCMToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The &quot;less than or equal&quot; operator. Example: x &lt;= 10..
-        /// </summary>
-        public static string LessOrEqualToolTip {
-            get {
-                return ResourceManager.GetString("LessOrEqualToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The &quot;less than&quot; operator. Example: x &lt; 10..
-        /// </summary>
-        public static string LessThanToolTip {
-            get {
-                return ResourceManager.GetString("LessThanToolTip", resourceCulture);
             }
         }
         
@@ -1186,29 +1006,11 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The &quot;*=&quot; operator. Example: x *= 2..
-        /// </summary>
-        public static string MulAssignToolTip {
-            get {
-                return ResourceManager.GetString("MulAssignToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to New.
         /// </summary>
         public static string NewMenu {
             get {
                 return ResourceManager.GetString("NewMenu", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The inequality operator. Example: x != 10..
-        /// </summary>
-        public static string NotEqualToolTip {
-            get {
-                return ResourceManager.GetString("NotEqualToolTip", resourceCulture);
             }
         }
         
@@ -1330,15 +1132,6 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Programming.
-        /// </summary>
-        public static string ProgExpanderHeader {
-            get {
-                return ResourceManager.GetString("ProgExpanderHeader", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Radian.
         /// </summary>
         public static string RadianButtonHeader {
@@ -1393,20 +1186,11 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Rounds a value to the nearest integer or to the specified number of fractional digits. Example: round(number, digits)..
+        ///   Looks up a localized string similar to The &quot;round&quot; function. Example: round(number, digits)..
         /// </summary>
         public static string RoundToolTip {
             get {
                 return ResourceManager.GetString("RoundToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Save As.
-        /// </summary>
-        public static string SaveAsMenu {
-            get {
-                return ResourceManager.GetString("SaveAsMenu", resourceCulture);
             }
         }
         
@@ -1618,15 +1402,6 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save user functions..
-        /// </summary>
-        public static string SettingsSaveUF {
-            get {
-                return ResourceManager.GetString("SettingsSaveUF", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Shows settings of program..
         /// </summary>
         public static string SettingsToolTip {
@@ -1717,15 +1492,6 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The &quot;-=&quot; operator. Example: x -= 2..
-        /// </summary>
-        public static string SubAssignToolTip {
-            get {
-                return ResourceManager.GetString("SubAssignToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Summation. Example: sum(body, from, to, increment, variable).
         /// </summary>
         public static string SumToolTip {
@@ -1767,24 +1533,6 @@ namespace xFunc.Resources {
         public static string ToInputMenuItem {
             get {
                 return ResourceManager.GetString("ToInputMenuItem", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Tools.
-        /// </summary>
-        public static string ToolsGroupHeader {
-            get {
-                return ResourceManager.GetString("ToolsGroupHeader", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to To:.
-        /// </summary>
-        public static string ToText {
-            get {
-                return ResourceManager.GetString("ToText", resourceCulture);
             }
         }
         
@@ -1870,24 +1618,6 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _Unit:.
-        /// </summary>
-        public static string UnitsText {
-            get {
-                return ResourceManager.GetString("UnitsText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to _Value:.
-        /// </summary>
-        public static string ValueText {
-            get {
-                return ResourceManager.GetString("ValueText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The variable not found..
         /// </summary>
         public static string VariableNotFoundExceptionError {
@@ -1933,7 +1663,7 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Variables (Ctrl+Alt+V).
+        ///   Looks up a localized string similar to Variables.
         /// </summary>
         public static string VarScreenTitTitle {
             get {
@@ -1956,15 +1686,6 @@ namespace xFunc.Resources {
         public static string VersionTextBox {
             get {
                 return ResourceManager.GetString("VersionTextBox", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The While loop. Example: while(x := x + 1, x &lt; 10)..
-        /// </summary>
-        public static string WhileToolTip {
-            get {
-                return ResourceManager.GetString("WhileToolTip", resourceCulture);
             }
         }
         

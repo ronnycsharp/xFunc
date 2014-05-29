@@ -23,6 +23,10 @@ namespace xFunc.Maths.Expressions
     public class Log : BinaryExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Log"/> class.
+        /// </summary>
+        /// <seealso cref="IExpression"/>
         internal Log() { }
 
         /// <summary>
@@ -64,6 +68,36 @@ namespace xFunc.Maths.Expressions
         public override object Calculate(ExpressionParameters parameters)
         {
             return Math.Log((double)right.Calculate(parameters), (double)left.Calculate(parameters));
+        }
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        public override IExpression Differentiate(Variable variable)
+        {
+            if (Parser.HasVar(left, variable))
+            {
+                var ln1 = new Ln(right.Clone());
+                var ln2 = new Ln(left.Clone());
+                var div = new Div(ln1, ln2);
+
+                return div.Differentiate(variable);
+            }
+            if (Parser.HasVar(right, variable))
+            {
+                var ln = new Ln(left.Clone());
+                var mul = new Mul(right.Clone(), ln);
+                var div = new Div(right.Clone().Differentiate(variable), mul);
+
+                return div;
+            }
+
+            return new Number(0);
         }
 
         /// <summary>

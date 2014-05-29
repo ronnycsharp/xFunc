@@ -48,18 +48,17 @@
     <AssemblyOriginatorKeyFile>..\key.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Fluent, Version=2.1.0.0, Culture=neutral, PublicKeyToken=3e436e32a8c5546f, processorArchitecture=MSIL">
+    <Reference Include="Fluent, Version=2.0.0.0, Culture=neutral, PublicKeyToken=3e436e32a8c5546f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Fluent.Ribbon.2.1.0-i\lib\net40\Fluent.dll</HintPath>
+      <HintPath>..\Libs\Fluent.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fluent.Ribbon.2.1.0-i\lib\net40\System.Windows.Interactivity.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -72,7 +71,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="..\SharedCode\SharedAssemblyInfo.cs">
+    <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="App.xaml.cs">
@@ -95,20 +94,20 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Resources\Resource.uk.Designer.cs">
+      <DependentUpon>Resource.uk.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Resources\Resource.ru.Designer.cs">
+      <DependentUpon>Resource.ru.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Resources\Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\Resource.ru.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resource.ru.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\Resource.uk.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resource.uk.resx</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\FunctionViewModel.cs" />
     <Compile Include="ViewModels\GraphItemViewModel.cs" />
@@ -124,9 +123,6 @@
     </Compile>
     <Compile Include="Views\AddVariableView.xaml.cs">
       <DependentUpon>AddVariableView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Converter.xaml.cs">
-      <DependentUpon>Converter.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DrawingCanvas.cs" />
     <Compile Include="Views\FunctionView.xaml.cs">
@@ -189,10 +185,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Converter.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\FunctionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -245,7 +237,6 @@
     <None Include="NOTICE">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -290,15 +281,11 @@
   <ItemGroup>
     <ProjectReference Include="..\xFunc.Logics\xFunc.Logics %28.Net 4.0%29.csproj">
       <Project>{dfc61417-f3cc-47d5-b2de-4029be939a4c}</Project>
-      <Name>xFunc.Logics %28.Net 4.0%29</Name>
+      <Name>xFunc.Logics</Name>
     </ProjectReference>
     <ProjectReference Include="..\xFunc.Maths\xFunc.Maths %28.Net 4.0%29.csproj">
       <Project>{91ad4fbf-d01a-4bd3-b3e9-caf885cc208c}</Project>
-      <Name>xFunc.Maths %28.Net 4.0%29</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\xFunc.UnitConverters\xFunc.UnitConverters %28.Net 4.0%29.csproj">
-      <Project>{2ecaad28-e0ce-40be-8eb0-0d055c908133}</Project>
-      <Name>xFunc.UnitConverters %28.Net 4.0%29</Name>
+      <Name>xFunc.Maths</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -324,6 +311,15 @@
     <Resource Include="Images\FunctionLarge.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Images\exit.png" />
+    <Resource Include="Images\settings.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\new.png" />
+    <Resource Include="Images\open.png" />
+    <Resource Include="Images\save.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Images\Add.png" />
     <Resource Include="Images\Edit.png" />
     <Resource Include="Images\Refresh.png" />
@@ -334,10 +330,6 @@
       <Link>LICENSE_Ms-PL.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Converter.png" />
-    <Resource Include="Images\ConverterLarge.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

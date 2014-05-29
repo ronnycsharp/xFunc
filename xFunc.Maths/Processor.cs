@@ -46,7 +46,6 @@ namespace xFunc.Maths
             parser = new Parser(lexer, simplifier, new ExpressionFactory());
 
             parameters = new ExpressionParameters(AngleMeasurement.Degree, new ParameterCollection(), new FunctionCollection());
-            numeralSystem = NumeralSystem.Decimal;
         }
 
         /// <summary>
@@ -76,7 +75,6 @@ namespace xFunc.Maths
             this.parser = new Parser(lexer, simplifier, factory);
 
             this.parameters = parameters;
-            this.numeralSystem = NumeralSystem.Decimal;
         }
 
         /// <summary>
@@ -92,9 +90,9 @@ namespace xFunc.Maths
             {
                 var deriv = exp as Derivative;
                 if (deriv.CountOfParams == 1)
-                    return new ExpressionResult(Differentiate(deriv.Expression, new Variable("x"), parameters));
+                    return new ExpressionResult(Differentiate(deriv));
 
-                return new ExpressionResult(Differentiate(deriv.Expression, deriv.Variable, parameters));
+                return new ExpressionResult(Differentiate(deriv, deriv.Variable));
             }
             if (exp is Simplify)
             {
@@ -184,20 +182,6 @@ namespace xFunc.Maths
         public IExpression Differentiate(IExpression expression, Variable variable)
         {
             return differentiator.Differentiate(expression, variable);
-        }
-
-        /// <summary>
-        /// Differentiates the specified expression.
-        /// </summary>
-        /// <param name="expression">The expression.</param>
-        /// <param name="variable">The variable.</param>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>
-        /// Returns the derivative.
-        /// </returns>
-        public IExpression Differentiate(IExpression expression, Variable variable, ExpressionParameters parameters)
-        {
-            return differentiator.Differentiate(expression, variable, parameters);
         }
 
         /// <summary>

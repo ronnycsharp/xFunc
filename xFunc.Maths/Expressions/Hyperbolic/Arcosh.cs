@@ -24,6 +24,9 @@ namespace xFunc.Maths.Expressions.Hyperbolic
     public class Arcosh : HyperbolicExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Arcosh"/> class.
+        /// </summary>
         internal Arcosh() { }
 
         /// <summary>
@@ -77,7 +80,25 @@ namespace xFunc.Maths.Expressions.Hyperbolic
         {
             return new Arcosh(argument.Clone());
         }
-        
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        protected override IExpression _Differentiation(Variable variable)
+        {
+            var sqr = new Pow(argument.Clone(), new Number(2));
+            var sub = new Sub(sqr, new Number(1));
+            var sqrt = new Sqrt(sub);
+            var div = new Div(argument.Clone().Differentiate(variable), sqrt);
+
+            return div;
+        }
+
     }
 
 }

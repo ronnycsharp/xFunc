@@ -12,24 +12,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
 express or implied. 
 See the License for the specific language governing permissions and 
 limitations under the License. -->
-<ribbon:MetroWindow x:Class="xFunc.Views.MainView"
-                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:res="clr-namespace:xFunc.Resources"
-                    xmlns:ribbon="clr-namespace:Fluent;assembly=Fluent"
-                    xmlns:viewModels="clr-namespace:xFunc.ViewModels"
-                    xmlns:views="clr-namespace:xFunc.Views"
-                    Style="{StaticResource MetroWindowStyle}"
-                    Foreground="White"
-                    Title="xFunc" Width="1024" Height="576" MinWidth="480" MinHeight="270"
-                    Icon="../Images/xFunc.ico" TextOptions.TextFormattingMode="Display"
-                    Loaded="this_Loaded">
-    <ribbon:MetroWindow.CommandBindings>
-        <CommandBinding Command="views:MainView.NewCommand" Executed="NewCommand_Execute" />
-        <CommandBinding Command="views:MainView.OpenCommand" Executed="OpenCommand_Execute" />
-        <CommandBinding Command="views:MainView.SaveCommand" Executed="SaveCommand_Execute" />
-        <CommandBinding Command="views:MainView.SaveAsCommand" Executed="SaveAsCommand_Execute" />
-        
+<ribbon:RibbonWindow x:Class="xFunc.Views.MainView"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:res="clr-namespace:xFunc.Resources"
+                     xmlns:ribbon="clr-namespace:Fluent;assembly=Fluent"
+                     xmlns:viewModels="clr-namespace:xFunc.ViewModels"
+                     xmlns:views="clr-namespace:xFunc.Views"
+                     Title="xFunc" Width="1024" Height="576" MinWidth="480" MinHeight="270"
+                     Icon="../Images/xFunc.ico" TextOptions.TextFormattingMode="Display"
+                     Loaded="this_Loaded">
+    <ribbon:RibbonWindow.CommandBindings>
         <CommandBinding Command="views:MainView.DegreeCommand" Executed="DegreeButton_Execute" CanExecute="AndleButtons_CanExecute" />
         <CommandBinding Command="views:MainView.RadianCommand" Executed="RadianButton_Execute" CanExecute="AndleButtons_CanExecute" />
         <CommandBinding Command="views:MainView.GradianCommand" Executed="GradianButton_Execute" CanExecute="AndleButtons_CanExecute" />
@@ -45,30 +38,19 @@ limitations under the License. -->
         <CommandBinding Command="views:MainView.DeleteExpCommand" Executed="DeleteExp_Execute" CanExecute="DeleteExp_CanExecute" />
         <CommandBinding Command="views:MainView.ClearCommand" Executed="Clear_Execute" CanExecute="Clear_CanExecute" />
 
-        <CommandBinding Command="views:MainView.ConverterCommand" Executed="ConverterCommand_Execute" />
-
         <CommandBinding Command="views:MainView.AboutCommand" Executed="AboutCommand_Execute" />
         <CommandBinding Command="views:MainView.SettingsCommand" Executed="SettingsCommand_Execute" />
         <CommandBinding Command="views:MainView.ExitCommand" Executed="ExitCommand_Execute" />
-    </ribbon:MetroWindow.CommandBindings>
-    <ribbon:MetroWindow.InputBindings>
-        <KeyBinding Command="views:MainView.NewCommand" Key="N" Modifiers="Control" />
-        <KeyBinding Command="views:MainView.OpenCommand" Key="O" Modifiers="Control" />
-        <KeyBinding Command="views:MainView.SaveCommand" Key="S" Modifiers="Control" />
-        <KeyBinding Command="views:MainView.SaveAsCommand" Key="S" Modifiers="Control+Shift" />
-        
+    </ribbon:RibbonWindow.CommandBindings>
+    <ribbon:RibbonWindow.InputBindings>
         <KeyBinding Command="views:MainView.DegreeCommand" Key="D" Modifiers="Control+Alt" />
         <KeyBinding Command="views:MainView.RadianCommand" Key="R" Modifiers="Control+Alt" />
         <KeyBinding Command="views:MainView.GradianCommand" Key="G" Modifiers="Control+Alt" />
 
-        <KeyBinding Command="views:MainView.VariablesCommand" Key="V" Modifiers="Control+Alt" />
-        <KeyBinding Command="views:MainView.FunctionsCommand" Key="F" Modifiers="Control+Alt" />
-        <KeyBinding Command="views:MainView.ConverterCommand" Key="C" Modifiers="Control+Alt" />
-
         <KeyBinding Command="views:MainView.AboutCommand" Key="F1" />
         <KeyBinding Command="views:MainView.SettingsCommand" Key="S" Modifiers="Alt" />
         <KeyBinding Command="views:MainView.ExitCommand" Key="F4" Modifiers="Alt" />
-    </ribbon:MetroWindow.InputBindings>
+    </ribbon:RibbonWindow.InputBindings>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -94,20 +76,18 @@ limitations under the License. -->
                 </ribbon:Button>
             </ribbon:Ribbon.ToolBarItems>
             <ribbon:Ribbon.Menu>
-                <ribbon:Backstage Header="{x:Static res:Resource.FileMenu}">
+                <ribbon:Backstage Header="{x:Static res:Resource.FileMenu}" Background="Black">
                     <ribbon:BackstageTabControl>
-                        <ribbon:Button Header="{x:Static res:Resource.NewMenu}" Command="views:MainView.NewCommand" />
-                        <ribbon:Button Header="{x:Static res:Resource.OpenMenu}" Command="views:MainView.OpenCommand" />
-                        <ribbon:Button Header="{x:Static res:Resource.SaveMenu}" Command="views:MainView.SaveCommand" />
-                        <ribbon:Button Header="{x:Static res:Resource.SaveAsMenu}" Command="views:MainView.SaveAsCommand" />
-                        <ribbon:SeparatorTabItem />
-                        <ribbon:Button Header="{x:Static res:Resource.SettingsMenu}" Command="views:MainView.SettingsCommand">
+                        <!--<ribbon:Button Header="{x:Static res:Resource.NewMenu}" Icon="..\Images\new.png" />
+                        <ribbon:Button Header="{x:Static res:Resource.OpenMenu}" Icon="..\Images\open.png" />
+                        <ribbon:Button Header="{x:Static res:Resource.SaveMenu}" Icon="..\Images\save.png" />
+                        <ribbon:SeparatorTabItem />-->
+                        <ribbon:Button Header="{x:Static res:Resource.SettingsMenu}" Icon="..\Images\settings.png" Command="views:MainView.SettingsCommand">
                             <ribbon:Button.ToolTip>
                                 <ribbon:ScreenTip Title="{x:Static res:Resource.SettingsToolTipTitle}" Text="{x:Static res:Resource.SettingsToolTip}" />
                             </ribbon:Button.ToolTip>
                         </ribbon:Button>
-                        <ribbon:SeparatorTabItem />
-                        <ribbon:Button Header="{x:Static res:Resource.ExitMenu}" Command="views:MainView.ExitCommand">
+                        <ribbon:Button Header="{x:Static res:Resource.ExitMenu}" Icon="..\Images\exit.png" Command="views:MainView.ExitCommand">
                             <ribbon:Button.ToolTip>
                                 <ribbon:ScreenTip Title="{x:Static res:Resource.ExitToolTipTitle}" Text="{x:Static res:Resource.ExitToolTip}" />
                             </ribbon:Button.ToolTip>
@@ -188,13 +168,6 @@ limitations under the License. -->
                     <ribbon:Button Header="{x:Static res:Resource.ClearButtonHeader}" Icon="../Images/Clear.png" LargeIcon="../Images/ClearLarge.png" Command="views:MainView.ClearCommand">
                         <ribbon:Button.ToolTip>
                             <ribbon:ScreenTip Title="{x:Static res:Resource.ClearScreenTipTitle}" Text="{x:Static res:Resource.ClearScreenTipText}" />
-                        </ribbon:Button.ToolTip>
-                    </ribbon:Button>
-                </ribbon:RibbonGroupBox>
-                <ribbon:RibbonGroupBox Header="{x:Static res:Resource.ToolsGroupHeader}">
-                    <ribbon:Button Header="{x:Static res:Resource.ConverterButtonHeader}" Icon="..\Images\Converter.png" LargeIcon="..\Images\ConverterLarge.png" Command="views:MainView.ConverterCommand">
-                        <ribbon:Button.ToolTip>
-                            <ribbon:ScreenTip Title="{x:Static res:Resource.ConverterScreenTipTitle}" Text="{x:Static res:Resource.ConverterScreenTipText}" />
                         </ribbon:Button.ToolTip>
                     </ribbon:Button>
                 </ribbon:RibbonGroupBox>
@@ -604,116 +577,6 @@ limitations under the License. -->
                         </Button>
                     </Grid>
                 </Expander>
-                <Expander x:Name="progToolBar" Header="{x:Static res:Resource.ProgExpanderHeader}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-
-                        <Button Grid.Row="0" Grid.Column="0" Tag="==" Click="InsertChar_Click">
-                            <Rectangle Fill="{StaticResource equal}" Width="32" Height="22" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.EqualToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-                        <Button Grid.Row="0" Grid.Column="1" Tag="!=" Click="InsertChar_Click">
-                            <Rectangle Fill="{StaticResource notEqual}" Width="32" Height="19" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.NotEqualToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-                        <Button Grid.Row="0" Grid.Column="2" Tag="&amp;&amp;" Click="InsertChar_Click">
-                            <Rectangle Fill="{StaticResource condAnd}" Width="32" Height="22" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.ConditionalAndToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-                        <Button Grid.Row="0" Grid.Column="3" Tag="||" Click="InsertChar_Click">
-                            <Rectangle Fill="{StaticResource condOr}" Width="32" Height="20" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.ConditionalOrToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-
-                        <Button Grid.Row="1" Grid.Column="0" Tag="&lt;" Click="InsertChar_Click">
-                            <Rectangle Fill="{StaticResource less}" Width="32" Height="14" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.LessThanToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-                        <Button Grid.Row="1" Grid.Column="1" Tag="&gt;" Click="InsertChar_Click">
-                            <Rectangle Fill="{StaticResource greater}" Width="32" Height="14" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.GreaterThanToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-                        <Button Grid.Row="1" Grid.Column="2" Tag="&lt;=" Click="InsertChar_Click">
-                            <Rectangle Fill="{StaticResource lessOrEqual}" Width="32" Height="20" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.LessOrEqualToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-                        <Button Grid.Row="1" Grid.Column="3" Tag="&gt;=" Click="InsertChar_Click">
-                            <Rectangle Fill="{StaticResource greaterOrEqual}" Width="32" Height="20" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.GreaterOrEqualToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-
-                        <Button Grid.Row="2" Grid.Column="0" Tag="+=" Click="InsertChar_Click">
-                            <Rectangle Fill="{StaticResource addAssign}" Width="32" Height="14" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.AddAssignToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-                        <Button Grid.Row="2" Grid.Column="1" Tag="-=" Click="InsertChar_Click">
-                            <Rectangle Fill="{StaticResource subAssign}" Width="32" Height="14" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.SubAssignToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-                        <Button Grid.Row="2" Grid.Column="2" Tag="*=" Click="InsertChar_Click">
-                            <Rectangle Fill="{StaticResource mulAssign}" Width="32" Height="20" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.MulAssignToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-                        <Button Grid.Row="2" Grid.Column="3" Tag="/=" Click="InsertChar_Click">
-                            <Rectangle Fill="{StaticResource divAssign}" Width="32" Height="20" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.DivAssignToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-
-                        <Button Grid.Row="3" Grid.Column="0" Tag="if" Click="InsertFunc_Click">
-                            <Rectangle Fill="{StaticResource if}" Width="28" Height="16" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.IfToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-                        <Button Grid.Row="3" Grid.Column="1" Tag="for" Click="InsertFunc_Click">
-                            <Rectangle Fill="{StaticResource for}" Width="28" Height="22" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.ForToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-                        <Button Grid.Row="3" Grid.Column="2" Tag="while" Click="InsertFunc_Click">
-                            <Rectangle Fill="{StaticResource while}" Width="44" Height="22" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.WhileToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-                    </Grid>
-                </Expander>
                 <Expander x:Name="constantsMathToolBar" Header="{x:Static res:Resource.ConstantsExpanderHeader}">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -802,21 +665,9 @@ limitations under the License. -->
                             </Button.ToolTip>
                         </Button>
                         <Button Grid.Row="2" Grid.Column="1" Tag="round" Click="InsertFunc_Click">
-                            <Rectangle Fill="{StaticResource round}" Width="48" Height="28" />
+                            <Rectangle Fill="{StaticResource round}" Width="40" Height="20" />
                             <Button.ToolTip>
                                 <ToolTip Content="{x:Static res:Resource.RoundToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-                        <Button Grid.Row="2" Grid.Column="2" Tag="ceil" Click="InsertFunc_Click">
-                            <Rectangle Fill="{StaticResource ceil}" Width="40" Height="28" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.CeilToolTip}" />
-                            </Button.ToolTip>
-                        </Button>
-                        <Button Grid.Row="2" Grid.Column="3" Tag="floor" Click="InsertFunc_Click">
-                            <Rectangle Fill="{StaticResource floor}" Width="42" Height="28" />
-                            <Button.ToolTip>
-                                <ToolTip Content="{x:Static res:Resource.FloorToolTip}" />
                             </Button.ToolTip>
                         </Button>
                     </Grid>
@@ -921,4 +772,4 @@ limitations under the License. -->
             </ribbon:StatusBarItem>
         </ribbon:StatusBar>
     </Grid>
-</ribbon:MetroWindow>
+</ribbon:RibbonWindow>

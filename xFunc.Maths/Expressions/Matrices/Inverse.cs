@@ -45,8 +45,14 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters)
         {
-            return MatrixExtentions.Inverse((Matrix)argument, parameters);
+			if (argument is Matrix) {
+				return ((Matrix)argument).Inverse (parameters);
+			} else {
+				return ((Matrix)argument.Calculate (parameters)).Inverse (parameters);
+			}
+			//return MatrixExtentions.Inverse((Matrix)argument, parameters);
         }
+			
 
         /// <summary>
         /// Clones this instance.
@@ -58,7 +64,21 @@ namespace xFunc.Maths.Expressions.Matrices
         {
             return new Inverse(this.argument.Clone());
         }
-        
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        protected override IExpression _Differentiation(Variable variable)
+        {
+            throw new NotSupportedException();
+        }
+
         /// <summary>
         /// Gets or sets the expression.
         /// </summary>
@@ -74,11 +94,19 @@ namespace xFunc.Maths.Expressions.Matrices
             }
             set
             {
-                if (!(value is Matrix))
-                    throw new NotSupportedException();
+                if (value != null)
+                {
+                    /*
+                    if (!(value is Matrix))
+                        throw new NotSupportedException();
+                    */
+
+                    // Not compatible with own TextExpression
+
+                    value.Parent = this;
+                }
 
                 argument = value;
-                argument.Parent = this;
             }
         }
 
@@ -96,6 +124,13 @@ namespace xFunc.Maths.Expressions.Matrices
             }
         }
 
+		/// <summary>
+		/// Converts this expression to the equivalent string.
+		/// </summary>
+		/// <returns>The string that represents this expression.</returns>
+		public override string ToString () {
+			return ToString ("inverse({0})");
+		}
     }
 
 }

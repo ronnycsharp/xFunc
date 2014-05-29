@@ -24,6 +24,9 @@ namespace xFunc.Maths.Expressions.Trigonometric
     public class Tan : TrigonometricExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Tan"/> class.
+        /// </summary>
         internal Tan() { }
 
         /// <summary>
@@ -93,6 +96,23 @@ namespace xFunc.Maths.Expressions.Trigonometric
             var radian = (double)argument.Calculate(parameters) * Math.PI / 200;
 
             return Math.Tan(radian);
+        }
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        protected override IExpression _Differentiation(Variable variable)
+        {
+            var cos = new Cos(argument.Clone());
+            var inv = new Pow(cos, new Number(2));
+            var div = new Div(argument.Clone().Differentiate(variable), inv);
+
+            return div;
         }
 
         /// <summary>

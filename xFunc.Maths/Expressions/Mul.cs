@@ -24,6 +24,9 @@ namespace xFunc.Maths.Expressions
     public class Mul : BinaryExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Mul"/> class.
+        /// </summary>
         internal Mul() { }
 
         /// <summary>
@@ -122,6 +125,36 @@ namespace xFunc.Maths.Expressions
             }
 
             return (double)left.Calculate(parameters) * (double)right.Calculate(parameters);
+        }
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        public override IExpression Differentiate(Variable variable)
+        {
+            var first = Parser.HasVar(left, variable);
+            var second = Parser.HasVar(right, variable);
+
+            if (first && second)
+            {
+                var mul1 = new Mul(left.Clone().Differentiate(variable), right.Clone());
+                var mul2 = new Mul(left.Clone(), right.Clone().Differentiate(variable));
+                var add = new Add(mul1, mul2);
+
+                return add;
+            }
+
+            if (first)
+                return new Mul(left.Clone().Differentiate(variable), right.Clone());
+            if (second)
+                return new Mul(left.Clone(), right.Clone().Differentiate(variable));
+
+            return new Number(0);
         }
 
         /// <summary>

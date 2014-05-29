@@ -137,11 +137,32 @@ namespace xFunc.Maths.Expressions
         /// </summary>
         /// <returns>Returns the new instance of <see cref="BinaryExpression"/> that is a clone of this instance.</returns>
         public abstract IExpression Clone();
-                
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <returns>
+        /// Returns a derivative of the expression.
+        /// </returns>
+        public IExpression Differentiate()
+        {
+            return Differentiate(new Variable("x"));
+        }
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        public abstract IExpression Differentiate(Variable variable);
+
         /// <summary>
         /// The left (first) operand.
         /// </summary>
-        public virtual IExpression Left
+        public IExpression Left
         {
             get
             {
@@ -153,14 +174,15 @@ namespace xFunc.Maths.Expressions
                     throw new ArgumentNullException("value");
 
                 left = value;
-                left.Parent = this;
+                if (left != null)
+                    left.Parent = this;
             }
         }
 
         /// <summary>
         /// The right (second) operand.
         /// </summary>
-        public virtual IExpression Right
+        public IExpression Right
         {
             get
             {
@@ -172,7 +194,8 @@ namespace xFunc.Maths.Expressions
                     throw new ArgumentNullException("value");
 
                 right = value;
-                right.Parent = this;
+                if (right != null)
+                    right.Parent = this;
             }
         }
 

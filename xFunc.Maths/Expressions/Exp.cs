@@ -23,6 +23,9 @@ namespace xFunc.Maths.Expressions
     public class Exp : UnaryExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Exp"/> class.
+        /// </summary>
         internal Exp() { }
 
         /// <summary>
@@ -62,6 +65,19 @@ namespace xFunc.Maths.Expressions
         public override int GetHashCode()
         {
             return base.GetHashCode(3923);
+        }
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        protected override IExpression _Differentiation(Variable variable)
+        {
+            return new Mul(argument.Clone().Differentiate(variable), Clone());
         }
 
         /// <summary>

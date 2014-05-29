@@ -23,6 +23,9 @@ namespace xFunc.Maths.Expressions
     public class Fact : UnaryExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Fact"/> class.
+        /// </summary>
         internal Fact() { }
 
         /// <summary>
@@ -79,6 +82,20 @@ namespace xFunc.Maths.Expressions
         public override IExpression Clone()
         {
             return new Fact(argument.Clone());
+        }
+
+        /// <summary>
+        /// Always throws <see cref="NotSupportedException" />.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Throws an exception.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        protected override IExpression _Differentiation(Variable variable)
+        {
+            throw new NotSupportedException();
         }
 
     }

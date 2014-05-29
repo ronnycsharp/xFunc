@@ -426,15 +426,6 @@ namespace xFunc.Test
         }
 
         [TestMethod]
-        public void ZeroDivByZero()
-        {
-            var div = new Div(new Number(0), new Number(0));
-            var expected = new Number(double.NaN);
-
-            SimpleTest(div, expected);
-        }
-
-        [TestMethod]
         public void DivByOne()
         {
             var div = new Div(new Variable("x"), new Number(1));

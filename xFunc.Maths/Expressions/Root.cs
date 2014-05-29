@@ -23,6 +23,9 @@ namespace xFunc.Maths.Expressions
     public class Root : BinaryExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Root"/> class.
+        /// </summary>
         internal Root() { }
 
         /// <summary>
@@ -64,8 +67,33 @@ namespace xFunc.Maths.Expressions
         {
             var first = (double)left.Calculate(parameters);
             var second = 1 / (double)right.Calculate(parameters);
+            if (first < 0 && second % 2 != 0)
+            {
+                return -Math.Pow(-first, second);
+            }
 
-            return MathExtentions.Pow(first, second);
+            return Math.Pow(first, second);
+        }
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        public override IExpression Differentiate(Variable variable)
+        {
+            if (Parser.HasVar(left, variable) || Parser.HasVar(right, variable))
+            {
+                var div = new Div(new Number(1), right.Clone());
+                var inv = new Pow(left.Clone(), div);
+
+                return inv.Differentiate(variable);
+            }
+
+            return new Number(0);
         }
 
         /// <summary>

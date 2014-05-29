@@ -24,6 +24,9 @@ namespace xFunc.Maths.Expressions.Hyperbolic
     public class Sech : HyperbolicExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Sech"/> class.
+        /// </summary>
         internal Sech() { }
 
         /// <summary>
@@ -68,7 +71,7 @@ namespace xFunc.Maths.Expressions.Hyperbolic
         {
             return MathExtentions.Sech((double)argument.Calculate(parameters));
         }
-
+        
         /// <summary>
         /// Clones this instance.
         /// </summary>
@@ -76,6 +79,25 @@ namespace xFunc.Maths.Expressions.Hyperbolic
         public override IExpression Clone()
         {
             return new Sech(argument.Clone());
+        }
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        protected override IExpression _Differentiation(Variable variable)
+        {
+            var tanh = new Tanh(argument.Clone());
+            var sech = Clone();
+            var mul1 = new Mul(tanh, sech);
+            var mul2 = new Mul(argument.Clone().Differentiate(variable), mul1);
+            var unMinus = new UnaryMinus(mul2);
+
+            return unMinus;
         }
 
     }

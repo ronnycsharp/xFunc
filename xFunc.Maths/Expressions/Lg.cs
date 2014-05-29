@@ -23,6 +23,10 @@ namespace xFunc.Maths.Expressions
     public class Lg : UnaryExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Lg"/> class.
+        /// </summary>
+        /// <seealso cref="IExpression"/>
         internal Lg() { }
 
         /// <summary>
@@ -63,6 +67,23 @@ namespace xFunc.Maths.Expressions
         public override object Calculate(ExpressionParameters parameters)
         {
             return Math.Log10((double)argument.Calculate(parameters));
+        }
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        protected override IExpression _Differentiation(Variable variable)
+        {
+            var ln = new Ln(new Number(10));
+            var mul1 = new Mul(argument.Clone(), ln);
+            var div = new Div(argument.Clone().Differentiate(variable), mul1);
+
+            return div;
         }
 
         /// <summary>

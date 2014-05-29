@@ -16,13 +16,16 @@ using System;
 
 namespace xFunc.Maths.Expressions
 {
-
+    
     /// <summary>
     /// Represents the Square Root function.
     /// </summary>
     public class Sqrt : UnaryExpression
     {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Sqrt"/> class.
+        /// </summary>
         internal Sqrt() { }
 
         /// <summary>
@@ -63,6 +66,22 @@ namespace xFunc.Maths.Expressions
         public override object Calculate(ExpressionParameters parameters)
         {
             return Math.Sqrt((double)argument.Calculate(parameters));
+        }
+
+        /// <summary>
+        /// Calculates a derivative of the expression.
+        /// </summary>
+        /// <param name="variable">The variable of differentiation.</param>
+        /// <returns>
+        /// Returns a derivative of the expression of several variables.
+        /// </returns>
+        /// <seealso cref="Variable" />
+        protected override IExpression _Differentiation(Variable variable)
+        {
+            var mul = new Mul(new Number(2), Clone());
+            var div = new Div(argument.Clone().Differentiate(variable), mul);
+
+            return div;
         }
 
         /// <summary>
