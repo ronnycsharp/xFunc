@@ -48,6 +48,9 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters)
         {
+			if (argument is Vector)
+				throw new InvalidOperationException ("Determinate can only be calculated from a squared matrix");
+
 			if (argument is Matrix) {
 				return ((Matrix)argument).Determinant (parameters);
 			} else {
