@@ -51,7 +51,7 @@ namespace xFunc.Maths.Expressions {
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters) {
-            return Quadratur ( parameters );
+            return Simpson ( parameters );
         }
 
         double Rectangle ( ExpressionParameters parameters ) {
@@ -89,6 +89,27 @@ namespace xFunc.Maths.Expressions {
                 result += (dx * (decimal)z);
             }
             return (double)result;
+        }
+
+        double Simpson (Func<double, double> f, double a, double b, int n) {
+            var h = (b - a) / n;
+
+            var sum = 0.0;
+            for (var i = 1; i <= n - 3; i = i + 2)
+                sum += f(a + i * h);
+
+            sum += f(a + (n - 1) * h);
+            sum = 4 * sum;
+
+            var sum2 = 0.0;
+            for (var i = 2; i <= n - 4; i += 2)
+                sum2 += f(a + i * h);
+
+            sum2 += f(a + (n - 2) * h);
+            sum2 *= 2;
+            sum += sum2 + f(a) + f(b);
+
+            return h / 3 * sum;
         }
 
         double Quadratur (ExpressionParameters parameters) {
