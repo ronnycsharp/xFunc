@@ -112,21 +112,20 @@ namespace xFunc.Maths.Expressions {
             return h / 3 * sum;
         }
 
-        double Quadratur (ExpressionParameters parameters) {
+        double Simpson (ExpressionParameters parameters) {
             if (parameters == null)
                 parameters = new ExpressionParameters();
 
             parameters.AngleMeasurement = AngleMeasurement.Radian;
 
-            var result = 0.0M;
-            var left = (decimal)(double)this.Left.Calculate(parameters);
-            var right = (decimal)(double)this.Right.Calculate(parameters);
+            var a = (double)this.Left.Calculate(parameters);
+            var b = (double)this.Right.Calculate(parameters);
 
-            if (right <= left)
+            if (b <= a)
                 throw new InvalidOperationException("Invalid Intergral-Bounds");
 
             var n = 1000;    // number of rectangles
-            var dx = (right - left) / (decimal)n;
+            var h = (b - a) / (double)n;
 
             var param = default(Parameter);
             foreach (var p in parameters.Parameters.Collection) {
@@ -141,12 +140,35 @@ namespace xFunc.Maths.Expressions {
 
                 parameters.Parameters.Add(param);
             }
-            for (var x = left; x <= right; x += dx) {
-                param.Value = (double)x;
-                var z = (double)this.Body.Calculate(parameters);
-                result += (dx * (decimal)z);
+
+            var sum = 0.0;
+            for (var i = 1; i <= n - 3; i = i + 2) {
+                param.Value = a + i * h;
+                sum += ( double ) this.Body.Calculate(parameters);
             }
-            return (double)result;
+
+            param.Value = a + (n - 1) * h;
+            sum += (double)this.Body.Calculate(parameters);
+            sum *= 4;
+
+            var sum2 = 0.0;
+            for (var i = 2; i <= n - 4; i += 2) {
+                param.Value = a + i * h;
+                sum2 += (double)this.Body.Calculate(parameters);
+            }
+
+            param.Value = a + (n - 2) * h;
+            sum2 += (double)this.Body.Calculate(parameters);
+            sum2 *= 2;
+
+            sum += sum2;
+            param.Value = a;
+            sum += ( double ) this.Body.Calculate(parameters);
+
+            param.Value = b;
+            sum += (double)this.Body.Calculate(parameters);
+            
+            return h / 3 * sum;
         }
 
         /// <summary>
