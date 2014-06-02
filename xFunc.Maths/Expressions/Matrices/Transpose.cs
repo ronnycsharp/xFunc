@@ -53,6 +53,15 @@ namespace xFunc.Maths.Expressions.Matrices
             if (matrix != null)
                 return matrix.Transpose();
 
+			var arg = argument.Calculate (parameters);
+			matrix = arg as Matrix;
+			if (matrix != null)
+				return matrix.Transpose ();
+
+			vector = arg as Vector;
+			if (vector != null)
+				return vector.Transpose ();
+				
             throw new NotSupportedException();
         }
 
@@ -126,6 +135,12 @@ namespace xFunc.Maths.Expressions.Matrices
             }
         }
 
+		/// <summary>
+		/// Converts this expression to the equivalent string.
+		/// </summary>
+		/// <returns>The string that represents this expression.</returns>
+		public override string ToString () {
+			return ToString ("transpose({0})");
+		}
     }
-
 }

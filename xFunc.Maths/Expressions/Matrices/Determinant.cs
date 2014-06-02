@@ -48,7 +48,14 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters)
         {
-            return ((Matrix)argument).Determinant(parameters);
+			if (argument is Vector)
+				throw new InvalidOperationException ("Determinate can only be calculated from a squared matrix");
+
+			if (argument is Matrix) {
+				return ((Matrix)argument).Determinant (parameters);
+			} else {
+				return ((Matrix)argument.Calculate (parameters)).Determinant (parameters);
+			}
         }
 
         /// <summary>
@@ -106,6 +113,10 @@ namespace xFunc.Maths.Expressions.Matrices
                 argument = value;
             }
         }
+
+		public override string ToString () {
+			return "det(" + this.Argument.ToString ( ) + ")";
+		}
 
         /// <summary>
         /// Gets a value indicating whether result is a matrix.

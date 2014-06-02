@@ -45,8 +45,14 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters)
         {
-            return MatrixExtentions.Inverse((Matrix)argument, parameters);
+			if (argument is Matrix) {
+				return ((Matrix)argument).Inverse (parameters);
+			} else {
+				return ((Matrix)argument.Calculate (parameters)).Inverse (parameters);
+			}
+			//return MatrixExtentions.Inverse((Matrix)argument, parameters);
         }
+			
 
         /// <summary>
         /// Clones this instance.
@@ -118,6 +124,13 @@ namespace xFunc.Maths.Expressions.Matrices
             }
         }
 
+		/// <summary>
+		/// Converts this expression to the equivalent string.
+		/// </summary>
+		/// <returns>The string that represents this expression.</returns>
+		public override string ToString () {
+			return ToString ("inverse({0})");
+		}
     }
 
 }
