@@ -732,6 +732,12 @@ namespace xFunc.Maths
 
                         continue;
                     }
+					if (sub.StartsWith("integral(")) {
+						tokens.Add(new FunctionToken(Functions.Integral));
+						i += 8;
+
+						continue;
+					}
                     if (sub.StartsWith("floor(")) {
                         tokens.Add(new FunctionToken(Functions.Floor));
                         i += 5;

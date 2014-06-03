@@ -197,6 +197,8 @@ namespace xFunc.Maths
                     return new Inverse();
                 case Functions.Undefine:
                     return new Undefine();
+				case Functions.Integral:
+					return new DefiniteIntegral ();
                 default: 
                     return null;
             }

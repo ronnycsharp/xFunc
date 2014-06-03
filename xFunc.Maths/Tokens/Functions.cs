@@ -227,7 +227,12 @@ namespace xFunc.Maths.Tokens
         /// <summary>
         /// The user function
         /// </summary>
-        UserFunction
+		UserFunction,
+
+		/// <summary>
+		/// definite integral
+		/// </summary>
+		Integral
 
     }
 
