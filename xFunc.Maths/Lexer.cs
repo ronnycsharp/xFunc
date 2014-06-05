@@ -726,12 +726,6 @@ namespace xFunc.Maths
 
                         continue;
                     }
-                    if (sub.StartsWith("roundunary(")) {
-                        tokens.Add(new FunctionToken(Functions.RoundUnary));
-                        i += 10;
-
-                        continue;
-                    }
 					if (sub.StartsWith("integral(")) {
 						tokens.Add(new FunctionToken(Functions.Integral));
 						i += 8;

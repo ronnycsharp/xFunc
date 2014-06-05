@@ -201,7 +201,6 @@
     <Compile Include="Tokens\VariableToken.cs" />
     <Compile Include="Expressions\Ceil.cs" />
     <Compile Include="Expressions\Floor.cs" />
-    <Compile Include="Expressions\RoundUnary.cs" />
     <Compile Include="Expressions\DefiniteIntegral.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -92,29 +92,6 @@ namespace xFunc.Maths.Expressions {
 			return (double)result;
 		}
 
-		/*
-		double Simpson (Func<double, double> f, double a, double b, int n) {
-			var h = (b - a) / n;
-
-			var sum = 0.0;
-			for (var i = 1; i <= n - 3; i = i + 2)
-				sum += f (a + i * h);
-
-			sum += f (a + (n - 1) * h);
-			sum = 4 * sum;
-
-			var sum2 = 0.0;
-			for (var i = 2; i <= n - 4; i += 2)
-				sum2 += f (a + i * h);
-
-			sum2 += f (a + (n - 2) * h);
-			sum2 *= 2;
-			sum += sum2 + f (a) + f (b);
-
-			return h / 3 * sum;
-		}
-		*/
-
 		double Simpson (ExpressionParameters parameters) {
 			if (parameters == null)
 				parameters = new ExpressionParameters ();
@@ -169,7 +146,7 @@ namespace xFunc.Maths.Expressions {
 			param.Value = b;
 			sum += (double)this.Body.Calculate (parameters);
             
-			return h / 3 * sum;
+			return Math.Round ( h / 3 * sum, 5 );
 		}
 
 		/// <summary>
