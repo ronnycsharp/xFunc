@@ -25,11 +25,10 @@ namespace xFunc.Maths.Expressions
 		internal Round() { }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RoundUnary"/> class.
+		/// Initializes a new instance of the <see cref="Round"/> class.
 		/// </summary>
 		/// <param name="argument">The expression that represents a double-precision floating-point number to be rounded.</param>
-		public Round(IExpression argument) :
-		base ( argument ) { }
+		public Round(IExpression argument) : base ( argument ) { }
 
 		/// <summary>
 		/// Returns a hash code for this instance.
