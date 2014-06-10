@@ -90,7 +90,7 @@ namespace xFunc.Maths.Expressions
                 IExpression r = null;
                 if (right is Vector || right is Matrix)
                 {
-                    r = left;
+                    r = right;
                 }
                 else
                 {

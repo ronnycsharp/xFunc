@@ -48,14 +48,7 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters)
         {
-			if (argument is Vector)
-				throw new InvalidOperationException ("Determinate can only be calculated from a squared matrix");
-
-			if (argument is Matrix) {
-				return ((Matrix)argument).Determinant (parameters);
-			} else {
-				return ((Matrix)argument.Calculate (parameters)).Determinant (parameters);
-			}
+            return ((Matrix)argument.Calculate(parameters)).Determinant(parameters);
         }
 
         /// <summary>
@@ -98,8 +91,7 @@ namespace xFunc.Maths.Expressions.Matrices
             }
             set
             {
-                if (value != null)
-                {
+                if (value != null) {
                     /*
                     if (!(value is Matrix))
                         throw new NotSupportedException();
@@ -109,7 +101,6 @@ namespace xFunc.Maths.Expressions.Matrices
 
                     value.Parent = this;
                 }
-
                 argument = value;
             }
         }

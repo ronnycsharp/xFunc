@@ -45,12 +45,7 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters)
         {
-			if (argument is Matrix) {
-				return ((Matrix)argument).Inverse (parameters);
-			} else {
-				return ((Matrix)argument.Calculate (parameters)).Inverse (parameters);
-			}
-			//return MatrixExtentions.Inverse((Matrix)argument, parameters);
+            return MatrixExtentions.Inverse((Matrix)argument.Calculate(parameters), parameters);
         }
 			
 
@@ -105,7 +100,6 @@ namespace xFunc.Maths.Expressions.Matrices
 
                     value.Parent = this;
                 }
-
                 argument = value;
             }
         }
