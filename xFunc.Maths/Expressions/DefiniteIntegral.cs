@@ -102,7 +102,7 @@ namespace xFunc.Maths.Expressions {
 			if (b <= a)
 				throw new InvalidOperationException ("Invalid Intergral-Bounds");
 
-			var n = 1000;    // number of rectangles
+			var n = 10000;    // number of rectangles
 			var h = (b - a) / (double)n;
 
 			var param = default(Parameter);
