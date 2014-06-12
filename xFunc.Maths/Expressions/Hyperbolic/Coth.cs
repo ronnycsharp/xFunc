@@ -69,7 +69,7 @@ namespace xFunc.Maths.Expressions.Hyperbolic
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters)
         {
-            return MathExtentions.Coth((double)argument.Calculate(parameters));
+            return MathExtentions.Coth((double)m_argument.Calculate(parameters));
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace xFunc.Maths.Expressions.Hyperbolic
         /// <returns>The new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
         public override IExpression Clone()
         {
-            return new Coth(argument.Clone());
+            return new Coth(m_argument.Clone());
         }
 
         /// <summary>

@@ -24,9 +24,6 @@ namespace xFunc.Maths.Expressions
     public class Derivative : DifferentParametersExpression
     {
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Derivative"/> class.
-        /// </summary>
         internal Derivative()
             : base(null, -1) { }
 
@@ -71,7 +68,7 @@ namespace xFunc.Maths.Expressions
                 return false;
 
             return Expression.Equals(exp.Expression) &&
-                   (countOfParams == 2 && Variable.Equals(exp.Variable));
+                   (m_countOfParams == 2 && Variable.Equals(exp.Variable));
         }
 
         /// <summary>
@@ -91,7 +88,7 @@ namespace xFunc.Maths.Expressions
         /// <returns>The string that represents this expression.</returns>
         public override string ToString()
         {
-            if (countOfParams == 1)
+            if (m_countOfParams == 1)
                 return string.Format("deriv({0})", Expression);
 
             return string.Format("deriv({0}, {1})", Expression, Variable);
@@ -107,48 +104,7 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters)
         {
-            return Differentiate().Calculate(parameters);
-        }
-
-        /// <summary>
-        /// Calculates a derivative of the expression.
-        /// </summary>
-        /// <returns>
-        /// Returns a derivative of the expression.
-        /// </returns>
-        public override IExpression Differentiate()
-        {
-            if (countOfParams == 1)
-                return _Differentiate(new Variable("x"));
-
-            return _Differentiate(Variable);
-        }
-
-        /// <summary>
-        /// Calculates a derivative of the expression.
-        /// </summary>
-        /// <param name="variable">The variable of differentiation.</param>
-        /// <returns>
-        /// Returns a derivative of the expression of several variables.
-        /// </returns>
-        /// <seealso cref="Variable" />
-        /// <remarks>
-        /// This method ignores the local <paramref name="variable" />.
-        /// </remarks>
-        public override IExpression Differentiate(Variable variable)
-        {
-            if (countOfParams == 1)
-                return _Differentiate(new Variable("x"));
-
-            return _Differentiate(this.Variable);
-        }
-
-        private IExpression _Differentiate(Variable variable)
-        {
-            if (Expression is Derivative)
-                return Expression.Differentiate(variable).Differentiate(variable);
-
-            return Expression.Differentiate(variable);
+            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -157,7 +113,7 @@ namespace xFunc.Maths.Expressions
         /// <returns>Returns the new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
         public override IExpression Clone()
         {
-            return new Derivative(CloneArguments(), countOfParams);
+            return new Derivative(CloneArguments(), m_countOfParams);
         }
 
         /// <summary>
@@ -170,15 +126,15 @@ namespace xFunc.Maths.Expressions
         {
             get
             {
-                return arguments[0];
+                return m_arguments[0];
             }
             set
             {
                 if (value == null)
                     throw new ArgumentNullException("value");
 
-                arguments[0] = value;
-                arguments[0].Parent = this;
+                m_arguments[0] = value;
+                m_arguments[0].Parent = this;
             }
         }
 
@@ -192,15 +148,7 @@ namespace xFunc.Maths.Expressions
         {
             get
             {
-                return (Variable)arguments[1];
-            }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException("value");
-
-                arguments[1] = value;
-                arguments[1].Parent = this;
+                return m_countOfParams == 2 ? (Variable)m_arguments[1] : null;
             }
         }
 

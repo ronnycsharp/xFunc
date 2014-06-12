@@ -65,7 +65,7 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters)
         {
-            return Math.Sqrt((double)argument.Calculate(parameters));
+            return Math.Sqrt((double)m_argument.Calculate(parameters));
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace xFunc.Maths.Expressions
         /// <returns>Returns the new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
         public override IExpression Clone()
         {
-            return new Sqrt(argument.Clone());
+            return new Sqrt(m_argument.Clone());
         }
 
     }

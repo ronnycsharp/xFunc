@@ -20,15 +20,17 @@ namespace xFunc.Maths.Expressions
     /// <summary>
     /// Represents the "ceil" function.
     /// </summary>
-    public class Ceil : UnaryExpression {
+    public class Ceil : UnaryExpression
+    {
+
         internal Ceil() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Ceil"/> class.
         /// </summary>
         /// <param name="argument">The expression that represents a double-precision floating-point number to be rounded up.</param>
-        public Ceil(IExpression argument) :
-            base ( argument ) { }
+        public Ceil(IExpression argument)
+            : base(argument) { }
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -38,7 +40,7 @@ namespace xFunc.Maths.Expressions
         /// </returns>
         public override int GetHashCode()
         {
-            return base.GetHashCode(5678);
+            return base.GetHashCode(12473);
         }
 
         /// <summary>
@@ -51,11 +53,7 @@ namespace xFunc.Maths.Expressions
         {
             return ToString("ceil({0})");
         }
-
-        protected override IExpression _Differentiation (Variable variable) {
-            throw new NotSupportedException();
-        }
-
+        
         /// <summary>
         /// Calculates this mathemarical expression.
         /// </summary>
@@ -66,8 +64,7 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters)
         {
-            return Math.Ceiling(
-                (double)Argument.Calculate(parameters));
+            return Math.Ceiling((double)m_argument.Calculate(parameters));
         }
 
         /// <summary>
@@ -78,7 +75,9 @@ namespace xFunc.Maths.Expressions
         /// </returns>
         public override IExpression Clone()
         {
-            return new Ceil(argument.Clone());
+            return new Ceil(m_argument.Clone());
         }
+
     }
+
 }

@@ -23,9 +23,6 @@ namespace xFunc.Maths.Expressions
     public class Pow : BinaryExpression
     {
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Pow"/> class.
-        /// </summary>
         internal Pow() { }
 
         /// <summary>
@@ -52,7 +49,7 @@ namespace xFunc.Maths.Expressions
         /// <returns>The string that represents this expression.</returns>
         public override string ToString()
         {
-            if (parent is BinaryExpression)
+            if (m_parent is BinaryExpression)
             {
                 return ToString("({0} ^ {1})");
             }
@@ -70,47 +67,16 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters)
         {
-            return Math.Pow((double)left.Calculate(parameters), (double)right.Calculate(parameters));
+            return MathExtentions.Pow((double)m_left.Calculate(parameters), (double)m_right.Calculate(parameters));
         }
-
-        /// <summary>
-        /// Calculates a derivative of the expression.
-        /// </summary>
-        /// <param name="variable">The variable of differentiation.</param>
-        /// <returns>
-        /// Returns a derivative of the expression of several variables.
-        /// </returns>
-        /// <seealso cref="Variable" />
-        public override IExpression Differentiate(Variable variable)
-        {
-            if (Parser.HasVar(left, variable))
-            {
-                var sub = new Sub(right.Clone(), new Number(1));
-                var inv = new Pow(left.Clone(), sub);
-                var mul1 = new Mul(right.Clone(), inv);
-                var mul2 = new Mul(left.Clone().Differentiate(variable), mul1);
-
-                return mul2;
-            }
-            if (Parser.HasVar(right, variable))
-            {
-                var ln = new Ln(left.Clone());
-                var mul1 = new Mul(ln, Clone());
-                var mul2 = new Mul(mul1, right.Clone().Differentiate(variable));
-
-                return mul2;
-            }
-            
-            return new Number(0);
-        }
-
+        
         /// <summary>
         /// Clones this instance of the <see cref="Pow"/> class.
         /// </summary>
         /// <returns>Returns the new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
         public override IExpression Clone()
         {
-            return new Pow(left.Clone(), right.Clone());
+            return new Pow(m_left.Clone(), m_right.Clone());
         }
 
     }

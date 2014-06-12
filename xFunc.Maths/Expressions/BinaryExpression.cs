@@ -26,15 +26,15 @@ namespace xFunc.Maths.Expressions
         /// <summary>
         /// The parent expression of this expression.
         /// </summary>
-        protected IExpression parent;
+        protected IExpression m_parent;
         /// <summary>
         /// The left (first) operand.
         /// </summary>
-        protected IExpression left;
+        protected IExpression m_left;
         /// <summary>
         /// The right (second) operand.
         /// </summary>
-        protected IExpression right;
+        protected IExpression m_right;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BinaryExpression"/> class.
@@ -69,7 +69,7 @@ namespace xFunc.Maths.Expressions
 
             var exp = (BinaryExpression)obj;
 
-            return left.Equals(exp.Left) && right.Equals(exp.Right);
+            return m_left.Equals(exp.Left) && m_right.Equals(exp.Right);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace xFunc.Maths.Expressions
         {
             int hash = first;
 
-            hash = hash * second + left.GetHashCode();
+            hash = hash * second + m_left.GetHashCode();
             hash = hash * second + second.GetHashCode();
 
             return hash;
@@ -108,7 +108,7 @@ namespace xFunc.Maths.Expressions
         /// <returns>A string that represents the current object.</returns>
         protected string ToString(string format)
         {
-            return string.Format(format, left, right);
+            return string.Format(format, m_left, m_right);
         }
 
         /// <summary>
@@ -137,65 +137,42 @@ namespace xFunc.Maths.Expressions
         /// </summary>
         /// <returns>Returns the new instance of <see cref="BinaryExpression"/> that is a clone of this instance.</returns>
         public abstract IExpression Clone();
-
-        /// <summary>
-        /// Calculates a derivative of the expression.
-        /// </summary>
-        /// <returns>
-        /// Returns a derivative of the expression.
-        /// </returns>
-        public IExpression Differentiate()
-        {
-            return Differentiate(new Variable("x"));
-        }
-
-        /// <summary>
-        /// Calculates a derivative of the expression.
-        /// </summary>
-        /// <param name="variable">The variable of differentiation.</param>
-        /// <returns>
-        /// Returns a derivative of the expression of several variables.
-        /// </returns>
-        /// <seealso cref="Variable" />
-        public abstract IExpression Differentiate(Variable variable);
-
+                
         /// <summary>
         /// The left (first) operand.
         /// </summary>
-        public IExpression Left
+        public virtual IExpression Left
         {
             get
             {
-                return left;
+                return m_left;
             }
             set
             {
                 if (value == null)
                     throw new ArgumentNullException("value");
 
-                left = value;
-                if (left != null)
-                    left.Parent = this;
+                m_left = value;
+                m_left.Parent = this;
             }
         }
 
         /// <summary>
         /// The right (second) operand.
         /// </summary>
-        public IExpression Right
+        public virtual IExpression Right
         {
             get
             {
-                return right;
+                return m_right;
             }
             set
             {
                 if (value == null)
                     throw new ArgumentNullException("value");
 
-                right = value;
-                if (right != null)
-                    right.Parent = this;
+                m_right = value;
+                m_right.Parent = this;
             }
         }
 
@@ -206,11 +183,11 @@ namespace xFunc.Maths.Expressions
         {
             get
             {
-                return parent;
+                return m_parent;
             }
             set
             {
-                parent = value;
+                m_parent = value;
             }
         }
 

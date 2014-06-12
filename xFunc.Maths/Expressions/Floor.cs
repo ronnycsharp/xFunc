@@ -22,14 +22,15 @@ namespace xFunc.Maths.Expressions
     /// </summary>
     public class Floor : UnaryExpression
     {
+
         internal Floor() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Floor"/> class.
         /// </summary>
         /// <param name="argument">The expression that represents a double-precision floating-point number to be rounded down.</param>
-        public Floor(IExpression argument) :
-            base ( argument ) { }
+        public Floor(IExpression argument)
+            : base(argument) { }
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -39,7 +40,7 @@ namespace xFunc.Maths.Expressions
         /// </returns>
         public override int GetHashCode()
         {
-            return base.GetHashCode(5679);
+            return base.GetHashCode(11551);
         }
 
         /// <summary>
@@ -52,11 +53,7 @@ namespace xFunc.Maths.Expressions
         {
             return ToString("floor({0})");
         }
-
-        protected override IExpression _Differentiation (Variable variable) {
-            throw new NotSupportedException();
-        }
-
+        
         /// <summary>
         /// Calculates this mathemarical expression.
         /// </summary>
@@ -67,8 +64,7 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters)
         {
-            return Math.Floor(
-                (double)Argument.Calculate(parameters));
+            return Math.Floor((double)m_argument.Calculate(parameters));
         }
 
         /// <summary>
@@ -79,7 +75,9 @@ namespace xFunc.Maths.Expressions
         /// </returns>
         public override IExpression Clone()
         {
-            return new Floor(argument.Clone ( ));
+            return new Floor(m_argument.Clone());
         }
+
     }
+
 }

@@ -13,97 +13,67 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
-using xFunc.Maths.Expressions.Matrices;
 
-namespace xFunc.Maths.Expressions {
-	/// <summary>
-	/// Represents the Absolute operation.
-	/// </summary>
-	public class Abs : UnaryExpression {
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Abs"/> class.
-		/// </summary>
-		internal Abs () {
-		}
+namespace xFunc.Maths.Expressions
+{
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Abs"/> class.
-		/// </summary>
-		/// <param name="expression">The argument of function.</param>
-		/// <seealso cref="IExpression"/>
-		public Abs (IExpression expression) : base (expression) {
-		}
+    /// <summary>
+    /// Represents the Absolute operation.
+    /// </summary>
+    public class Abs : UnaryExpression
+    {
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-		/// </returns>
-		public override int GetHashCode () {
-			return base.GetHashCode (6329);
-		}
+        internal Abs() { }
 
-		/// <summary>
-		/// Converts this expression to the equivalent string.
-		/// </summary>
-		/// <returns>The string that represents this expression.</returns>
-		public override string ToString () {
-			return ToString ("abs({0})");
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Abs"/> class.
+        /// </summary>
+        /// <param name="expression">The argument of function.</param>
+        /// <seealso cref="IExpression"/>
+        public Abs(IExpression expression) : base(expression) { }
 
-		/// <summary>
-		/// Calculates this Absolute expression.
-		/// </summary>
-		/// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
-		/// <returns>
-		/// A result of the calculation.
-		/// </returns>
-		/// <seealso cref="ExpressionParameters" />
-		public override object Calculate (ExpressionParameters parameters) {
-			if (argument is Vector) {
-				return AbsVector ((Vector)argument, parameters);
-			} else {
-				var arg = argument.Calculate (parameters);
-				if (arg is Double)
-					return Math.Abs ((double)arg);
-				else if (arg is Vector) {
-					return AbsVector ((Vector)arg, parameters);
-				}
-			}
-			throw new NotSupportedException ();
-		}
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode(6329);
+        }
 
-		static double AbsVector ( Vector vec, ExpressionParameters parameters ) {
-			var sum = 0.0;
-			foreach (var a in vec.Arguments)
-				sum += Math.Pow (
-					(double)a.Calculate (parameters), 2);
+        /// <summary>
+        /// Converts this expression to the equivalent string.
+        /// </summary>
+        /// <returns>The string that represents this expression.</returns>
+        public override string ToString()
+        {
+            return ToString("abs({0})");
+        }
 
-			return Math.Sqrt (sum);
-		}
+        /// <summary>
+        /// Calculates this Absolute expression.
+        /// </summary>
+        /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
+        /// <returns>
+        /// A result of the calculation.
+        /// </returns>
+        /// <seealso cref="ExpressionParameters" />
+        public override object Calculate(ExpressionParameters parameters)
+        {
+            return Math.Abs((double)m_argument.Calculate(parameters));
+        }
 
-		/// <summary>
-		/// Calculates a derivative of the expression.
-		/// </summary>
-		/// <param name="variable">The variable of differentiation.</param>
-		/// <returns>
-		/// Returns a derivative of the expression of several variables.
-		/// </returns>
-		/// <seealso cref="Variable" />
-		protected override IExpression _Differentiation (Variable variable) {
-			var div = new Div (argument.Clone (), Clone ());
-			var mul = new Mul (argument.Clone ().Differentiate (variable), div);
+        /// <summary>
+        /// Clones this instance of the <see cref="xFunc.Maths.Expressions.Bitwise.And"/> class.
+        /// </summary>
+        /// <returns>Returns the new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
+        public override IExpression Clone()
+        {
+            return new Abs(m_argument.Clone());
+        }
 
-			return mul;
-		}
+    }
 
-		/// <summary>
-		/// Clones this instance of the <see cref="xFunc.Maths.Expressions.Bitwise.And"/> class.
-		/// </summary>
-		/// <returns>Returns the new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
-		public override IExpression Clone () {
-			return new Abs (argument.Clone ());
-		}
-	}
 }

@@ -23,10 +23,7 @@ namespace xFunc.Maths.Expressions.Matrices
     public class Determinant : UnaryExpression
     {
 
-        internal Determinant()
-        {
-
-        }
+        internal Determinant() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Determinant"/> class.
@@ -48,7 +45,7 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters)
         {
-            return ((Matrix)argument.Calculate(parameters)).Determinant(parameters);
+            return ((Matrix)m_argument.Calculate(parameters)).Determinant(parameters);
         }
 
         /// <summary>
@@ -59,21 +56,7 @@ namespace xFunc.Maths.Expressions.Matrices
         /// </returns>
         public override IExpression Clone()
         {
-            return new Determinant(argument.Clone());
-        }
-
-        /// <summary>
-        /// Calculates a derivative of the expression.
-        /// </summary>
-        /// <param name="variable">The variable of differentiation.</param>
-        /// <returns>
-        /// Returns a derivative of the expression of several variables.
-        /// </returns>
-        /// <seealso cref="Variable" />
-        /// <exception cref="System.NotSupportedException">Always.</exception>
-        protected override IExpression _Differentiation(Variable variable)
-        {
-            throw new NotSupportedException();
+            return new Determinant(m_argument.Clone());
         }
 
         /// <summary>
@@ -87,27 +70,17 @@ namespace xFunc.Maths.Expressions.Matrices
         {
             get
             {
-                return argument;
+                return m_argument;
             }
             set
             {
-                if (value != null) {
-                    /*
-                    if (!(value is Matrix))
-                        throw new NotSupportedException();
-                     * */
+                if (!value.ResultIsMatrix)
+                    throw new NotSupportedException();
 
-                    // Not compatible with own TextExpression
-
-                    value.Parent = this;
-                }
-                argument = value;
+                m_argument = value;
+                m_argument.Parent = this;
             }
         }
-
-		public override string ToString () {
-			return "det(" + this.Argument.ToString ( ) + ")";
-		}
 
         /// <summary>
         /// Gets a value indicating whether result is a matrix.

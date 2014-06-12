@@ -23,9 +23,6 @@ namespace xFunc.Maths.Expressions
     public class Root : BinaryExpression
     {
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Root"/> class.
-        /// </summary>
         internal Root() { }
 
         /// <summary>
@@ -65,35 +62,10 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters)
         {
-            var first = (double)left.Calculate(parameters);
-            var second = 1 / (double)right.Calculate(parameters);
-            if (first < 0 && second % 2 != 0)
-            {
-                return -Math.Pow(-first, second);
-            }
+            var first = (double)m_left.Calculate(parameters);
+            var second = 1 / (double)m_right.Calculate(parameters);
 
-            return Math.Pow(first, second);
-        }
-
-        /// <summary>
-        /// Calculates a derivative of the expression.
-        /// </summary>
-        /// <param name="variable">The variable of differentiation.</param>
-        /// <returns>
-        /// Returns a derivative of the expression of several variables.
-        /// </returns>
-        /// <seealso cref="Variable" />
-        public override IExpression Differentiate(Variable variable)
-        {
-            if (Parser.HasVar(left, variable) || Parser.HasVar(right, variable))
-            {
-                var div = new Div(new Number(1), right.Clone());
-                var inv = new Pow(left.Clone(), div);
-
-                return inv.Differentiate(variable);
-            }
-
-            return new Number(0);
+            return MathExtentions.Pow(first, second);
         }
 
         /// <summary>
@@ -102,7 +74,7 @@ namespace xFunc.Maths.Expressions
         /// <returns>Returns the new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
         public override IExpression Clone()
         {
-            return new Root(left.Clone(), right.Clone());
+            return new Root(m_left.Clone(), m_right.Clone());
         }
 
     }

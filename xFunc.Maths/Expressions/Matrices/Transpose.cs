@@ -31,7 +31,7 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <param name="argument">Matrix or vector.</param>
         public Transpose(IExpression argument)
             : base(argument)
-		{ 
+        {
 
         }
 
@@ -46,22 +46,13 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <exception cref="System.NotSupportedException">Argument is not <see cref="Matrix"/> or <see cref="Vector"/>.</exception>
         public override object Calculate(ExpressionParameters parameters)
         {
-            var vector = argument.Calculate(parameters) as Vector;
+            var vector = m_argument.Calculate(parameters) as Vector;
             if (vector != null)
                 return vector.Transpose();
-            var matrix = argument.Calculate(parameters) as Matrix;
+            var matrix = m_argument.Calculate(parameters) as Matrix;
             if (matrix != null)
                 return matrix.Transpose();
 
-			var arg = argument.Calculate (parameters);
-			matrix = arg as Matrix;
-			if (matrix != null)
-				return matrix.Transpose ();
-
-			vector = arg as Vector;
-			if (vector != null)
-				return vector.Transpose ();
-				
             throw new NotSupportedException();
         }
 
@@ -73,21 +64,7 @@ namespace xFunc.Maths.Expressions.Matrices
         /// </returns>
         public override IExpression Clone()
         {
-            return new Transpose(this.argument.Clone());
-        }
-
-        /// <summary>
-        /// Calculates a derivative of the expression.
-        /// </summary>
-        /// <param name="variable">The variable of differentiation.</param>
-        /// <returns>
-        /// Returns a derivative of the expression of several variables.
-        /// </returns>
-        /// <seealso cref="Variable" />
-        /// <exception cref="System.NotSupportedException">Always.</exception>
-        protected override IExpression _Differentiation(Variable variable)
-        {
-            throw new NotSupportedException();
+            return new Transpose(this.m_argument.Clone());
         }
 
         /// <summary>
@@ -101,22 +78,15 @@ namespace xFunc.Maths.Expressions.Matrices
         {
             get
             {
-                return argument;
+                return m_argument;
             }
             set
             {
-                if (value != null)
-                {
-                    /*
-                    if (!(value is Vector || value is Matrix))
-                        throw new NotSupportedException();
-                     * */
+                if (!value.ResultIsMatrix)
+                    throw new NotSupportedException();
 
-                    // Not compatible with own TextExpression
-
-                    value.Parent = this;
-                }
-                argument = value;
+                m_argument = value;
+                m_argument.Parent = this;
             }
         }
 
@@ -134,12 +104,6 @@ namespace xFunc.Maths.Expressions.Matrices
             }
         }
 
-		/// <summary>
-		/// Converts this expression to the equivalent string.
-		/// </summary>
-		/// <returns>The string that represents this expression.</returns>
-		public override string ToString () {
-			return ToString ("transpose({0})");
-		}
     }
+
 }
