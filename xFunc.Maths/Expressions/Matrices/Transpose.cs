@@ -104,8 +104,10 @@ namespace xFunc.Maths.Expressions.Matrices
             }
             set
             {
+				/*
                 if (!value.ResultIsMatrix)
                     throw new NotSupportedException();
+                    */
 
                 m_argument = value;
                 m_argument.Parent = this;

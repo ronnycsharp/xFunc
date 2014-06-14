@@ -79,7 +79,7 @@ namespace xFunc.Maths.Expressions
 			foreach (var a in vec.Arguments)
 				sum += Math.Pow (
 					(double)a.Calculate (parameters), 2);
-
+					
 			return Math.Sqrt (sum);
 		}
 

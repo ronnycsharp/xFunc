@@ -219,6 +219,7 @@
     <Compile Include="Expressions\Programming\Or.cs" />
     <Compile Include="Expressions\Programming\SubAssign.cs" />
     <Compile Include="Expressions\Programming\While.cs" />
+    <Compile Include="Expressions\Programming\Bool.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\LICENSE">
