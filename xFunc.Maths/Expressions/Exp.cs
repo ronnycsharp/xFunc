@@ -66,20 +66,7 @@ namespace xFunc.Maths.Expressions
         {
             return base.GetHashCode(3923);
         }
-
-        /// <summary>
-        /// Calculates a derivative of the expression.
-        /// </summary>
-        /// <param name="variable">The variable of differentiation.</param>
-        /// <returns>
-        /// Returns a derivative of the expression of several variables.
-        /// </returns>
-        /// <seealso cref="Variable" />
-        protected override IExpression _Differentiation(Variable variable)
-        {
-            return new Mul(argument.Clone().Differentiate(variable), Clone());
-        }
-
+			
         /// <summary>
         /// Clones this instance.
         /// </summary>

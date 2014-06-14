@@ -52,10 +52,6 @@ namespace xFunc.Maths.Expressions
 			return ToString("round({0})");
 		}
 
-		protected override IExpression _Differentiation (Variable variable) {
-			throw new NotSupportedException();
-		}
-
 		/// <summary>
 		/// Calculates this mathemarical expression.
 		/// </summary>
@@ -78,7 +74,7 @@ namespace xFunc.Maths.Expressions
 		/// </returns>
 		public override IExpression Clone()
 		{
-			return new Round(argument.Clone ( ));
+			return new Round(m_argument.Clone ( ));
 		}
 	}
 }

@@ -22,7 +22,6 @@ namespace xFunc.Maths.Expressions
     /// </summary>
     public abstract class UnaryExpression : IExpression
     {
-
         /// <summary>
         /// The parent expression of this expression.
         /// </summary>
@@ -123,45 +122,6 @@ namespace xFunc.Maths.Expressions
         /// </summary>
         /// <returns>Returns the new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
         public abstract IExpression Clone();
-
-        /// <summary>
-        /// Calculates a derivative of the expression.
-        /// </summary>
-        /// <returns>
-        /// Returns a derivative of the expression.
-        /// </returns>
-        public IExpression Differentiate()
-        {
-            return Differentiate(new Variable("x"));
-        }
-
-        /// <summary>
-        /// Calculates a derivative of the expression.
-        /// </summary>
-        /// <param name="variable">The variable of differentiation.</param>
-        /// <returns>
-        /// Returns a derivative of the expression of several variables.
-        /// </returns>
-        /// <seealso cref="Variable" />
-        public IExpression Differentiate(Variable variable)
-        {
-            if (Parser.HasVar(argument, variable))
-            {
-                return _Differentiation(variable);
-            }
-
-            return new Number(0);
-        }
-
-        /// <summary>
-        /// Calculates a derivative of the expression.
-        /// </summary>
-        /// <param name="variable">The variable of differentiation.</param>
-        /// <returns>
-        /// Returns a derivative of the expression of several variables.
-        /// </returns>
-        /// <seealso cref="Variable" />
-        protected abstract IExpression _Differentiation(Variable variable);
 
         /// <summary>
         /// Gets or sets the expression.

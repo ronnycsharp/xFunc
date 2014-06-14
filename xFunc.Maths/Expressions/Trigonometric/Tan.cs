@@ -97,24 +97,7 @@ namespace xFunc.Maths.Expressions.Trigonometric
 
             return Math.Tan(radian);
         }
-
-        /// <summary>
-        /// Calculates a derivative of the expression.
-        /// </summary>
-        /// <param name="variable">The variable of differentiation.</param>
-        /// <returns>
-        /// Returns a derivative of the expression of several variables.
-        /// </returns>
-        /// <seealso cref="Variable" />
-        protected override IExpression _Differentiation(Variable variable)
-        {
-            var cos = new Cos(argument.Clone());
-            var inv = new Pow(cos, new Number(2));
-            var div = new Div(argument.Clone().Differentiate(variable), inv);
-
-            return div;
-        }
-
+			
         /// <summary>
         /// Clones this instance.
         /// </summary>
