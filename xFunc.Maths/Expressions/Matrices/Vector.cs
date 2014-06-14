@@ -130,6 +130,29 @@ namespace xFunc.Maths.Expressions.Matrices
             return sb.ToString();
         }
 
+        private IExpression[] CalculateVector(ExpressionParameters parameters)
+        {
+            IExpression[] args = new IExpression[this.m_countOfParams];
+
+            for (int i = 0; i < this.m_countOfParams; i++)
+            {
+                if (!(m_arguments[i] is Number))
+                {
+                    var result = m_arguments[i].Calculate(parameters);
+                    if (result is double)
+                        args[i] = new Number((double)result);
+                    else
+                        args[i] = new Number((int)result);
+                }
+                else
+                {
+                    args[i] = m_arguments[i];
+                }
+            }
+
+            return args;
+        }
+
         /// <summary>
         /// Calculates this mathemarical expression.
         /// </summary>
@@ -141,7 +164,7 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <exception cref="System.NotSupportedException">Always.</exception>
         public override object Calculate(ExpressionParameters parameters)
         {
-            return this;
+            return new Vector(CalculateVector(parameters));
         }
 
         /// <summary>
