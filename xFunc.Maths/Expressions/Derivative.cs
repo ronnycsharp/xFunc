@@ -104,7 +104,9 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters)
         {
-            throw new NotSupportedException();
+            var differentiator = new Differentiator ();
+            var derivat = differentiator.Differentiate ( this.Expression, this.Variable );
+            return derivat.Calculate ( parameters );
         }
 
         /// <summary>
