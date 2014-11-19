@@ -155,7 +155,7 @@ namespace xFunc.Maths.Expressions {
 		/// <returns>Returns the new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
 		public override IExpression Clone () {
 			return new DefiniteIntegral (
-				CloneArguments (), m_countOfParams);
+				CloneArguments (), countOfParams);
 		}
 
 		#region Properties
@@ -168,14 +168,14 @@ namespace xFunc.Maths.Expressions {
 		/// </value>
 		public IExpression Body {
 			get {
-				return m_arguments [0];
+				return arguments [0];
 			}
 			set {
 				if (value == null)
 					throw new ArgumentNullException ("value");
 
-				m_arguments [0] = value;
-				m_arguments [0].Parent = this;
+				arguments [0] = value;
+				arguments [0].Parent = this;
 			}
 		}
 
@@ -187,40 +187,40 @@ namespace xFunc.Maths.Expressions {
 		/// </value>
 		public Variable Variable {
 			get {
-				return (Variable)m_arguments [1];
+				return (Variable) arguments [1];
 			}
 			set {
 				if (value == null)
 					throw new ArgumentNullException ("value");
 
-				m_arguments [1] = value;
-				m_arguments [1].Parent = this;
+				arguments [1] = value;
+				arguments [1].Parent = this;
 			}
 		}
 
 		public IExpression Left {
 			get {
-				return m_arguments [2];
+				return arguments [2];
 			}
 			set {
 				if (value == null)
 					throw new ArgumentNullException ("value");
 
-				m_arguments [2] = value;
-				m_arguments [2].Parent = this;
+				arguments [2] = value;
+				arguments [2].Parent = this;
 			}
 		}
 
 		public IExpression Right {
 			get {
-				return m_arguments [3];
+				return arguments [3];
 			}
 			set {
 				if (value == null)
 					throw new ArgumentNullException ("value");
 
-				m_arguments [3] = value;
-				m_arguments [3].Parent = this;
+				arguments [3] = value;
+				arguments [3].Parent = this;
 			}
 		}
 

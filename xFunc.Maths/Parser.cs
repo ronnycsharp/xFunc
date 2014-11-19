@@ -99,7 +99,7 @@ namespace xFunc.Maths
         public IExpression Parse(string function)
         {
 #if NET40_OR_GREATER || PORTABLE
-            if (string.IsNullOrWhiteSpace(function))
+            if (function == null || function == "")
 #elif NET20_OR_GREATER
             if (StringExtention.IsNullOrWhiteSpace(function))
 #endif

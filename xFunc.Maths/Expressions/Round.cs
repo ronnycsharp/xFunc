@@ -74,7 +74,7 @@ namespace xFunc.Maths.Expressions
 		/// </returns>
 		public override IExpression Clone()
 		{
-			return new Round(m_argument.Clone ( ));
+			return new Round(argument.Clone ( ));
 		}
 	}
 }

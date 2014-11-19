@@ -197,7 +197,7 @@ namespace xFunc.Maths.Expressions.Collections
         public void Remove(string key)
         {
 #if NET40_OR_GREATER || PORTABLE
-            if (string.IsNullOrWhiteSpace(key))
+            if (key == null || key == "")
 #elif NET20_OR_GREATER
             if (StringExtention.IsNullOrWhiteSpace(key))
 #endif
