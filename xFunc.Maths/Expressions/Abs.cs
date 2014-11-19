@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Linq;
 using xFunc.Maths.Expressions.Matrices;
 
 namespace xFunc.Maths.Expressions
@@ -62,24 +63,24 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Calculate(ExpressionParameters parameters) {
             if (argument is Vector) {
-                return Abs((Vector)argument, parameters);
+                return Absolute(
+                    (Vector)argument, parameters);
             } else {
                 var arg = argument.Calculate(parameters);
                 if (arg is Double)
                     return Math.Abs((double)arg);
                 else if (arg is Vector) {
-                    return Abs((Vector)arg, parameters);
+                    return Absolute(
+                        (Vector)arg, parameters);
                 }
             }
             throw new NotSupportedException();
         }
 
-        static double Abs (Vector vec, ExpressionParameters parameters) {
-            var sum = 0.0;
-            foreach (var a in vec.Arguments) {
-                sum += Math.Pow((double)a.Calculate(parameters), 2);
-            }
-            return Math.Sqrt(sum);
+        static double Absolute (Vector vec, ExpressionParameters parameters) {
+            return Math.Sqrt(
+                vec.Arguments.Sum ( a => Math.Pow ( 
+                    ( double ) a.Calculate ( ), 2 ) ) );
         }
 
         /// <summary>
