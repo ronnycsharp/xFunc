@@ -198,7 +198,7 @@ namespace xFunc.Maths.Expressions
         /// </returns>
         public override IExpression Clone()
         {
-            return new Sum(CloneArguments(), m_arguments.Length);
+            return new Sum(CloneArguments(), arguments.Length);
         }
 
         /// <summary>
@@ -239,7 +239,7 @@ namespace xFunc.Maths.Expressions
         {
             get
             {
-                return m_arguments[0];
+                return arguments[0];
             }
         }
 
@@ -253,7 +253,7 @@ namespace xFunc.Maths.Expressions
         {
             get
             {
-                return m_countOfParams >= 3 ? m_arguments[1] : null;
+                return countOfParams >= 3 ? arguments[1] : null;
             }
         }
 
@@ -267,7 +267,7 @@ namespace xFunc.Maths.Expressions
         {
             get
             {
-                return m_countOfParams == 2 ? m_arguments[1] : m_arguments[2];
+                return countOfParams == 2 ? arguments[1] : arguments[2];
             }
         }
 
@@ -281,7 +281,7 @@ namespace xFunc.Maths.Expressions
         {
             get
             {
-                return m_countOfParams >= 4 ? m_arguments[3] : null;
+                return countOfParams >= 4 ? arguments[3] : null;
             }
         }
 
@@ -295,7 +295,7 @@ namespace xFunc.Maths.Expressions
         {
             get
             {
-                return m_countOfParams == 5 ? (Variable)m_arguments[4] : null;
+                return countOfParams == 5 ? (Variable)arguments[4] : null;
             }
         }
 

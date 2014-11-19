@@ -13,7 +13,6 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
-using xFunc.Maths.Expressions.Matrices;
 
 namespace xFunc.Maths.Expressions
 {
@@ -23,6 +22,7 @@ namespace xFunc.Maths.Expressions
     /// </summary>
     public class Abs : UnaryExpression
     {
+
         internal Abs() { }
 
         /// <summary>
@@ -52,36 +52,18 @@ namespace xFunc.Maths.Expressions
             return ToString("abs({0})");
         }
 
-		/// <summary>
-		/// Calculates this Absolute expression.
-		/// </summary>
-		/// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
-		/// <returns>
-		/// A result of the calculation.
-		/// </returns>
-		/// <seealso cref="ExpressionParameters" />
-		public override object Calculate (ExpressionParameters parameters) {
-			if (m_argument is Vector) {
-				return AbsVector ((Vector)m_argument, parameters);
-			} else {
-				var arg = m_argument.Calculate (parameters);
-				if (arg is Double)
-					return Math.Abs ((double)arg);
-				else if (arg is Vector) {
-					return AbsVector ((Vector)arg, parameters);
-				}
-			}
-			throw new NotSupportedException ();
-		}
-
-		static double AbsVector ( Vector vec, ExpressionParameters parameters ) {
-			var sum = 0.0;
-			foreach (var a in vec.Arguments)
-				sum += Math.Pow (
-					(double)a.Calculate (parameters), 2);
-					
-			return Math.Sqrt (sum);
-		}
+        /// <summary>
+        /// Calculates this Absolute expression.
+        /// </summary>
+        /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
+        /// <returns>
+        /// A result of the calculation.
+        /// </returns>
+        /// <seealso cref="ExpressionParameters" />
+        public override object Calculate(ExpressionParameters parameters)
+        {
+            return Math.Abs((double)argument.Calculate(parameters));
+        }
 
         /// <summary>
         /// Clones this instance of the <see cref="xFunc.Maths.Expressions.Bitwise.And"/> class.
@@ -89,7 +71,7 @@ namespace xFunc.Maths.Expressions
         /// <returns>Returns the new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
         public override IExpression Clone()
         {
-            return new Abs(m_argument.Clone());
+            return new Abs(argument.Clone());
         }
 
     }

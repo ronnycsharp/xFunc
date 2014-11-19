@@ -65,7 +65,7 @@ namespace xFunc.Maths.Expressions.Trigonometric
         /// <seealso cref="ExpressionParameters" />
         protected override double CalculateDergee(ExpressionParameters parameters)
         {
-            var radian = (double)m_argument.Calculate(parameters) * Math.PI / 180;
+            var radian = (double)argument.Calculate(parameters) * Math.PI / 180;
 
             return Math.Sin(radian);
         }
@@ -80,7 +80,7 @@ namespace xFunc.Maths.Expressions.Trigonometric
         /// <seealso cref="ExpressionParameters" />
         protected override double CalculateRadian(ExpressionParameters parameters)
         {
-            return Math.Sin((double)m_argument.Calculate(parameters));
+            return Math.Sin((double)argument.Calculate(parameters));
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace xFunc.Maths.Expressions.Trigonometric
         /// <seealso cref="ExpressionParameters" />
         protected override double CalculateGradian(ExpressionParameters parameters)
         {
-            var radian = (double)m_argument.Calculate(parameters) * Math.PI / 200;
+            var radian = (double)argument.Calculate(parameters) * Math.PI / 200;
 
             return Math.Sin(radian);
         }
@@ -104,7 +104,7 @@ namespace xFunc.Maths.Expressions.Trigonometric
         /// <returns>The new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
         public override IExpression Clone()
         {
-            return new Sin(m_argument.Clone());
+            return new Sin(argument.Clone());
         }
 
     }

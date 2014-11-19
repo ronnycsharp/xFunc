@@ -6,21 +6,21 @@ namespace xFunc.Test.Expressions.Maths
 {
 
     [TestClass]
-    public class RootTest
+    public class PowTest
     {
-        
-        [TestMethod]
-        public void CalculateRootTest1()
-        {
-            IExpression exp = new Root(new Number(8), new Number(3));
 
-            Assert.AreEqual(Math.Pow(8, 1.0 / 3.0), exp.Calculate());
+        [TestMethod]
+        public void CalculateTest()
+        {
+            IExpression exp = new Pow(new Number(2), new Number(10));
+
+            Assert.AreEqual(1024.0, exp.Calculate());
         }
 
         [TestMethod]
-        public void CalculateRootTest2()
+        public void NegativeCalculateTest()
         {
-            IExpression exp = new Root(new Number(-8), new Number(3));
+            IExpression exp = new Pow(new Number(-8), new Number(1 / 3.0));
 
             Assert.AreEqual(-2.0, exp.Calculate());
         }
@@ -28,11 +28,11 @@ namespace xFunc.Test.Expressions.Maths
         [TestMethod]
         public void NegativeNumberCalculateTest()
         {
-            var exp = new Root(new Number(-25), new Number(2));
+            var exp = new Pow(new Number(-25), new Number(1 / 2.0));
 
             Assert.AreEqual(double.NaN, exp.Calculate());
         }
-                
+
     }
 
 }

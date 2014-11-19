@@ -12,20 +12,20 @@
 // express or implied. 
 // See the License for the specific language governing permissions and 
 // limitations under the License.
+using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
-using xFunc.Logics;
-using xFunc.Logics.Expressions;
+using System.Xml.Linq;
 using xFunc.Maths;
 using xFunc.Maths.Expressions;
+using xFunc.Maths.Expressions.Collections;
 using xFunc.Presenters;
 using xFunc.Properties;
 using xFunc.Resources;
@@ -34,7 +34,7 @@ using xFunc.ViewModels;
 namespace xFunc.Views
 {
 
-    public partial class MainView : Fluent.RibbonWindow
+    public partial class MainView : Fluent.MetroWindow
     {
 
         private Processor processor;
@@ -44,8 +44,14 @@ namespace xFunc.Views
         private GraphsPresenter graphsPresenter;
         private TruthTablePresenter truthTablePresenter;
         private Updater updater;
+        private string fileName;
 
         #region Commands
+
+        public static RoutedCommand NewCommand = new RoutedCommand();
+        public static RoutedCommand OpenCommand = new RoutedCommand();
+        public static RoutedCommand SaveCommand = new RoutedCommand();
+        public static RoutedCommand SaveAsCommand = new RoutedCommand();
 
         public static RoutedCommand DegreeCommand = new RoutedCommand();
         public static RoutedCommand RadianCommand = new RoutedCommand();
@@ -62,6 +68,8 @@ namespace xFunc.Views
         public static RoutedCommand DeleteExpCommand = new RoutedCommand();
         public static RoutedCommand ClearCommand = new RoutedCommand();
 
+        public static RoutedCommand ConverterCommand = new RoutedCommand();
+
         public static RoutedCommand AboutCommand = new RoutedCommand();
         public static RoutedCommand SettingsCommand = new RoutedCommand();
         public static RoutedCommand ExitCommand = new RoutedCommand();
@@ -70,6 +78,7 @@ namespace xFunc.Views
 
         private VariableView variableView;
         private FunctionView functionView;
+        private Converter converterView;
 
         public MainView()
         {
@@ -198,6 +207,10 @@ namespace xFunc.Views
 
         private void LoadSettings()
         {
+            if (Settings.Default.SaveUserFunction && Settings.Default.UserFunctions != null)
+                foreach (var func in Settings.Default.UserFunctions)
+                    processor.Solve(func);
+
             if (Settings.Default.WindowState != WindowState.Minimized)
             {
                 WindowState = Settings.Default.WindowState;
@@ -227,6 +240,7 @@ namespace xFunc.Views
             hyperbolicToolBar.IsExpanded = Settings.Default.HyperbolicExpanded;
             matrixToolBar.IsExpanded = Settings.Default.MatrixExpanded;
             bitwiseToolBar.IsExpanded = Settings.Default.BitwiseExpanded;
+            progToolBar.IsExpanded = Settings.Default.ProgExpanded;
             constantsMathToolBar.IsExpanded = Settings.Default.ConstantsMathExpanded;
             additionalMathToolBar.IsExpanded = Settings.Default.AdditionalMathExpanded;
 
@@ -237,6 +251,14 @@ namespace xFunc.Views
 
         private void SaveSettings()
         {
+            if (Settings.Default.SaveUserFunction)
+            {
+                if (processor.UserFunctions.Count > 0)
+                    Settings.Default.UserFunctions = new System.Collections.Specialized.StringCollection();
+                foreach (var item in processor.UserFunctions)
+                    Settings.Default.UserFunctions.Add(string.Format("{0}:={1}", item.Key, item.Value));
+            }
+
             if (Settings.Default.RememberSizeAndPosition)
             {
                 if (WindowState != WindowState.Minimized)
@@ -277,6 +299,7 @@ namespace xFunc.Views
                 Settings.Default.HyperbolicExpanded = hyperbolicToolBar.IsExpanded;
                 Settings.Default.MatrixExpanded = matrixToolBar.IsExpanded;
                 Settings.Default.BitwiseExpanded = bitwiseToolBar.IsExpanded;
+                Settings.Default.ProgExpanded = progToolBar.IsExpanded;
                 Settings.Default.ConstantsMathExpanded = constantsMathToolBar.IsExpanded;
                 Settings.Default.AdditionalMathExpanded = additionalMathToolBar.IsExpanded;
 
@@ -302,6 +325,50 @@ namespace xFunc.Views
             Settings.Default.Save();
         }
 
+        private void Serialize(string path)
+        {
+            var exps = new XElement("expressions", mathPresenter.Workspace.Select(exp => new XElement("expression", exp.StringExpression)));
+            var vars = new XElement("variables",
+                from @var in processor.Parameters
+                where @var.Type != ParameterType.Constant
+                select new XElement("add",
+                        new XAttribute("key", @var.Key),
+                        new XAttribute("value", @var.Value.ToString(CultureInfo.InvariantCulture)),
+                        new XAttribute("readonly", @var.Type == ParameterType.ReadOnly ? true : false)));
+            var funcs = new XElement("functions",
+                from func in processor.UserFunctions
+                select new XElement("add",
+                        new XAttribute("key", func.Key.ToString()),
+                        new XAttribute("value", func.Value.ToString())));
+
+            var root = new XElement("xfunc",
+                                    exps.IsEmpty ? null : exps,
+                                    vars.IsEmpty ? null : vars,
+                                    funcs.IsEmpty ? null : funcs);
+            var doc = new XDocument(new XDeclaration("1.0", "UTF-8", null), root);
+
+            doc.Save(path);
+        }
+
+        private void Deserialize(string path)
+        {
+            var doc = XDocument.Load(path);
+            var vars = doc.Root.Element("variables");
+            if (vars != null)
+                foreach (var item in vars.Elements("add"))
+                    processor.Parameters.Add(new Parameter(item.Attribute("key").Value, double.Parse(item.Attribute("value").Value), bool.Parse(item.Attribute("readonly").Value) ? ParameterType.ReadOnly : ParameterType.Normal));
+
+            var funcs = doc.Root.Element("functions");
+            if (funcs != null)
+                foreach (var item in funcs.Elements("add"))
+                    processor.Solve(string.Format("{0}:={1}", item.Attribute("key").Value, item.Attribute("value").Value));
+
+            var exps = doc.Root.Element("expressions");
+            if (exps != null)
+                foreach (var item in exps.Elements("expression").Select(exp => exp.Value))
+                    mathPresenter.Add(item);
+        }
+
         private void SetFocus()
         {
             if (tabControl.SelectedItem == mathTab)
@@ -315,6 +382,56 @@ namespace xFunc.Views
         }
 
         #region Commands
+
+        private void NewCommand_Execute(object o, ExecutedRoutedEventArgs args)
+        {
+            mathPresenter.Clear();
+            processor.Parameters.Clear();
+            processor.UserFunctions.Clear();
+            fileName = null;
+        }
+
+        private void OpenCommand_Execute(object o, ExecutedRoutedEventArgs args)
+        {
+            var ofd = new OpenFileDialog()
+            {
+                FileName = "xFunc Document",
+                DefaultExt = ".xml",
+                Filter = "xFunc File (*.xml)|*.xml|All Files (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+
+            if (ofd.ShowDialog() == true)
+            {
+                Deserialize(ofd.FileName);
+                fileName = ofd.FileName;
+            }
+        }
+
+        private void SaveCommand_Execute(object o, ExecutedRoutedEventArgs args)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+                SaveAsCommand_Execute(o, args);
+            else
+                Serialize(fileName);
+        }
+
+        private void SaveAsCommand_Execute(object o, ExecutedRoutedEventArgs args)
+        {
+            var sfd = new SaveFileDialog()
+            {
+                FileName = "xFunc Document",
+                DefaultExt = ".xml",
+                Filter = "xFunc File (*.xml)|*.xml|All Files (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+
+            if (sfd.ShowDialog() == true)
+            {
+                Serialize(sfd.FileName);
+                fileName = sfd.FileName;
+            }
+        }
 
         private void DegreeButton_Execute(object o, ExecutedRoutedEventArgs args)
         {
@@ -495,6 +612,39 @@ namespace xFunc.Views
                               tabControl.SelectedItem == graphsTab;
         }
 
+        private void ConverterCommand_Execute(object o, ExecutedRoutedEventArgs args)
+        {
+            if (converterView == null)
+            {
+                converterView = new Converter()
+                {
+                    Owner = this,
+                    Top = Settings.Default.ConverterTop == -1 ? this.Top + 100 : Settings.Default.ConverterTop,
+                    Left = Settings.Default.ConverterLeft == -1 ? this.Left + 300 : Settings.Default.ConverterLeft
+                };
+                converterView.Closed += (obj, args1) =>
+                {
+                    if (Settings.Default.RememberSizeAndPosition)
+                    {
+                        Settings.Default.ConverterTop = converterView.Top;
+                        Settings.Default.ConverterLeft = converterView.Left;
+                    }
+                    else
+                    {
+                        Settings.Default.ConverterTop = double.Parse(Settings.Default.Properties["ConverterTop"].DefaultValue.ToString());
+                        Settings.Default.ConverterLeft = double.Parse(Settings.Default.Properties["ConverterLeft"].DefaultValue.ToString());
+                    }
+
+                    converterView = null;
+                };
+            }
+
+            if (converterView.Visibility == Visibility.Visible)
+                converterView.Activate();
+            else
+                converterView.Visibility = Visibility.Visible;
+        }
+
         private void AboutCommand_Execute(object o, ExecutedRoutedEventArgs args)
         {
             AboutView aboutView = new AboutView { Owner = this };
@@ -522,6 +672,7 @@ namespace xFunc.Views
                     mathPresenter.Base = settingsView.Base;
                 }
                 Settings.Default.MaxCountOfExpressions = settingsView.MaxCountOfExps;
+                Settings.Default.SaveUserFunction = settingsView.SaveUserFunctions;
                 Settings.Default.CheckUpdates = settingsView.CheckUpdates;
 
                 Settings.Default.Save();
@@ -649,6 +800,7 @@ namespace xFunc.Views
                 hyperbolicToolBar.Visibility = Visibility.Collapsed;
                 matrixToolBar.Visibility = Visibility.Collapsed;
                 bitwiseToolBar.Visibility = Visibility.Collapsed;
+                progToolBar.Visibility = Visibility.Collapsed;
                 constantsMathToolBar.Visibility = Visibility.Collapsed;
                 additionalMathToolBar.Visibility = Visibility.Collapsed;
 
@@ -668,6 +820,7 @@ namespace xFunc.Views
                 trigonometricToolBar.Visibility = Visibility.Visible;
                 hyperbolicToolBar.Visibility = Visibility.Visible;
                 bitwiseToolBar.Visibility = Visibility.Visible;
+                progToolBar.Visibility = Visibility.Visible;
                 constantsMathToolBar.Visibility = Visibility.Visible;
                 additionalMathToolBar.Visibility = Visibility.Visible;
 
