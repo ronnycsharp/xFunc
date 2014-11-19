@@ -1,4 +1,5 @@
 ﻿// Copyright 2012-2014 Dmitry Kischenko
+// Ronny Weidemann - June 2014, Added Vector-Calculation
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,16 +14,15 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using xFunc.Maths.Expressions.Matrices;
 
 namespace xFunc.Maths.Expressions
 {
-
     /// <summary>
     /// Represents the Absolute operation.
     /// </summary>
     public class Abs : UnaryExpression
     {
-
         internal Abs() { }
 
         /// <summary>
@@ -60,20 +60,34 @@ namespace xFunc.Maths.Expressions
         /// A result of the calculation.
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
-        public override object Calculate(ExpressionParameters parameters)
-        {
-            return Math.Abs((double)argument.Calculate(parameters));
+        public override object Calculate(ExpressionParameters parameters) {
+            if (argument is Vector) {
+                return Abs((Vector)argument, parameters);
+            } else {
+                var arg = argument.Calculate(parameters);
+                if (arg is Double)
+                    return Math.Abs((double)arg);
+                else if (arg is Vector) {
+                    return Abs((Vector)arg, parameters);
+                }
+            }
+            throw new NotSupportedException();
+        }
+
+        static double Abs (Vector vec, ExpressionParameters parameters) {
+            var sum = 0.0;
+            foreach (var a in vec.Arguments) {
+                sum += Math.Pow((double)a.Calculate(parameters), 2);
+            }
+            return Math.Sqrt(sum);
         }
 
         /// <summary>
         /// Clones this instance of the <see cref="xFunc.Maths.Expressions.Bitwise.And"/> class.
         /// </summary>
         /// <returns>Returns the new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
-        public override IExpression Clone()
-        {
+        public override IExpression Clone() {
             return new Abs(argument.Clone());
         }
-
     }
-
 }
