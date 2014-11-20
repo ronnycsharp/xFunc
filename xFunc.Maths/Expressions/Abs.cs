@@ -80,7 +80,7 @@ namespace xFunc.Maths.Expressions
         static double Absolute (Vector vec, ExpressionParameters parameters) {
             return Math.Sqrt(
                 vec.Arguments.Sum ( a => Math.Pow ( 
-                    ( double ) a.Calculate ( ), 2 ) ) );
+                    ( double ) a.Calculate ( parameters ), 2 ) ) );
         }
 
         /// <summary>
