@@ -34,7 +34,9 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <ReleaseVersion>4.3</ReleaseVersion>
+    <ReleaseVersion>2.1</ReleaseVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -218,6 +220,7 @@
     <Compile Include="Expressions\Programming\SubAssign.cs" />
     <Compile Include="Expressions\Programming\While.cs" />
     <Compile Include="Expressions\Programming\Bool.cs" />
+    <Compile Include="Expressions\Fraction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\LICENSE">

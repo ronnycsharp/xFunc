@@ -1,22 +1,47 @@
-﻿// Copyright 2014 - Ronny Weidemann
-
+﻿// Copyright 2012-2014 Dmitry Kischenko
+//
+// Licensed under the Apache License, Version 2.0 (the "License"); 
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software 
+// distributed under the License is distributed on an "AS IS" BASIS, 
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either 
+// express or implied. 
+// See the License for the specific language governing permissions and 
+// limitations under the License.
 using System;
-namespace xFunc.Maths.Expressions {
-    public class Fraction : DifferentParametersExpression {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Fraction"/> class.
-        /// </summary>
-		internal Fraction ()
-            : base(null, -1) { }
+#if NET35_OR_GREATER || PORTABLE
+using System.Linq;
+#endif
+
+namespace xFunc.Maths.Expressions
+{
+
+    /// <summary>
+    /// Represents a least common multiple.
+    /// </summary>
+    public class LCM : DifferentParametersExpression
+    {
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Fraction"/> class.
+        /// Initializes a new instance of the <see cref="LCM"/> class.
+        /// </summary>
+        internal LCM()
+            : base(null, -1)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LCM"/> class.
         /// </summary>
         /// <param name="args">The arguments.</param>
         /// <param name="countOfParams">The count of parameters.</param>
         /// <exception cref="System.ArgumentNullException"><paramref name="args"/> is null.</exception>
         /// <exception cref="System.ArgumentException"></exception>
-		public Fraction (IExpression[] args, int countOfParams)
+        public LCM(IExpression[] args, int countOfParams)
             : base(args, countOfParams)
         {
             if (args == null)
@@ -26,11 +51,13 @@ namespace xFunc.Maths.Expressions {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Fraction"/> class.
+        /// Initializes a new instance of the <see cref="LCM"/> class.
         /// </summary>
-		public Fraction(IExpression wholePart, IExpression numeratorPart, IExpression denominatorPart )
-			: base(new[] { wholePart, numeratorPart, denominatorPart }, 3 ) {
-
+        /// <param name="firstMathExpression">The first operand.</param>
+        /// <param name="secondMathExpression">The second operand.</param>
+        public LCM(IExpression firstMathExpression, IExpression secondMathExpression)
+            : base(new[] { firstMathExpression, secondMathExpression }, 2)
+        {
         }
 
         /// <summary>
@@ -41,7 +68,7 @@ namespace xFunc.Maths.Expressions {
         /// </returns>
         public override int GetHashCode()
         {
-			return base.GetHashCode ();	// TODO Add Hash - Values
+            return base.GetHashCode(7417, 2719);
         }
 
         /// <summary>
@@ -50,7 +77,7 @@ namespace xFunc.Maths.Expressions {
         /// <returns>The string that represents this expression.</returns>
         public override string ToString()
         {
-            return base.ToString("fract");
+            return base.ToString("lcm");
         }
 
         /// <summary>
@@ -61,20 +88,20 @@ namespace xFunc.Maths.Expressions {
         /// A result of the calculation.
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
-        public override object Calculate(ExpressionParameters parameters) {
-			var whole = (double)this.Arguments [0].Calculate (parameters);			// Whole-Number-Part
-			var numerator = (double)this.Arguments [1].Calculate (parameters);		// Numerator-Part
-			var denominator = (double)this.Arguments [2].Calculate (parameters);	// Denominator-Part
-			return whole + numerator / denominator;
+        public override object Calculate(ExpressionParameters parameters)
+        {
+            var numbers = arguments.Select(item => (double)item.Calculate(parameters)).ToArray();
+
+            return MathExtentions.LCM(numbers);
         }
 
         /// <summary>
-        /// Clones this instance of the <see cref="Fraction"/>.
+        /// Clones this instance of the <see cref="LCM"/>.
         /// </summary>
-        /// <returns>Returns the new instance of <see cref="Fraction"/> that is a clone of this instance.</returns>
+        /// <returns>Returns the new instance of <see cref="LCM"/> that is a clone of this instance.</returns>
         public override IExpression Clone()
         {
-            return new Fraction(CloneArguments(), arguments.Length);
+            return new LCM(CloneArguments(), arguments.Length);
         }
 			
         /// <summary>
@@ -87,7 +114,7 @@ namespace xFunc.Maths.Expressions {
         {
             get
             {
-                return 3;
+                return 2;
             }
         }
 
@@ -101,7 +128,7 @@ namespace xFunc.Maths.Expressions {
         {
             get
             {
-                return 3;
+                return -1;
             }
         }
 
