@@ -1,4 +1,4 @@
-﻿// Copyright 2014 Ronny Weidemann
+﻿// Copyright 2014/2016 Ronny Weidemann
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,15 +13,11 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
-
-namespace xFunc.Maths.Expressions
-{
-
+namespace xFunc.Maths.Expressions {
     /// <summary>
     /// Represents the "round" function.
     /// </summary>
-    public class RoundUnary : UnaryExpression
-    {
+    public class RoundUnary : UnaryExpression {
         internal RoundUnary() { }
 
         /// <summary>
@@ -37,8 +33,7 @@ namespace xFunc.Maths.Expressions
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode()
-        {
+        public override int GetHashCode() {
             return base.GetHashCode(5680);
         }
 
@@ -48,13 +43,8 @@ namespace xFunc.Maths.Expressions
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
-        public override string ToString()
-        {
+        public override string ToString() {
             return ToString("roundunary({0})");
-        }
-
-        protected override IExpression _Differentiation (Variable variable) {
-            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -65,10 +55,8 @@ namespace xFunc.Maths.Expressions
         /// A result of the calculation.
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
-        public override object Calculate(ExpressionParameters parameters)
-        {
-            return Math.Round (
-                (double)Argument.Calculate(parameters));
+        public override object Execute(ExpressionParameters parameters) {
+			return Math.Round ((double)this.Argument.Execute(parameters));
         }
 
         /// <summary>
@@ -77,9 +65,8 @@ namespace xFunc.Maths.Expressions
         /// <returns>
         /// Returns the new instance of <see cref="IExpression" /> that is a clone of this instance.
         /// </returns>
-        public override IExpression Clone()
-        {
-            return new RoundUnary(argument.Clone ( ));
+        public override IExpression Clone() {
+            return new RoundUnary(this.Argument.Clone ( ));
         }
     }
 }
