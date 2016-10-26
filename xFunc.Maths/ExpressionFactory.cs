@@ -283,6 +283,11 @@ namespace xFunc.Maths
                     return new Conjugate();
                 case Functions.Reciprocal:
                     return new Reciprocal();
+				case Functions.DefiniteIntegral:
+					return new DefiniteIntegral ();
+				case Functions.RoundUnary:
+					return new RoundUnary ();
+
                 default:
                     return null;
             }

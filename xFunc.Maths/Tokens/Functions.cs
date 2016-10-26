@@ -267,6 +267,16 @@ namespace xFunc.Maths.Tokens
         /// </summary>
         Reciprocal,
 
+		/// <summary>
+		/// Definite Integral
+		/// </summary>
+		DefiniteIntegral,
+
+		/// <summary>
+		/// Round with only one argument
+		/// </summary>
+		RoundUnary,
+
         /// <summary>
         /// The user function
         /// </summary>

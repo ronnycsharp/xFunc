@@ -1128,6 +1128,18 @@ namespace xFunc.Maths
 
                         continue;
                     }
+					if (sub.StartsWith ("integral(", StringComparison.Ordinal)) {
+						tokens.Add (new FunctionToken (Functions.DefiniteIntegral));
+						i += 8;
+
+						continue;
+					}
+					if (sub.StartsWith ("roundunary(", StringComparison.Ordinal)) {
+						tokens.Add (new FunctionToken (Functions.RoundUnary));
+						i += 10;
+
+						continue;
+					}
 
                     int j = i + 1;
                     for (; j < function.Length && (char.IsLetter(function[j]) || char.IsDigit(function[j])) && !notVar.Any(s => function.Substring(j).StartsWith(s, StringComparison.Ordinal)); j++) { }
