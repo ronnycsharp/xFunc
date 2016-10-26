@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 ﻿// Copyright 2012-2016 Dmitry Kischenko
-=======
-﻿// Copyright 2012-2014 Dmitry Kischenko
 // Ronny Weidemann - June 2014, Added Vector-Calculation
->>>>>>> 0dedb0a5e5bcf6c2a4787468fc545c5e1a5c3488
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -17,13 +13,11 @@
 // express or implied. 
 // See the License for the specific language governing permissions and 
 // limitations under the License.
+
 using System;
-<<<<<<< HEAD
 using System.Numerics;
-=======
 using System.Linq;
 using xFunc.Maths.Expressions.Matrices;
->>>>>>> 0dedb0a5e5bcf6c2a4787468fc545c5e1a5c3488
 
 namespace xFunc.Maths.Expressions
 {
@@ -47,8 +41,7 @@ namespace xFunc.Maths.Expressions
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode()
-        {
+        public override int GetHashCode() {
             return base.GetHashCode(6329);
         }
 
@@ -56,59 +49,41 @@ namespace xFunc.Maths.Expressions
         /// Converts this expression to the equivalent string.
         /// </summary>
         /// <returns>The string that represents this expression.</returns>
-        public override string ToString()
-        {
+        public override string ToString() {
             return ToString("abs({0})");
         }
 
-        /// <summary>
-        /// Executes this Absolute expression.
-        /// </summary>
-        /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
-        /// <returns>
-        /// A result of the execution.
-        /// </returns>
-        /// <seealso cref="ExpressionParameters" />
-<<<<<<< HEAD
-        public override object Execute(ExpressionParameters parameters)
-        {
-            var result = m_argument.Execute(parameters);
+		/// <summary>
+		/// Executes this Absolute expression.
+		/// </summary>
+		/// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
+		/// <returns>
+		/// A result of the execution.
+		/// </returns>
+		/// <seealso cref="ExpressionParameters" />
+		public override object Execute (ExpressionParameters parameters) {
+			if (m_argument is Vector) {
+				return this.AbsVector ((Vector)m_argument, parameters);
+			} else {
+				var result = m_argument.Execute (parameters);
+				if (result is Complex)
+					return Complex.Abs ((Complex)result);
 
-            if (result is Complex)
-                return Complex.Abs((Complex)result);
+				return Math.Abs ((double)result);
+			}
+		}
 
-            return Math.Abs((double)result);
-=======
-        public override object Calculate(ExpressionParameters parameters) {
-            if (argument is Vector) {
-                return Absolute(
-                    (Vector)argument, parameters);
-            } else {
-                var arg = argument.Calculate(parameters);
-                if (arg is Double)
-                    return Math.Abs((double)arg);
-                else if (arg is Vector) {
-                    return Absolute(
-                        (Vector)arg, parameters);
-                }
-            }
-            throw new NotSupportedException();
-        }
-
-        static double Absolute (Vector vec, ExpressionParameters parameters) {
+        double AbsVector (Vector vec, ExpressionParameters parameters) {
             return Math.Sqrt(
                 vec.Arguments.Sum ( a => Math.Pow ( 
-                    ( double ) a.Calculate ( parameters ), 2 ) ) );
->>>>>>> 0dedb0a5e5bcf6c2a4787468fc545c5e1a5c3488
+                   ( double ) a.Execute ( parameters ), 2 ) ) );
         }
 
         /// <summary>
         /// Clones this instance of the <see cref="xFunc.Maths.Expressions.Abs"/> class.
         /// </summary>
         /// <returns>Returns the new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
-<<<<<<< HEAD
-        public override IExpression Clone()
-        {
+        public override IExpression Clone() {
             return new Abs(m_argument.Clone());
         }
 
@@ -118,16 +93,10 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The type of the argument.
         /// </value>
-        public override ExpressionResultType ArgumentType
-        {
-            get
-            {
+        public override ExpressionResultType ArgumentType {
+            get {
                 return ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
             }
-=======
-        public override IExpression Clone() {
-            return new Abs(argument.Clone());
->>>>>>> 0dedb0a5e5bcf6c2a4787468fc545c5e1a5c3488
         }
     }
 }
