@@ -13,14 +13,16 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Numerics;
 using xFunc.Maths;
 using xFunc.Maths.Expressions;
+using xFunc.Maths.Expressions.ComplexNumbers;
 using xFunc.Maths.Expressions.Hyperbolic;
 using Xunit;
 
 namespace xFunc.Tests.Expressions.Maths.Hyperbolic
 {
-    
+
     public class HyperbolicArcosineTest
     {
 
@@ -30,6 +32,18 @@ namespace xFunc.Tests.Expressions.Maths.Hyperbolic
             var exp = new Arcosh(new Number(1));
 
             Assert.Equal(MathExtensions.Acosh(1), exp.Execute());
+        }
+
+        [Fact]
+        public void ExecuteComplexNumberTest()
+        {
+            var complex = new Complex(3, 2);
+            var exp = new Arcosh(new ComplexNumber(complex));
+            var result = (Complex)exp.Execute();
+
+            Assert.Equal(ComplexExtensions.Acosh(complex), result);
+            Assert.Equal(1.9686379257930964, result.Real, 15);
+            Assert.Equal(0.606137822387294, result.Imaginary, 15);
         }
 
         [Fact]

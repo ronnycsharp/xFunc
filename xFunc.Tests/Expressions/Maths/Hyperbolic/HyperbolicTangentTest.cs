@@ -13,13 +13,15 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Numerics;
 using xFunc.Maths.Expressions;
+using xFunc.Maths.Expressions.ComplexNumbers;
 using xFunc.Maths.Expressions.Hyperbolic;
 using Xunit;
 
 namespace xFunc.Tests.Expressions.Maths.Hyperbolic
 {
-    
+
     public class HyperbolicTangentTest
     {
 
@@ -29,6 +31,18 @@ namespace xFunc.Tests.Expressions.Maths.Hyperbolic
             var exp = new Tanh(new Number(1));
 
             Assert.Equal(Math.Tanh(1), exp.Execute());
+        }
+
+        [Fact]
+        public void ExecuteComplexNumberTest()
+        {
+            var complex = new Complex(3, 2);
+            var exp = new Tanh(new ComplexNumber(complex));
+            var result = (Complex)exp.Execute();
+
+            Assert.Equal(Complex.Tanh(complex), result);
+            Assert.Equal(1.0032386273536098, result.Real, 15);
+            Assert.Equal(-0.0037640256415041864, result.Imaginary, 15);
         }
 
         [Fact]

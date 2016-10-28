@@ -13,14 +13,16 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Numerics;
 using xFunc.Maths;
 using xFunc.Maths.Expressions;
+using xFunc.Maths.Expressions.ComplexNumbers;
 using xFunc.Maths.Expressions.Hyperbolic;
 using Xunit;
 
 namespace xFunc.Tests.Expressions.Maths.Hyperbolic
 {
-    
+
     public class HyperbolicCotangentTest
     {
 
@@ -30,6 +32,18 @@ namespace xFunc.Tests.Expressions.Maths.Hyperbolic
             var exp = new Coth(new Number(1));
 
             Assert.Equal(MathExtensions.Coth(1), exp.Execute());
+        }
+
+        [Fact]
+        public void ExecuteComplexNumberTest()
+        {
+            var complex = new Complex(3, 2);
+            var exp = new Coth(new ComplexNumber(complex));
+            var result = (Complex)exp.Execute();
+
+            Assert.Equal(ComplexExtensions.Coth(complex), result);
+            Assert.Equal(0.99675779656935837, result.Real, 15);
+            Assert.Equal(0.0037397103763368955, result.Imaginary, 15);
         }
 
         [Fact]
