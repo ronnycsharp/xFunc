@@ -16,15 +16,13 @@ using System;
 
 namespace xFunc.Maths.Expressions
 {
-
     /// <summary>
     /// Represents variables in expressions.
     /// </summary>
-    public class Variable : IExpression
-    {
-
+    public class Variable : IExpression {
+		
         private IExpression parent;
-        private readonly string name;
+        private string name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Variable"/> class.
@@ -126,6 +124,9 @@ namespace xFunc.Maths.Expressions
             {
                 return name;
             }
+			set {
+				name = value;
+			}
         }
 
         /// <summary>

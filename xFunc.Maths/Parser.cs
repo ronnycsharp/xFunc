@@ -29,7 +29,6 @@ namespace xFunc.Maths
     /// </summary>
     public class Parser : IParser
     {
-        
         private IExpressionFactory factory;
 
         /// <summary>
@@ -47,6 +46,7 @@ namespace xFunc.Maths
         public Parser(IExpressionFactory factory)
         {
             this.factory = factory;
+			this.simplifier = new Simplifier ();
         }
 
         /// <summary>
@@ -275,7 +275,19 @@ namespace xFunc.Maths
                 factory = value;
             }
         }
-        
+
+		/// <summary>
+		/// gets the simplifier-object for simplifying an expression
+		/// </summary>
+		/// <remarks>
+		/// only for backward-compatibility
+		/// </remarks>
+		/// <value>The simplifier.</value>
+		public Simplifier Simplifier {
+			get { return simplifier; }
+		}
+
+		private Simplifier simplifier;
     }
 
 }
