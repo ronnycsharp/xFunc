@@ -1100,6 +1100,12 @@ namespace xFunc.Maths
 
                         continue;
                     }
+					if (sub.StartsWith ("arg(", StringComparison.Ordinal)) {
+						tokens.Add (new FunctionToken (Functions.Phase));
+						i += 3;
+
+						continue;
+					}
                     if (sub.StartsWith("phase(", StringComparison.Ordinal))
                     {
                         tokens.Add(new FunctionToken(Functions.Phase));
