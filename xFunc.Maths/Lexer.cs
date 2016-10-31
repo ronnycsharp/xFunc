@@ -448,7 +448,9 @@ namespace xFunc.Maths
                     strNumber = function.Substring(i, length);
                     number = double.Parse(strNumber, CultureInfo.InvariantCulture);
 
-                    if (CheckNextSymbol(function, i + length - 1, 'i'))
+                    var isIComplex = CheckNextSymbol(function, i + length - 1, 'i');
+                    var isDegreeComplex = CheckNextSymbol(function, i + length - 1, '°');
+                    if (isIComplex || isDegreeComplex)
                     {
                         length++;
 
@@ -493,7 +495,10 @@ namespace xFunc.Maths
                             }
                         }
 
-                        tokens.Add(new ComplexNumberToken(new Complex(realPart, imaginaryPart)));
+                        if (isDegreeComplex)
+                            tokens.Add(new ComplexNumberToken(Complex.FromPolarCoordinates(realPart, imaginaryPart)));
+                        else
+                            tokens.Add(new ComplexNumberToken(new Complex(realPart, imaginaryPart)));
                     }
                     else
                     {
@@ -1110,13 +1115,6 @@ namespace xFunc.Maths
                     {
                         tokens.Add(new FunctionToken(Functions.Phase));
                         i += 5;
-
-                        continue;
-                    }
-                    if (sub.StartsWith("magnitude(", StringComparison.Ordinal))
-                    {
-                        tokens.Add(new FunctionToken(Functions.Magnitude));
-                        i += 9;
 
                         continue;
                     }

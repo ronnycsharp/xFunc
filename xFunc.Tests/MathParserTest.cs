@@ -251,6 +251,19 @@ namespace xFunc.Tests
         }
 
         [Fact]
+        public void DefineComplexParserTest()
+        {
+            var tokens = new List<IToken>
+            {
+                new VariableToken("aaa"),
+                new OperationToken(Operations.Assign),
+                new ComplexNumberToken(new Complex(3, 2))
+            };
+
+            Assert.Throws<ParameterTypeMismatchException>(() => parser.Parse(tokens));
+        }
+
+        [Fact]
         public void AssignUserFuncTest()
         {
             var tokens = new List<IToken>
@@ -1274,22 +1287,6 @@ namespace xFunc.Tests
             };
             var exp = parser.Parse(tokens);
             var expected = new Phase(new ComplexNumber(new Complex(3, -2)));
-
-            Assert.Equal(expected, exp);
-        }
-
-        [Fact]
-        public void MagnitudeTest()
-        {
-            var tokens = new List<IToken>
-            {
-                new FunctionToken(Functions.Magnitude, 1),
-                new SymbolToken(Symbols.OpenBracket),
-                new ComplexNumberToken(new Complex(3, -2)),
-                new SymbolToken(Symbols.CloseBracket)
-            };
-            var exp = parser.Parse(tokens);
-            var expected = new Magnitude(new ComplexNumber(new Complex(3, -2)));
 
             Assert.Equal(expected, exp);
         }
