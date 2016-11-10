@@ -13,26 +13,25 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
-using System.Numerics;
-using xFunc.Maths.Expressions.Matrices;
 
 namespace xFunc.Maths.Expressions
 {
 
     /// <summary>
-    /// Represents the Absolute operation.
+    /// Represents the Modulo operator.
     /// </summary>
-    public class Abs : UnaryExpression
+    /// <seealso cref="xFunc.Maths.Expressions.BinaryExpression" />
+    public class Mod : BinaryExpression
     {
 
-        internal Abs() { }
+        internal Mod() { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Abs"/> class.
+        /// Initializes a new instance of the <see cref="Mod"/> class.
         /// </summary>
-        /// <param name="expression">The argument of function.</param>
-        /// <seealso cref="IExpression"/>
-        public Abs(IExpression expression) : base(expression) { }
+        /// <param name="left">The left (first) operand.</param>
+        /// <param name="right">The right (second) operand.</param>
+        public Mod(IExpression left, IExpression right) : base(left, right) { }
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -42,20 +41,25 @@ namespace xFunc.Maths.Expressions
         /// </returns>
         public override int GetHashCode()
         {
-            return base.GetHashCode(6329);
+            return base.GetHashCode(32909, 52541);
         }
 
         /// <summary>
-        /// Converts this expression to the equivalent string.
+        /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
-        /// <returns>The string that represents this expression.</returns>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
-            return ToString("abs({0})");
+            if (m_parent is BinaryExpression && !(m_parent is Mul))
+                return ToString("({0} % {1})");
+
+            return ToString("{0} % {1}");
         }
 
         /// <summary>
-        /// Executes this Absolute expression.
+        /// Executes this expression.
         /// </summary>
         /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
         /// <returns>
@@ -64,38 +68,21 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            var result = m_argument.Execute(parameters);
+            var leftResult = (double)m_left.Execute(parameters);
+            var rightResult = (double)m_right.Execute(parameters);
 
-            if (result is Complex)
-                return Complex.Abs((Complex)result);
-
-            if (result is Vector)
-                return ((Vector)result).Abs(parameters);
-
-            return Math.Abs((double)result);
+            return leftResult % rightResult;
         }
 
         /// <summary>
-        /// Clones this instance of the <see cref="xFunc.Maths.Expressions.Abs"/> class.
+        /// Creates the clone of this instance.
         /// </summary>
-        /// <returns>Returns the new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
+        /// <returns>
+        /// Returns the new instance of <see cref="BinaryExpression" /> that is a clone of this instance.
+        /// </returns>
         public override IExpression Clone()
         {
-            return new Abs(m_argument.Clone());
-        }
-
-        /// <summary>
-        /// Gets the type of the argument.
-        /// </summary>
-        /// <value>
-        /// The type of the argument.
-        /// </value>
-        public override ExpressionResultType ArgumentType
-        {
-            get
-            {
-                return ExpressionResultType.Number | ExpressionResultType.ComplexNumber | ExpressionResultType.Vector;
-            }
+            return new Mod(m_left.Clone(), m_right.Clone());
         }
 
     }

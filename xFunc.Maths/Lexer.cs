@@ -37,7 +37,7 @@ namespace xFunc.Maths
         /// </summary>
         public Lexer()
         {
-            notVar = new HashSet<string> { "nand", "nor", "and", "or", "xor" };
+            notVar = new HashSet<string> { "nand", "nor", "and", "or", "xor", "mod" };
             unaryMinusOp = new HashSet<char> { '(', '{', '*', '/', '^', '=', ',' };
         }
 
@@ -364,6 +364,10 @@ namespace xFunc.Maths
 
                     tokens.Add(new OperationToken(Operations.GreaterThan));
                 }
+                else if (letter == '%')
+                {
+                    tokens.Add(new OperationToken(Operations.Modulo));
+                }
                 else if (char.IsDigit(letter))
                 {
                     int length;
@@ -447,63 +451,7 @@ namespace xFunc.Maths
 
                     strNumber = function.Substring(i, length);
                     number = double.Parse(strNumber, CultureInfo.InvariantCulture);
-
-                    var isIComplex = CheckNextSymbol(function, i + length - 1, 'i');
-                    var isDegreeComplex = CheckNextSymbol(function, i + length - 1, '°');
-                    if (isIComplex || isDegreeComplex)
-                    {
-                        length++;
-
-                        var realPart = 0.0;
-                        var imaginaryPart = number;
-
-                        if (tokens.Count >= 1)
-                        {
-                            var lastOperationToken = tokens[tokens.Count - 1] as OperationToken;
-                            if (lastOperationToken != null && tokens.Count >= 2 &&
-                                (lastOperationToken.Operation == Operations.Addition ||
-                                 lastOperationToken.Operation == Operations.Subtraction))
-                            {
-                                var lastNumberToken = tokens[tokens.Count - 2] as NumberToken;
-                                if (lastNumberToken != null)
-                                {
-                                    realPart = lastNumberToken.Number;
-
-                                    if (lastOperationToken.Operation == Operations.Subtraction)
-                                        imaginaryPart = -imaginaryPart;
-
-                                    if (tokens.Count >= 3)
-                                    {
-                                        var lastUnaryToken = tokens[tokens.Count - 3] as OperationToken;
-                                        if (lastUnaryToken != null && lastUnaryToken.Operation == Operations.UnaryMinus)
-                                        {
-                                            realPart = -realPart;
-
-                                            tokens.Remove(lastUnaryToken);
-                                        }
-                                    }
-
-                                    tokens.Remove(lastNumberToken);
-                                    tokens.Remove(lastOperationToken);
-                                }
-                            }
-                            else if (lastOperationToken.Operation == Operations.UnaryMinus)
-                            {
-                                imaginaryPart = -imaginaryPart;
-
-                                tokens.Remove(lastOperationToken);
-                            }
-                        }
-
-                        if (isDegreeComplex)
-                            tokens.Add(new ComplexNumberToken(Complex.FromPolarCoordinates(realPart, imaginaryPart)));
-                        else
-                            tokens.Add(new ComplexNumberToken(new Complex(realPart, imaginaryPart)));
-                    }
-                    else
-                    {
-                        tokens.Add(new NumberToken(number));
-                    }
+                    tokens.Add(new NumberToken(number));
 
                     i += length;
 
@@ -513,7 +461,7 @@ namespace xFunc.Maths
 
                     continue;
                 }
-                else if (char.IsLetter(letter))
+                else if (char.IsLetter(letter) || letter == '°')
                 {
                     var sub = function.Substring(i);
                     if (sub.StartsWith("pi", StringComparison.Ordinal))
@@ -561,6 +509,13 @@ namespace xFunc.Maths
                     if (sub.StartsWith("abs(", StringComparison.Ordinal))
                     {
                         tokens.Add(new FunctionToken(Functions.Absolute));
+                        i += 3;
+
+                        continue;
+                    }
+                    if (sub.StartsWith("mod", StringComparison.Ordinal))
+                    {
+                        tokens.Add(new OperationToken(Operations.Modulo));
                         i += 3;
 
                         continue;
@@ -1144,6 +1099,73 @@ namespace xFunc.Maths
 
 						continue;
 					}
+
+                    var isIComplex = letter == 'i';
+                    var isDegreeComplex = letter == '°';
+                    if (isIComplex || isDegreeComplex)
+                    {
+                        var realPart = 0.0;
+                        var imaginaryPart = 1.0;
+
+                        var mulToken = tokens.LastOrDefault() as OperationToken;
+                        if (mulToken != null && mulToken.Operation == Operations.Multiplication)
+                            tokens.Remove(mulToken);
+
+                        // imaginary part
+                        var imaginaryToken = tokens.LastOrDefault() as NumberToken;
+                        if (imaginaryToken != null)
+                        {
+                            imaginaryPart = imaginaryToken.Number;
+
+                            tokens.Remove(imaginaryToken);
+                        }
+
+                        // binary +, - or unary -
+                        var operationToken = tokens.LastOrDefault() as OperationToken;
+                        if (operationToken != null)
+                        {
+                            if (tokens.Count >= 2 &&
+                                (operationToken.Operation == Operations.Addition || operationToken.Operation == Operations.Subtraction))
+                            {
+                                var realToken = tokens[tokens.Count - 2] as NumberToken;
+                                if (realToken != null)
+                                {
+                                    realPart = realToken.Number;
+
+                                    if (operationToken.Operation == Operations.Subtraction)
+                                        imaginaryPart = -imaginaryPart;
+
+                                    if (tokens.Count >= 3)
+                                    {
+                                        var unaryRealToken = tokens[tokens.Count - 3] as OperationToken;
+                                        if (unaryRealToken != null && unaryRealToken.Operation == Operations.UnaryMinus)
+                                        {
+                                            realPart = -realPart;
+
+                                            tokens.Remove(unaryRealToken);
+                                        }
+                                    }
+
+                                    tokens.Remove(operationToken);
+                                    tokens.Remove(realToken);
+                                }
+                            }
+                            else if (operationToken.Operation == Operations.UnaryMinus)
+                            {
+                                imaginaryPart = -imaginaryPart;
+
+                                tokens.Remove(operationToken);
+                            }
+                        }
+
+                        if (isDegreeComplex)
+                            tokens.Add(new ComplexNumberToken(Complex.FromPolarCoordinates(realPart, imaginaryPart)));
+                        else
+                            tokens.Add(new ComplexNumberToken(new Complex(realPart, imaginaryPart)));
+
+                        i++;
+                        continue;
+                    }
 
                     int j = i + 1;
                     for (; j < function.Length && (char.IsLetter(function[j]) || char.IsDigit(function[j])) && !notVar.Any(s => function.Substring(j).StartsWith(s, StringComparison.Ordinal)); j++) { }
