@@ -208,6 +208,7 @@
     <Compile Include="Tokens\VariableToken.cs" />
     <Compile Include="Expressions\DefiniteIntegral.cs" />
     <Compile Include="Expressions\RoundUnary.cs" />
+    <Compile Include="Expressions\Mod.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Resource.uk.resx">
