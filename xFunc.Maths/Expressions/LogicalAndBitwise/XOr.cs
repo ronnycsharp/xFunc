@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions.LogicalAndBitwise
 {
@@ -23,6 +25,7 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
     public class XOr : BinaryExpression
     {
 
+        [ExcludeFromCodeCoverage]
         internal XOr() { }
 
         /// <summary>
@@ -31,10 +34,23 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <seealso cref="IExpression"/>
-        public XOr(IExpression left, IExpression right)
-            : base(left, right)
-        {
+        public XOr(IExpression left, IExpression right) : base(left, right) { }
 
+        /// <summary>
+        /// Gets the result type.
+        /// </summary>
+        /// <returns>
+        /// The result type of current expression.
+        /// </returns>
+        protected override ExpressionResultType GetResultType()
+        {
+            if (m_left.ResultType == ExpressionResultType.Number || m_right.ResultType == ExpressionResultType.Number)
+                return ExpressionResultType.Number;
+
+            if (m_left.ResultType == ExpressionResultType.Boolean || m_right.ResultType == ExpressionResultType.Boolean)
+                return ExpressionResultType.Boolean;
+
+            return ExpressionResultType.Number | ExpressionResultType.Boolean;
         }
 
         /// <summary>
@@ -46,18 +62,6 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         public override int GetHashCode()
         {
             return base.GetHashCode(3371, 2833);
-        }
-
-        /// <summary>
-        /// Converts this expression to the equivalent string.
-        /// </summary>
-        /// <returns>The string that represents this expression.</returns>
-        public override string ToString()
-        {
-            if (m_parent is BinaryExpression)
-                return ToString("({0} xor {1})");
-
-            return ToString("{0} xor {1}");
         }
 
         /// <summary>
@@ -73,17 +77,23 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
             var left = m_left.Execute(parameters);
             var right = m_right.Execute(parameters);
 
-#if PORTABLE
             if (left is bool && right is bool)
                 return (bool)left ^ (bool)right;
-            else
-                return (double)((int)Math.Round((double)left) ^ (int)Math.Round((double)right));
-#else
-            if (left is bool && right is bool)
-                return (bool)left ^ (bool)right;
-            else
-                return (double)((int)Math.Round((double)left, MidpointRounding.AwayFromZero) ^ (int)Math.Round((double)right, MidpointRounding.AwayFromZero));
-#endif
+
+            return (double)((int)Math.Round((double)left, MidpointRounding.AwayFromZero) ^ (int)Math.Round((double)right, MidpointRounding.AwayFromZero));
+        }
+
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
         }
 
         /// <summary>
@@ -136,26 +146,6 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
                     if (m_left.ResultType == ExpressionResultType.Boolean)
                         return ExpressionResultType.Boolean;
                 }
-
-                return ExpressionResultType.Number | ExpressionResultType.Boolean;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the result.
-        /// </summary>
-        /// <value>
-        /// The type of the result.
-        /// </value>
-        public override ExpressionResultType ResultType
-        {
-            get
-            {
-                if (m_left.ResultType == ExpressionResultType.Number || m_right.ResultType == ExpressionResultType.Number)
-                    return ExpressionResultType.Number;
-
-                if (m_left.ResultType == ExpressionResultType.Boolean || m_right.ResultType == ExpressionResultType.Boolean)
-                    return ExpressionResultType.Boolean;
 
                 return ExpressionResultType.Number | ExpressionResultType.Boolean;
             }

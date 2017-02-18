@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions.LogicalAndBitwise
 {
@@ -23,6 +25,7 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
     public class Not : UnaryExpression
     {
 
+        [ExcludeFromCodeCoverage]
         internal Not() { }
 
         /// <summary>
@@ -30,10 +33,17 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// </summary>
         /// <param name="expression">The argument of function.</param>
         /// <seealso cref="IExpression"/>
-        public Not(IExpression expression)
-            : base(expression)
-        {
+        public Not(IExpression expression) : base(expression) { }
 
+        /// <summary>
+        /// Gets the result type.
+        /// </summary>
+        /// <returns>
+        /// The result type of current expression.
+        /// </returns>
+        protected override ExpressionResultType GetResultType()
+        {
+            return ExpressionResultType.Boolean;
         }
 
         /// <summary>
@@ -48,15 +58,6 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         }
 
         /// <summary>
-        /// Converts this expression to the equivalent string.
-        /// </summary>
-        /// <returns>The string that represents this expression.</returns>
-        public override string ToString()
-        {
-            return ToString("not({0})");
-        }
-
-        /// <summary>
         /// Executes this bitwise NOT expression.
         /// </summary>
         /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
@@ -68,17 +69,23 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         {
             var arg = m_argument.Execute(parameters);
 
-#if PORTABLE            
             if (arg is bool)
                 return !(bool)arg;
-            else
-                return (double)(~(int)Math.Round((double)arg));
-#else
-            if (arg is bool)
-                return !(bool)arg;
-            else
-                return (double)(~(int)Math.Round((double)arg, MidpointRounding.AwayFromZero));
-#endif
+
+            return (double)(~(int)Math.Round((double)arg, MidpointRounding.AwayFromZero));
+        }
+
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
         }
 
         /// <summary>
@@ -96,27 +103,7 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// <value>
         /// The type of the argument.
         /// </value>
-        public override ExpressionResultType ArgumentType
-        {
-            get
-            {
-                return ExpressionResultType.Number | ExpressionResultType.Boolean;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the result.
-        /// </summary>
-        /// <value>
-        /// The type of the result.
-        /// </value>
-        public override ExpressionResultType ResultType
-        {
-            get
-            {
-                return m_argument.ResultType;
-            }
-        }
+        public override ExpressionResultType ArgumentType => ExpressionResultType.Number | ExpressionResultType.Boolean;
 
     }
 

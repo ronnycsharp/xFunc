@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions.Programming
 {
@@ -23,6 +25,7 @@ namespace xFunc.Maths.Expressions.Programming
     public class DivAssign : BinaryExpression
     {
 
+        [ExcludeFromCodeCoverage]
         internal DivAssign() { }
 
         /// <summary>
@@ -30,19 +33,7 @@ namespace xFunc.Maths.Expressions.Programming
         /// </summary>
         /// <param name="variable">The variable.</param>
         /// <param name="exp">The expression.</param>
-        public DivAssign(IExpression variable, IExpression exp)
-            : base(variable, exp) { }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return ToString("{0} /= {1}");
-        }
+        public DivAssign(IExpression variable, IExpression exp) : base(variable, exp) { }
 
         /// <summary>
         /// Executes this expression.
@@ -63,6 +54,19 @@ namespace xFunc.Maths.Expressions.Programming
             parameters.Variables[var.Name] = newValue;
 
             return newValue;
+        }
+
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
         }
 
         /// <summary>

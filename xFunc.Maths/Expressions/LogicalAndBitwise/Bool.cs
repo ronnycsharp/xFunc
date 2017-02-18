@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using xFunc.Maths.Analyzers;
+using xFunc.Maths.Analyzers.Formatters;
 
 namespace xFunc.Maths.Expressions.LogicalAndBitwise
 {
@@ -22,17 +24,13 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
     /// </summary>
     public class Bool : IExpression
     {
-
-        private IExpression parent;
-        private readonly bool value;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Bool"/> class.
         /// </summary>
         /// <param name="value">The value of this constant.</param>
         public Bool(bool value)
         {
-            this.value = value;
+            this.Value = value;
         }
 
         /// <summary>
@@ -43,7 +41,7 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// </returns>
         public object Execute()
         {
-            return value;
+            return Value;
         }
 
         /// <summary>
@@ -56,7 +54,20 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// <seealso cref="ExpressionParameters" />
         public object Execute(ExpressionParameters parameters)
         {
-            return value;
+            return Value;
+        }
+
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
         }
 
         /// <summary>
@@ -68,7 +79,7 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// </returns>
         public static implicit operator bool(Bool boolean)
         {
-            return boolean.value;
+            return boolean.Value;
         }
 
         /// <summary>
@@ -94,7 +105,7 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         {
             var boolean = obj as Bool;
 
-            return value == boolean?.value;
+            return Value == boolean?.Value;
         }
 
         /// <summary>
@@ -105,7 +116,19 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// </returns>
         public override int GetHashCode()
         {
-            return value.GetHashCode() ^ 7883;
+            return Value.GetHashCode() ^ 7883;
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="formatter">The formatter.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatter formatter)
+        {
+            return this.Analyze(formatter);
         }
 
         /// <summary>
@@ -116,7 +139,7 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// </returns>
         public override string ToString()
         {
-            return value.ToString();
+            return this.ToString(new CommonFormatter());
         }
 
         /// <summary>
@@ -127,23 +150,13 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// </returns>
         public IExpression Clone()
         {
-            return new Bool(value);
+            return new Bool(Value);
         }
 
         /// <summary>
         /// Get or Set the parent expression.
         /// </summary>
-        public IExpression Parent
-        {
-            get
-            {
-                return parent;
-            }
-            set
-            {
-                parent = value;
-            }
-        }
+        public IExpression Parent { get; set; }
 
         /// <summary>
         /// Gets the minimum count of parameters.
@@ -151,13 +164,7 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// <value>
         /// The minimum count of parameters.
         /// </value>
-        public int MinParameters
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public int MinParameters => 0;
 
         /// <summary>
         /// Gets the maximum count of parameters. -1 - Infinity.
@@ -165,13 +172,7 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// <value>
         /// The maximum count of parameters.
         /// </value>
-        public int MaxParameters
-        {
-            get
-            {
-                return -1;
-            }
-        }
+        public int MaxParameters => -1;
 
         /// <summary>
         /// Gets the count of parameters.
@@ -179,13 +180,7 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// <value>
         /// The count of parameters.
         /// </value>
-        public int ParametersCount
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public int ParametersCount => 0;
 
         /// <summary>
         /// Gets the type of the result.
@@ -193,13 +188,18 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// <value>
         /// The type of the result.
         /// </value>
-        public ExpressionResultType ResultType
-        {
-            get
-            {
-                return ExpressionResultType.Boolean;
-            }
-        }
+        /// <remarks>
+        /// Usage of this property can affect performance. Don't use this property each time if you need to check result type of current expression. Just store/cache value only once and use it everywhere.
+        /// </remarks>
+        public ExpressionResultType ResultType => ExpressionResultType.Boolean;
+
+        /// <summary>
+        /// Gets the value of this expression.
+        /// </summary>
+        /// <value>
+        /// The value of this expression.
+        /// </value>
+        public bool Value { get; }
 
     }
 

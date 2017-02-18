@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,9 +13,7 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
-#if !PORTABLE
 using System.Runtime.Serialization;
-#endif
 
 namespace xFunc.Maths
 {
@@ -23,9 +21,7 @@ namespace xFunc.Maths
     /// <summary>
     /// The exception that is thrown in <see cref="Lexer"/>.
     /// </summary>
-#if !PORTABLE
     [Serializable]
-#endif
     public class LexerException : Exception
     {
 
@@ -47,14 +43,12 @@ namespace xFunc.Maths
         /// <param name="inner">The exception that is the cause of the current exception.</param>
         public LexerException(string message, Exception inner) : base(message, inner) { }
         
-#if !PORTABLE
         /// <summary>
         /// Initializes a new instance of the <see cref="LexerException"/> class with serialized data.
         /// </summary>
         /// <param name="info">The object that holds the serialized object data.</param>
         /// <param name="context">The contextual information about the source or destination.</param>
         protected LexerException(SerializationInfo info, StreamingContext context) : base(info, context) { }
-#endif
 
     }
 

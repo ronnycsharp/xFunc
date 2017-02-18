@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -34,9 +34,17 @@ namespace xFunc.Maths.Expressions.Trigonometric
         /// Initializes a new instance of the <see cref="TrigonometricExpression"/> class.
         /// </summary>
         /// <param name="expression">The argument of function.</param>
-        protected TrigonometricExpression(IExpression expression)
-            : base(expression)
+        protected TrigonometricExpression(IExpression expression) : base(expression) { }
+
+        /// <summary>
+        /// Gets the result type.
+        /// </summary>
+        /// <returns>
+        /// The result type of current expression.
+        /// </returns>
+        protected override ExpressionResultType GetResultType()
         {
+            return m_argument.ResultType;
         }
 
         /// <summary>
@@ -85,8 +93,10 @@ namespace xFunc.Maths.Expressions.Trigonometric
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            if (ResultType == ExpressionResultType.ComplexNumber)
+            var resultType = this.ResultType;
+            if (resultType == ExpressionResultType.ComplexNumber)
                 return ExecuteComplex(parameters);
+
             if (parameters == null || parameters.AngleMeasurement == AngleMeasurement.Degree)
                 return ExecuteDergee(parameters);
             if (parameters.AngleMeasurement == AngleMeasurement.Radian)
@@ -103,27 +113,7 @@ namespace xFunc.Maths.Expressions.Trigonometric
         /// <value>
         /// The type of the argument.
         /// </value>
-        public override ExpressionResultType ArgumentType
-        {
-            get
-            {
-                return ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the result.
-        /// </summary>
-        /// <value>
-        /// The type of the result.
-        /// </value>
-        public override ExpressionResultType ResultType
-        {
-            get
-            {
-                return m_argument.ResultType;
-            }
-        }
+        public override ExpressionResultType ArgumentType => ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
 
     }
 

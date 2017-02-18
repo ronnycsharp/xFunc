@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,9 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions
 {
@@ -24,6 +26,7 @@ namespace xFunc.Maths.Expressions
     public class Exp : UnaryExpression
     {
 
+        [ExcludeFromCodeCoverage]
         internal Exp() { }
 
         /// <summary>
@@ -33,12 +36,17 @@ namespace xFunc.Maths.Expressions
         public Exp(IExpression expression) : base(expression) { }
 
         /// <summary>
-        /// Converts this expression to the equivalent string.
+        /// Gets the result type.
         /// </summary>
-        /// <returns>The string that represents this expression.</returns>
-        public override string ToString()
+        /// <returns>
+        /// The result type of current expression.
+        /// </returns>
+        protected override ExpressionResultType GetResultType()
         {
-            return ToString("exp({0})");
+            if (m_argument.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber))
+                return ExpressionResultType.ComplexNumber;
+
+            return ExpressionResultType.Number;
         }
 
         /// <summary>
@@ -51,12 +59,26 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
+            var resultType = this.ResultType;
             var result = m_argument.Execute(parameters);
 
-            if (ResultType == ExpressionResultType.ComplexNumber)
-                return Complex.Exp(result is Complex ? (Complex)result : (double)result);
+            if (resultType == ExpressionResultType.ComplexNumber)
+                return Complex.Exp(result as Complex? ?? (double)result);
 
             return Math.Exp((double)result);
+        }
+
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
         }
 
         /// <summary>
@@ -85,30 +107,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The type of the argument.
         /// </value>
-        public override ExpressionResultType ArgumentType
-        {
-            get
-            {
-                return ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the result.
-        /// </summary>
-        /// <value>
-        /// The type of the result.
-        /// </value>
-        public override ExpressionResultType ResultType
-        {
-            get
-            {
-                if (m_argument.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber))
-                    return ExpressionResultType.ComplexNumber;
-
-                return ExpressionResultType.Number;
-            }
-        }
+        public override ExpressionResultType ArgumentType => ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
 
     }
 

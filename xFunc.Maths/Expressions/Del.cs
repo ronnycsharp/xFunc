@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,9 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using xFunc.Maths.Analyzers;
 using xFunc.Maths.Expressions.Matrices;
 
 namespace xFunc.Maths.Expressions
@@ -26,17 +28,24 @@ namespace xFunc.Maths.Expressions
     public class Del : UnaryExpression
     {
 
-        private IDifferentiator differentiator;
-
+        [ExcludeFromCodeCoverage]
         internal Del() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Del"/> class.
         /// </summary>
         /// <param name="expression">The expression.</param>
-        public Del(IExpression expression)
-            : base(expression)
+        public Del(IExpression expression) : base(expression) { }
+
+        /// <summary>
+        /// Gets the result type.
+        /// </summary>
+        /// <returns>
+        /// The result type of current expression.
+        /// </returns>
+        protected override ExpressionResultType GetResultType()
         {
+            return ExpressionResultType.Expression;
         }
 
         /// <summary>
@@ -51,17 +60,6 @@ namespace xFunc.Maths.Expressions
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return ToString("del({0})");
-        }
-
-        /// <summary>
         /// Executes this expression.
         /// </summary>
         /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
@@ -72,16 +70,35 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            if (differentiator == null)
-                throw new ArgumentNullException(nameof(differentiator));
+            if (Differentiator == null)
+                throw new ArgumentNullException(nameof(Differentiator));
 
             var variables = Helpers.GetAllVariables(m_argument).ToList();
             var vector = new Vector(variables.Count);
 
-            for (int i = 0; i < variables.Count; i++)
-                vector[i] = differentiator.Differentiate(m_argument, variables[i]);
+            Differentiator.Parameters = parameters;
+
+            for (var i = 0; i < variables.Count; i++)
+            {
+                Differentiator.Variable = variables[i];
+
+                vector[i] = m_argument.Analyze(Differentiator).Analyze(Simplifier);
+            }
 
             return vector;
+        }
+
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
         }
 
         /// <summary>
@@ -101,27 +118,15 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The type of the argument.
         /// </value>
-        public override ExpressionResultType ArgumentType
-        {
-            get
-            {
-                return ExpressionResultType.All;
-            }
-        }
+        public override ExpressionResultType ArgumentType => ExpressionResultType.All;
 
         /// <summary>
-        /// Gets the type of the result.
+        /// Gets or sets the simplifier.
         /// </summary>
         /// <value>
-        /// The type of the result.
+        /// The simplifier.
         /// </value>
-        public override ExpressionResultType ResultType
-        {
-            get
-            {
-                return ExpressionResultType.Expression;
-            }
-        }
+        public ISimplifier Simplifier { get; set; }
 
         /// <summary>
         /// Gets or sets the differentiator.
@@ -129,17 +134,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The differentiator.
         /// </value>
-        public IDifferentiator Differentiator
-        {
-            get
-            {
-                return differentiator;
-            }
-            set
-            {
-                differentiator = value;
-            }
-        }
+        public IDifferentiator Differentiator { get; set; }
 
     }
 

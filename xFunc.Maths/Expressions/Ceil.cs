@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions
 {
@@ -23,14 +25,14 @@ namespace xFunc.Maths.Expressions
     public class Ceil : UnaryExpression
     {
 
+        [ExcludeFromCodeCoverage]
         internal Ceil() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Ceil" /> class.
         /// </summary>
         /// <param name="argument">The expression that represents a double-precision floating-point number to be rounded up.</param>
-        public Ceil(IExpression argument)
-            : base(argument) { }
+        public Ceil(IExpression argument) : base(argument) { }
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -44,17 +46,6 @@ namespace xFunc.Maths.Expressions
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return ToString("ceil({0})");
-        }
-
-        /// <summary>
         /// Executes this expression.
         /// </summary>
         /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
@@ -65,6 +56,19 @@ namespace xFunc.Maths.Expressions
         public override object Execute(ExpressionParameters parameters)
         {
             return Math.Ceiling((double)m_argument.Execute(parameters));
+        }
+
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
         }
 
         /// <summary>

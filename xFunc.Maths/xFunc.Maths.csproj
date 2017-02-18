@@ -43,8 +43,15 @@
     <Compile Include="..\SharedCode\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Analyzers\Analyzer.cs" />
+    <Compile Include="Analyzers\Differentiator.cs" />
+    <Compile Include="Analyzers\Formatters\CommonFormatter.cs" />
+    <Compile Include="Analyzers\Formatters\IFormatter.cs" />
+    <Compile Include="Analyzers\IAnalyzer.cs" />
+    <Compile Include="Analyzers\Simplifier.cs" />
     <Compile Include="Builder.cs" />
     <Compile Include="DefaultDependencyResolver.cs" />
+    <Compile Include="Expressions\CachedResultTypeExpression.cs" />
     <Compile Include="Expressions\Ceil.cs" />
     <Compile Include="Expressions\ComplexNumbers\ComplexNumber.cs" />
     <Compile Include="Expressions\ComplexNumbers\Conjugate.cs" />
@@ -60,6 +67,7 @@
     <Compile Include="Expressions\Floor.cs" />
     <Compile Include="Expressions\GCD.cs" />
     <Compile Include="Expressions\Hyperbolic\HyperbolicExpression.cs" />
+    <Compile Include="Expressions\IChangedExpession.cs" />
     <Compile Include="Expressions\LCM.cs" />
     <Compile Include="Expressions\Collections\FunctionCollection.cs" />
     <Compile Include="Expressions\Collections\Parameter.cs" />
@@ -82,7 +90,8 @@
     <Compile Include="Expressions\Del.cs" />
     <Compile Include="Expressions\Mod.cs" />
     <Compile Include="Expressions\ParameterTypeMismatchException.cs" />
-    <Compile Include="Expressions\Product.cs" />
+    <Compile Include="Expressions\Statistical\Count.cs" />
+    <Compile Include="Expressions\Statistical\Product.cs" />
     <Compile Include="Expressions\Programming\AddAssign.cs" />
     <Compile Include="Expressions\Programming\And.cs" />
     <Compile Include="Expressions\Programming\Dec.cs" />
@@ -103,16 +112,22 @@
     <Compile Include="Expressions\ReverseFunctionAttribute.cs" />
     <Compile Include="Expressions\Round.cs" />
     <Compile Include="Expressions\Simplify.cs" />
-    <Compile Include="Expressions\Sum.cs" />
+    <Compile Include="Expressions\Statistical\Avg.cs" />
+    <Compile Include="Expressions\Statistical\Max.cs" />
+    <Compile Include="Expressions\Statistical\Min.cs" />
+    <Compile Include="Expressions\Statistical\Varp.cs" />
+    <Compile Include="Expressions\Statistical\Var.cs" />
+    <Compile Include="Expressions\Statistical\Stdevp.cs" />
+    <Compile Include="Expressions\Statistical\Stdev.cs" />
+    <Compile Include="Expressions\Statistical\Sum.cs" />
     <Compile Include="ComplexExtensions.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="IDependencyResolver.cs" />
-    <Compile Include="IDifferentiator.cs" />
+    <Compile Include="Analyzers\IDifferentiator.cs" />
     <Compile Include="IExpressionFactory.cs" />
     <Compile Include="InvalidResultException.cs" />
     <Compile Include="IParser.cs" />
-    <Compile Include="ISimplifier.cs" />
-    <Compile Include="Differentiator.cs" />
+    <Compile Include="Analyzers\ISimplifier.cs" />
     <Compile Include="ExpressionFactory.cs" />
     <Compile Include="LexerException.cs" />
     <Compile Include="ParserException.cs" />
@@ -184,7 +199,6 @@
       <DependentUpon>Resource.uk.resx</DependentUpon>
     </Compile>
     <Compile Include="Results\ComplexNumberResult.cs" />
-    <Compile Include="Simplifier.cs" />
     <Compile Include="NumeralSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\Resource.Designer.cs">

@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,14 @@ namespace xFunc.Tests.Converters
     {
 
         private TemperatureConverter conv = new TemperatureConverter();
+
+        [Fact]
+        public void ConvertToSame()
+        {
+            var value = conv.Convert(12, TemperatureUnits.Celsius, TemperatureUnits.Celsius);
+
+            Assert.Equal(12, value);
+        }
 
         [Fact]
         public void FromCToF()

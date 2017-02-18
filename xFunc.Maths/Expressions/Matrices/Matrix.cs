@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,8 +13,10 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions.Matrices
 {
@@ -25,10 +27,8 @@ namespace xFunc.Maths.Expressions.Matrices
     public class Matrix : DifferentParametersExpression
     {
 
-        internal Matrix()
-            : base(null, -1)
-        {
-        }
+        [ExcludeFromCodeCoverage]
+        internal Matrix() : base(null, -1) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Matrix"/> class.
@@ -99,26 +99,6 @@ namespace xFunc.Maths.Expressions.Matrices
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
-        /// </summary>
-        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool Equals(object obj)
-        {
-            if (this == obj)
-                return true;
-
-            if (obj == null || this.GetType() != obj.GetType())
-                return false;
-
-            var matrix = (Matrix)obj;
-
-            return this.countOfParams == matrix.countOfParams && this.m_arguments.SequenceEqual(matrix.m_arguments);
-        }
-
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
@@ -129,29 +109,11 @@ namespace xFunc.Maths.Expressions.Matrices
             return base.GetHashCode(743, 3863);
         }
 
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-
-            sb.Append('{');
-            foreach (var item in m_arguments)
-                sb.Append(item).Append(", ");
-            sb.Remove(sb.Length - 2, 2).Append('}');
-
-            return sb.ToString();
-        }
-
         private Vector[] CalculateMatrix(ExpressionParameters parameters)
         {
-            var args = new Vector[this.countOfParams];
+            var args = new Vector[this.ParametersCount];
 
-            for (int i = 0; i < this.ParametersCount; i++)
+            for (var i = 0; i < this.ParametersCount; i++)
                 if (!(m_arguments[i] is Vector) && m_arguments[i].ResultType == ExpressionResultType.Matrix)
                     args[i] = (Vector)m_arguments[i].Execute(parameters);
                 else
@@ -175,6 +137,19 @@ namespace xFunc.Maths.Expressions.Matrices
         }
 
         /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
+        }
+
+        /// <summary>
         /// Clones this instance of the <see cref="IExpression" />.
         /// </summary>
         /// <returns>
@@ -182,18 +157,13 @@ namespace xFunc.Maths.Expressions.Matrices
         /// </returns>
         public override IExpression Clone()
         {
-            return new Matrix((Vector[])CloneArguments());
+            return new Matrix(Array.ConvertAll(CloneArguments(), x => (Vector)x));
         }
 
         internal double[][] ToCalculatedArray(ExpressionParameters parameters)
         {
-#if !PORTABLE
             return (from vector in m_arguments.AsParallel().AsOrdered()
                     select ((Vector)vector).ToCalculatedArray(parameters)).ToArray();
-#else
-            return (from vector in m_arguments
-                    select ((Vector)vector).ToCalculatedArray(parameters)).ToArray();
-#endif
         }
 
         /// <summary>
@@ -204,9 +174,9 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <exception cref="System.ArgumentOutOfRangeException"><paramref name="firstIndex"/> or <paramref name="secondIndex"/> is out of range.</exception>
         public void SwapRows(int firstIndex, int secondIndex)
         {
-            if (firstIndex < 0 || firstIndex >= countOfParams)
+            if (firstIndex < 0 || firstIndex >= ParametersCount)
                 throw new ArgumentException();
-            if (secondIndex < 0 || secondIndex >= countOfParams)
+            if (secondIndex < 0 || secondIndex >= ParametersCount)
                 throw new ArgumentException();
 
             var temp = m_arguments[firstIndex];
@@ -222,9 +192,9 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <exception cref="System.ArgumentOutOfRangeException"><paramref name="firstIndex"/> or <paramref name="secondIndex"/> is out of range.</exception>
         public void SwapColumns(int firstIndex, int secondIndex)
         {
-            if (firstIndex < 0 || firstIndex >= countOfParams)
+            if (firstIndex < 0 || firstIndex >= ParametersCount)
                 throw new ArgumentOutOfRangeException();
-            if (secondIndex < 0 || secondIndex >= countOfParams)
+            if (secondIndex < 0 || secondIndex >= ParametersCount)
                 throw new ArgumentOutOfRangeException();
 
             foreach (Vector item in m_arguments)
@@ -244,9 +214,9 @@ namespace xFunc.Maths.Expressions.Matrices
         {
             var matrix = new Matrix(sizeOfMatrix, sizeOfMatrix);
 
-            for (int i = 0; i < sizeOfMatrix; i++)
+            for (var i = 0; i < sizeOfMatrix; i++)
             {
-                for (int j = 0; j < sizeOfMatrix; j++)
+                for (var j = 0; j < sizeOfMatrix; j++)
                     matrix[i][j] = new Number(0);
 
                 matrix[i][i] = new Number(1);
@@ -290,7 +260,7 @@ namespace xFunc.Maths.Expressions.Matrices
             get
             {
                 var results = new ExpressionResultType[m_arguments?.Length ?? MinParameters];
-                for (int i = 0; i < results.Length; i++)
+                for (var i = 0; i < results.Length; i++)
                     results[i] = ExpressionResultType.Vector;
 
                 return results;
@@ -303,13 +273,7 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <value>
         /// The size of vectors.
         /// </value>
-        public int SizeOfVectors
-        {
-            get
-            {
-                return m_arguments[0].ParametersCount;
-            }
-        }
+        public int SizeOfVectors => m_arguments[0].ParametersCount;
 
         /// <summary>
         /// Gets the minimum count of parameters.
@@ -317,13 +281,7 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <value>
         /// The minimum count of parameters.
         /// </value>
-        public override int MinParameters
-        {
-            get
-            {
-                return 1;
-            }
-        }
+        public override int MinParameters => 1;
 
         /// <summary>
         /// Gets the maximum count of parameters. -1 - Infinity.
@@ -331,13 +289,7 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <value>
         /// The maximum count of parameters.
         /// </value>
-        public override int MaxParameters
-        {
-            get
-            {
-                return -1;
-            }
-        }
+        public override int MaxParameters => -1;
 
         /// <summary>
         /// Gets a value indicating whether matrix is square.
@@ -345,13 +297,7 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <value>
         ///   <c>true</c> if matrix is square; otherwise, <c>false</c>.
         /// </value>
-        public bool IsSquare
-        {
-            get
-            {
-                return this.countOfParams == this.SizeOfVectors;
-            }
-        }
+        public bool IsSquare => this.ParametersCount == this.SizeOfVectors;
 
         /// <summary>
         /// Gets the type of the result.
@@ -359,13 +305,10 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <value>
         /// The type of the result.
         /// </value>
-        public override ExpressionResultType ResultType
-        {
-            get
-            {
-                return ExpressionResultType.Matrix;
-            }
-        }
+        /// <remarks>
+        /// Usage of this property can affect performance. Don't use this property each time if you need to check result type of current expression. Just store/cache value only once and use it everywhere.
+        /// </remarks>
+        public override ExpressionResultType ResultType => ExpressionResultType.Matrix;
 
     }
 

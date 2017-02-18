@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,8 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
+using xFunc.Maths.Analyzers;
 using xFunc.Maths.Expressions.Collections;
 
 namespace xFunc.Maths.Expressions
@@ -27,19 +28,8 @@ namespace xFunc.Maths.Expressions
 
         private string function;
 
-        internal UserFunction()
-            : this(null, null, -1)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserFunction"/> class.
-        /// </summary>
-        /// <param name="function">The name of function.</param>
-        internal UserFunction(string function)
-            : this(function, null, -1)
-        {
-        }
+        [ExcludeFromCodeCoverage]
+        internal UserFunction() : this(null, null, -1) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserFunction"/> class.
@@ -59,7 +49,7 @@ namespace xFunc.Maths.Expressions
         {
             this.function = function;
             this.m_arguments = args;
-            this.countOfParams = countOfParams;
+            this.ParametersCount = countOfParams;
         }
 
         /// <summary>
@@ -70,7 +60,7 @@ namespace xFunc.Maths.Expressions
         public override bool Equals(object obj)
         {
             var exp = obj as UserFunction;
-            if (exp != null && this.function == exp.function && this.countOfParams == exp.countOfParams)
+            if (exp != null && this.function == exp.function && this.ParametersCount == exp.ParametersCount)
                 return true;
 
             return false;
@@ -87,35 +77,9 @@ namespace xFunc.Maths.Expressions
             int hash = 1721;
 
             hash = (hash * 5701) + function.GetHashCode();
-            hash = (hash * 5701) + countOfParams.GetHashCode();
+            hash = (hash * 5701) + ParametersCount.GetHashCode();
 
             return hash;
-        }
-
-        /// <summary>
-        /// Converts this expression to the equivalent string.
-        /// </summary>
-        /// <returns>The string that represents this expression.</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-
-            sb.Append(function).Append('(');
-            if (m_arguments != null && m_arguments.Length > 0)
-            {
-                foreach (var item in m_arguments)
-                    sb.Append(item).Append(", ");
-                sb.Remove(sb.Length - 2, 2);
-            }
-            else if (countOfParams > 0)
-            {
-                for (int i = 1; i <= countOfParams; i++)
-                    sb.AppendFormat("x{0}, ", i);
-                sb.Remove(sb.Length - 2, 2);
-            }
-            sb.Append(')');
-
-            return sb.ToString();
         }
 
         /// <summary>
@@ -135,7 +99,7 @@ namespace xFunc.Maths.Expressions
             var func = parameters.Functions.GetKeyByKey(this);
 
             var newParameters = new ParameterCollection(parameters.Variables.Collection);
-            for (int i = 0; i < m_arguments.Length; i++)
+            for (var i = 0; i < m_arguments.Length; i++)
             {
                 var arg = func.Arguments[i] as Variable;
                 newParameters[arg.Name] = (double)this.m_arguments[i].Execute(parameters);
@@ -146,25 +110,32 @@ namespace xFunc.Maths.Expressions
         }
 
         /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
+        }
+
+        /// <summary>
         /// Clones this instance.
         /// </summary>
         /// <returns>Returns the new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
         public override IExpression Clone()
         {
-            return new UserFunction(function, m_arguments, countOfParams);
+            return new UserFunction(function, m_arguments, ParametersCount);
         }
 
         /// <summary>
         /// Gets the name of function.
         /// </summary>
         /// <value>The name of function.</value>
-        public string Function
-        {
-            get
-            {
-                return function;
-            }
-        }
+        public string Function => function;
 
         /// <summary>
         /// Gets the minimum count of parameters. -1 - Infinity.
@@ -172,13 +143,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The minimum count of parameters.
         /// </value>
-        public override int MinParameters
-        {
-            get
-            {
-                return countOfParams;
-            }
-        }
+        public override int MinParameters => ParametersCount;
 
         /// <summary>
         /// Gets the maximum count of parameters. -1 - Infinity.
@@ -186,13 +151,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The maximum count of parameters.
         /// </value>
-        public override int MaxParameters
-        {
-            get
-            {
-                return countOfParams;
-            }
-        }
+        public override int MaxParameters => ParametersCount;
 
         /// <summary>
         /// Gets the type of the result.
@@ -200,13 +159,10 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The type of the result.
         /// </value>
-        public override ExpressionResultType ResultType
-        {
-            get
-            {
-                return ExpressionResultType.All;
-            }
-        }
+        /// <remarks>
+        /// Usage of this property can affect performance. Don't use this property each time if you need to check result type of current expression. Just store/cache value only once and use it everywhere.
+        /// </remarks>
+        public override ExpressionResultType ResultType => ExpressionResultType.All;
 
     }
 

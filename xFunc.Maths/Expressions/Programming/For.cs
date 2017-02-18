@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions.Programming
 {
@@ -23,6 +25,7 @@ namespace xFunc.Maths.Expressions.Programming
     public class For : DifferentParametersExpression
     {
 
+        [ExcludeFromCodeCoverage]
         internal For() : base(null, -1) { }
 
         /// <summary>
@@ -32,8 +35,7 @@ namespace xFunc.Maths.Expressions.Programming
         /// <param name="init">The initializer section.</param>
         /// <param name="cond">The condition section.</param>
         /// <param name="iter">The itererator section.</param>
-        public For(IExpression body, IExpression init, IExpression cond, IExpression iter)
-            : base(new[] { body, init, cond, iter }, 4) { }
+        public For(IExpression body, IExpression init, IExpression cond, IExpression iter) : base(new[] { body, init, cond, iter }, 4) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="For" /> class.
@@ -49,17 +51,6 @@ namespace xFunc.Maths.Expressions.Programming
                 throw new ArgumentNullException(nameof(arguments));
             if (arguments.Length != countOfParams)
                 throw new ArgumentException();
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return base.ToString("for");
         }
 
         /// <summary>
@@ -79,6 +70,19 @@ namespace xFunc.Maths.Expressions.Programming
         }
 
         /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
+        }
+
+        /// <summary>
         /// Clones this instance of the <see cref="For" />.
         /// </summary>
         /// <returns>
@@ -86,7 +90,7 @@ namespace xFunc.Maths.Expressions.Programming
         /// </returns>
         public override IExpression Clone()
         {
-            return new For(CloneArguments(), countOfParams);
+            return new For(CloneArguments(), ParametersCount);
         }
 
         /// <summary>
@@ -179,6 +183,9 @@ namespace xFunc.Maths.Expressions.Programming
         /// <value>
         /// The type of the result.
         /// </value>
+        /// <remarks>
+        /// Usage of this property can affect performance. Don't use this property each time if you need to check result type of current expression. Just store/cache value only once and use it everywhere.
+        /// </remarks>
         public override ExpressionResultType ResultType
         {
             get

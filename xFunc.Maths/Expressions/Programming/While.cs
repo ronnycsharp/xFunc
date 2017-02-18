@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions.Programming
 {
@@ -23,6 +25,7 @@ namespace xFunc.Maths.Expressions.Programming
     public class While : BinaryExpression
     {
 
+        [ExcludeFromCodeCoverage]
         internal While() { }
 
         /// <summary>
@@ -30,18 +33,17 @@ namespace xFunc.Maths.Expressions.Programming
         /// </summary>
         /// <param name="body">The body of while loop.</param>
         /// <param name="condition">The condition of loop.</param>
-        public While(IExpression body, IExpression condition)
-            : base(body, condition) { }
+        public While(IExpression body, IExpression condition) : base(body, condition) { }
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Gets the result type.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// The result type of current expression.
         /// </returns>
-        public override string ToString()
+        protected override ExpressionResultType GetResultType()
         {
-            return ToString("while({0}, {1})");
+            return ExpressionResultType.Undefined;
         }
 
         /// <summary>
@@ -61,6 +63,19 @@ namespace xFunc.Maths.Expressions.Programming
         }
 
         /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
+        }
+
+        /// <summary>
         /// Creates the clone of this instance.
         /// </summary>
         /// <returns>
@@ -77,13 +92,7 @@ namespace xFunc.Maths.Expressions.Programming
         /// <value>
         /// The type of the left parameter.
         /// </value>
-        public override ExpressionResultType LeftType
-        {
-            get
-            {
-                return ExpressionResultType.All;
-            }
-        }
+        public override ExpressionResultType LeftType => ExpressionResultType.All;
 
         /// <summary>
         /// Gets the type of the right parameter.
@@ -91,28 +100,7 @@ namespace xFunc.Maths.Expressions.Programming
         /// <value>
         /// The type of the right parameter.
         /// </value>
-        public override ExpressionResultType RightType
-        {
-            get
-            {
-                return ExpressionResultType.Boolean;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the result.
-        /// </summary>
-        /// <value>
-        /// The type of the result.
-        /// </value>
-        public override ExpressionResultType ResultType
-        {
-            get
-            {
-                return ExpressionResultType.Undefined;
-            }
-        }
-
+        public override ExpressionResultType RightType => ExpressionResultType.Boolean;
     }
 
 }

@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,9 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions.Trigonometric
 {
@@ -25,17 +27,14 @@ namespace xFunc.Maths.Expressions.Trigonometric
     public class Arcsec : TrigonometricExpression
     {
 
+        [ExcludeFromCodeCoverage]
         internal Arcsec() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Arcsec"/> class.
         /// </summary>
         /// <param name="expression">The argument of function.</param>
-        public Arcsec(IExpression expression)
-            : base(expression)
-        {
-
-        }
+        public Arcsec(IExpression expression) : base(expression) { }
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -46,15 +45,6 @@ namespace xFunc.Maths.Expressions.Trigonometric
         public override int GetHashCode()
         {
             return base.GetHashCode(6257);
-        }
-
-        /// <summary>
-        /// Converts this expression to the equivalent string.
-        /// </summary>
-        /// <returns>The string that represents this expression.</returns>
-        public override string ToString()
-        {
-            return ToString("arcsec({0})");
         }
 
         /// <summary>
@@ -106,6 +96,19 @@ namespace xFunc.Maths.Expressions.Trigonometric
         protected override Complex ExecuteComplex(ExpressionParameters parameters)
         {
             return ComplexExtensions.Asec((Complex)m_argument.Execute(parameters));
+        }
+
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
         }
 
         /// <summary>

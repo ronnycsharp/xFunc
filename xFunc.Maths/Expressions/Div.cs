@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,9 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions
 {
@@ -24,6 +26,7 @@ namespace xFunc.Maths.Expressions
     public class Div : BinaryExpression
     {
 
+        [ExcludeFromCodeCoverage]
         internal Div() { }
 
         /// <summary>
@@ -34,15 +37,18 @@ namespace xFunc.Maths.Expressions
         public Div(IExpression left, IExpression right) : base(left, right) { }
 
         /// <summary>
-        /// Converts this expression to the equivalent string.
+        /// Gets the result type.
         /// </summary>
-        /// <returns>The string that represents this expression.</returns>
-        public override string ToString()
+        /// <returns>
+        /// The result type of current expression.
+        /// </returns>
+        protected override ExpressionResultType GetResultType()
         {
-            if (m_parent is BinaryExpression)
-                return ToString("({0} / {1})");
+            if ((m_left.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber) && m_left.ResultType != ExpressionResultType.All) ||
+                (m_right.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber) && m_right.ResultType != ExpressionResultType.All))
+                return ExpressionResultType.ComplexNumber;
 
-            return ToString("{0} / {1}");
+            return ExpressionResultType.Number;
         }
 
         /// <summary>
@@ -55,18 +61,33 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
+            var resultType = this.ResultType;
+
             var leftResult = m_left.Execute(parameters);
             var rightResult = m_right.Execute(parameters);
 
-            if (ResultType == ExpressionResultType.ComplexNumber)
+            if (resultType == ExpressionResultType.ComplexNumber)
             {
-                var leftComplex = leftResult is Complex ? (Complex)leftResult : (double)leftResult;
-                var rightComplex = rightResult is Complex ? (Complex)rightResult : (double)rightResult;
+                var leftComplex = leftResult as Complex? ?? (double)leftResult;
+                var rightComplex = rightResult as Complex? ?? (double)rightResult;
 
                 return Complex.Divide(leftComplex, rightComplex);
             }
 
             return (double)leftResult / (double)rightResult;
+        }
+
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
         }
 
         /// <summary>
@@ -95,13 +116,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The type of the left parameter.
         /// </value>
-        public override ExpressionResultType LeftType
-        {
-            get
-            {
-                return ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
-            }
-        }
+        public override ExpressionResultType LeftType => ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
 
         /// <summary>
         /// Gets the type of the right parameter.
@@ -109,31 +124,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The type of the right parameter.
         /// </value>
-        public override ExpressionResultType RightType
-        {
-            get
-            {
-                return ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the result.
-        /// </summary>
-        /// <value>
-        /// The type of the result.
-        /// </value>
-        public override ExpressionResultType ResultType
-        {
-            get
-            {
-                if ((m_left.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber) && m_left.ResultType != ExpressionResultType.All) ||
-                    (m_right.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber) && m_right.ResultType != ExpressionResultType.All))
-                    return ExpressionResultType.ComplexNumber;
-
-                return ExpressionResultType.Number;
-            }
-        }
+        public override ExpressionResultType RightType => ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
 
     }
 

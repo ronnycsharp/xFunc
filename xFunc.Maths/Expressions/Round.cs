@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions
 {
@@ -23,23 +25,21 @@ namespace xFunc.Maths.Expressions
     public class Round : DifferentParametersExpression
     {
 
-        internal Round()
-            : base(null, -1) { }
+        [ExcludeFromCodeCoverage]
+        internal Round() : base(null, -1) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Round"/> class.
         /// </summary>
         /// <param name="argument">The expression that represents a double-precision floating-point number to be rounded.</param>
-        public Round(IExpression argument) :
-            this(new[] { argument }, 1) { }
+        public Round(IExpression argument) : this(new[] { argument }, 1) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Round"/> class.
         /// </summary>
         /// <param name="argument">The expression that represents a double-precision floating-point number to be rounded.</param>
         /// <param name="digits">The expression that represents the number of fractional digits in the return value.</param>
-        public Round(IExpression argument, IExpression digits) :
-            this(new[] { argument, digits }, 2) { }
+        public Round(IExpression argument, IExpression digits) : this(new[] { argument, digits }, 2) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Round"/> class.
@@ -69,17 +69,6 @@ namespace xFunc.Maths.Expressions
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return base.ToString("round");
-        }
-
-        /// <summary>
         /// Executes this expression.
         /// </summary>
         /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
@@ -92,11 +81,20 @@ namespace xFunc.Maths.Expressions
             var arg = (double)Argument.Execute(parameters);
             var digits = Digits != null ? (int)(double)Digits.Execute(parameters) : 0;
 
-#if PORTABLE
-            return Math.Round(arg, digits);
-#else
             return Math.Round(arg, digits, MidpointRounding.AwayFromZero);
-#endif
+        }
+
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
         }
 
         /// <summary>
@@ -107,7 +105,7 @@ namespace xFunc.Maths.Expressions
         /// </returns>
         public override IExpression Clone()
         {
-            return new Round(CloneArguments(), countOfParams);
+            return new Round(CloneArguments(), ParametersCount);
         }
 
         /// <summary>
@@ -116,13 +114,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The minimum count of parameters.
         /// </value>
-        public override int MinParameters
-        {
-            get
-            {
-                return 1;
-            }
-        }
+        public override int MinParameters => 1;
 
         /// <summary>
         /// Gets the maximum count of parameters. -1 - Infinity.
@@ -130,13 +122,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The maximum count of parameters.
         /// </value>
-        public override int MaxParameters
-        {
-            get
-            {
-                return 2;
-            }
-        }
+        public override int MaxParameters => 2;
 
         /// <summary>
         /// The expression that represents a double-precision floating-point number to be rounded.
@@ -144,13 +130,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The expression that represents a double-precision floating-point number to be rounded.
         /// </value>
-        public IExpression Argument
-        {
-            get
-            {
-                return m_arguments[0];
-            }
-        }
+        public IExpression Argument => m_arguments[0];
 
         /// <summary>
         /// The expression that represents the number of fractional digits in the return value.
@@ -158,13 +138,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The expression that represents the number of fractional digits in the return value.
         /// </value>
-        public IExpression Digits
-        {
-            get
-            {
-                return countOfParams == 2 ? m_arguments[1] : null;
-            }
-        }
+        public IExpression Digits => ParametersCount == 2 ? m_arguments[1] : null;
 
         /// <summary>
         /// Gets the arguments types.
@@ -176,7 +150,7 @@ namespace xFunc.Maths.Expressions
         {
             get
             {
-                if (countOfParams == 2)
+                if (ParametersCount == 2)
                     return new[]
                     {
                         ExpressionResultType.Number,

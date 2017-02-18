@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,9 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using xFunc.Maths.Analyzers;
 using xFunc.Maths.Expressions.Matrices;
 
 namespace xFunc.Maths.Expressions
@@ -25,6 +27,7 @@ namespace xFunc.Maths.Expressions
     public class Mul : BinaryExpression
     {
 
+        [ExcludeFromCodeCoverage]
         internal Mul() { }
 
         /// <summary>
@@ -33,6 +36,30 @@ namespace xFunc.Maths.Expressions
         /// <param name="left">The first (left) operand.</param>
         /// <param name="right">The second (right) operand.</param>
         public Mul(IExpression left, IExpression right) : base(left, right) { }
+
+        /// <summary>
+        /// Gets the result type.
+        /// </summary>
+        /// <returns>
+        /// The result type of current expression.
+        /// </returns>
+        protected override ExpressionResultType GetResultType()
+        {
+            if ((m_left.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber) && m_left.ResultType != ExpressionResultType.All) ||
+                (m_right.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber) && m_right.ResultType != ExpressionResultType.All))
+                return ExpressionResultType.ComplexNumber;
+
+            if (m_left.ResultType.HasFlagNI(ExpressionResultType.Number) && m_right.ResultType.HasFlagNI(ExpressionResultType.Number))
+                return ExpressionResultType.Number;
+
+            if (m_left.ResultType == ExpressionResultType.Matrix || m_right.ResultType == ExpressionResultType.Matrix)
+                return ExpressionResultType.Matrix;
+
+            if (m_right.ResultType == ExpressionResultType.Vector || m_left.ResultType == ExpressionResultType.Vector)
+                return ExpressionResultType.Vector;
+            
+            return ExpressionResultType.Number | ExpressionResultType.ComplexNumber | ExpressionResultType.Vector | ExpressionResultType.Matrix;
+        }
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -46,18 +73,6 @@ namespace xFunc.Maths.Expressions
         }
 
         /// <summary>
-        /// Converts this expression to the equivalent string.
-        /// </summary>
-        /// <returns>The string that represents this expression.</returns>
-        public override string ToString()
-        {
-            if (m_parent is BinaryExpression && !(m_parent is Mul))
-                return ToString("({0} * {1})");
-
-            return ToString("{0} * {1}");
-        }
-
-        /// <summary>
         /// Executes this expression.
         /// </summary>
         /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
@@ -68,13 +83,17 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            if (ResultType == ExpressionResultType.Matrix || ResultType == ExpressionResultType.Vector)
+            var resultType = this.ResultType;
+            if (resultType == ExpressionResultType.Matrix || resultType == ExpressionResultType.Vector)
             {
                 var temp = m_left.Execute(parameters);
-                var leftExpResult = temp is IExpression ? (IExpression)temp : new Number((double)temp);
+                var leftExpResult = temp as IExpression ?? new Number((double)temp);
 
                 temp = m_right.Execute(parameters);
-                var rightExpResult = temp is IExpression ? (IExpression)temp : new Number((double)temp);
+                var rightExpResult = temp as IExpression ?? new Number((double)temp);
+
+                if (leftExpResult is Vector && rightExpResult is Vector)
+                    return ((Vector)leftExpResult).Cross((Vector)rightExpResult, parameters);
 
                 if (leftExpResult is Vector)
                 {
@@ -102,15 +121,28 @@ namespace xFunc.Maths.Expressions
             var leftResult = m_left.Execute(parameters);
             var rightResult = m_right.Execute(parameters);
 
-            if (ResultType == ExpressionResultType.ComplexNumber)
+            if (resultType == ExpressionResultType.ComplexNumber)
             {
-                var leftComplex = leftResult is Complex ? (Complex)leftResult : (double)leftResult;
-                var rightComplex = rightResult is Complex ? (Complex)rightResult : (double)rightResult;
+                var leftComplex = leftResult as Complex? ?? (double)leftResult;
+                var rightComplex = rightResult as Complex? ?? (double)rightResult;
 
                 return Complex.Multiply(leftComplex, rightComplex);
             }
 
             return (double)leftResult * (double)rightResult;
+        }
+
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
         }
 
         /// <summary>
@@ -133,7 +165,7 @@ namespace xFunc.Maths.Expressions
             get
             {
                 if (m_right != null && m_right.ResultType == ExpressionResultType.Vector)
-                    return ExpressionResultType.Number | ExpressionResultType.Matrix;
+                    return ExpressionResultType.Number | ExpressionResultType.Vector | ExpressionResultType.Matrix;
 
                 return ExpressionResultType.Number | ExpressionResultType.ComplexNumber | ExpressionResultType.Vector | ExpressionResultType.Matrix;
             }
@@ -150,35 +182,7 @@ namespace xFunc.Maths.Expressions
             get
             {
                 if (m_left != null && m_left.ResultType == ExpressionResultType.Vector)
-                    return ExpressionResultType.Number | ExpressionResultType.Matrix;
-
-                return ExpressionResultType.Number | ExpressionResultType.ComplexNumber | ExpressionResultType.Vector | ExpressionResultType.Matrix;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the result.
-        /// </summary>
-        /// <value>
-        /// The type of the result.
-        /// </value>
-        public override ExpressionResultType ResultType
-        {
-            get
-            {
-                if ((m_left.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber) && m_left.ResultType != ExpressionResultType.All) ||
-                    (m_right.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber) && m_right.ResultType != ExpressionResultType.All))
-                    return ExpressionResultType.ComplexNumber;
-
-                if (m_left.ResultType.HasFlagNI(ExpressionResultType.Number) && m_right.ResultType.HasFlagNI(ExpressionResultType.Number))
-                    return ExpressionResultType.Number;
-
-                if ((m_left.ResultType.HasFlagNI(ExpressionResultType.Number) && m_right.ResultType == ExpressionResultType.Vector) ||
-                    (m_right.ResultType.HasFlagNI(ExpressionResultType.Number) && m_left.ResultType == ExpressionResultType.Vector))
-                    return ExpressionResultType.Vector;
-
-                if (m_left.ResultType == ExpressionResultType.Matrix || m_right.ResultType == ExpressionResultType.Matrix)
-                    return ExpressionResultType.Matrix;
+                    return ExpressionResultType.Number | ExpressionResultType.Vector | ExpressionResultType.Matrix;
 
                 return ExpressionResultType.Number | ExpressionResultType.ComplexNumber | ExpressionResultType.Vector | ExpressionResultType.Matrix;
             }

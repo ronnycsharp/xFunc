@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions.Programming
 {
@@ -23,6 +25,7 @@ namespace xFunc.Maths.Expressions.Programming
     public class If : DifferentParametersExpression
     {
 
+        [ExcludeFromCodeCoverage]
         internal If() : base(null, -1) { }
 
         /// <summary>
@@ -30,9 +33,7 @@ namespace xFunc.Maths.Expressions.Programming
         /// </summary>
         /// <param name="condition">The condition.</param>
         /// <param name="then">The "then" statement.</param>
-        public If(IExpression condition, IExpression then)
-            : base(new[] { condition, then }, 2)
-        { }
+        public If(IExpression condition, IExpression then) : base(new[] { condition, then }, 2) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="If"/> class.
@@ -40,9 +41,7 @@ namespace xFunc.Maths.Expressions.Programming
         /// <param name="condition">The condition.</param>
         /// <param name="then">The "then" statement.</param>
         /// <param name="else">The "else" statement.</param>
-        public If(IExpression condition, IExpression then, IExpression @else)
-            : base(new[] { condition, then, @else }, 3)
-        { }
+        public If(IExpression condition, IExpression then, IExpression @else) : base(new[] { condition, then, @else }, 3) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="If"/> class.
@@ -56,17 +55,6 @@ namespace xFunc.Maths.Expressions.Programming
                 throw new ArgumentNullException(nameof(arguments));
             if (arguments.Length != countOfParams)
                 throw new ArgumentException();
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return ToString("if");
         }
 
         /// <summary>
@@ -88,6 +76,19 @@ namespace xFunc.Maths.Expressions.Programming
         }
 
         /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
+        }
+
+        /// <summary>
         /// Clones this instance of the <see cref="If" />.
         /// </summary>
         /// <returns>
@@ -95,7 +96,7 @@ namespace xFunc.Maths.Expressions.Programming
         /// </returns>
         public override IExpression Clone()
         {
-            return new If(CloneArguments(), countOfParams);
+            return new If(CloneArguments(), ParametersCount);
         }
 
         /// <summary>
@@ -104,13 +105,7 @@ namespace xFunc.Maths.Expressions.Programming
         /// <value>
         /// The minimum count of parameters.
         /// </value>
-        public override int MinParameters
-        {
-            get
-            {
-                return 2;
-            }
-        }
+        public override int MinParameters => 2;
 
         /// <summary>
         /// Gets the maximum count of parameters. -1 - Infinity.
@@ -118,13 +113,7 @@ namespace xFunc.Maths.Expressions.Programming
         /// <value>
         /// The maximum count of parameters.
         /// </value>
-        public override int MaxParameters
-        {
-            get
-            {
-                return 3;
-            }
-        }
+        public override int MaxParameters => 3;
 
         /// <summary>
         /// Gets the condition.
@@ -132,13 +121,7 @@ namespace xFunc.Maths.Expressions.Programming
         /// <value>
         /// The condition.
         /// </value>
-        public IExpression Condition
-        {
-            get
-            {
-                return m_arguments[0];
-            }
-        }
+        public IExpression Condition => m_arguments[0];
 
         /// <summary>
         /// Gets the "then" statement.
@@ -146,13 +129,7 @@ namespace xFunc.Maths.Expressions.Programming
         /// <value>
         /// The then.
         /// </value>
-        public IExpression Then
-        {
-            get
-            {
-                return m_arguments[1];
-            }
-        }
+        public IExpression Then => m_arguments[1];
 
         /// <summary>
         /// Gets the "else" statement.
@@ -160,13 +137,7 @@ namespace xFunc.Maths.Expressions.Programming
         /// <value>
         /// The else.
         /// </value>
-        public IExpression Else
-        {
-            get
-            {
-                return countOfParams == 3 ? m_arguments[2] : null;
-            }
-        }
+        public IExpression Else => ParametersCount == 3 ? m_arguments[2] : null;
 
         /// <summary>
         /// Gets the type of the result.
@@ -174,6 +145,9 @@ namespace xFunc.Maths.Expressions.Programming
         /// <value>
         /// The type of the result.
         /// </value>
+        /// <remarks>
+        /// Usage of this property can affect performance. Don't use this property each time if you need to check result type of current expression. Just store/cache value only once and use it everywhere.
+        /// </remarks>
         public override ExpressionResultType ResultType
         {
             get
@@ -196,7 +170,7 @@ namespace xFunc.Maths.Expressions.Programming
         {
             get
             {
-                if (countOfParams == 3)
+                if (ParametersCount == 3)
                     return new[]
                     {
                         ExpressionResultType.Boolean, // Condition

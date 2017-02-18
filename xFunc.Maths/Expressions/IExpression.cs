@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using xFunc.Maths.Analyzers;
+using xFunc.Maths.Analyzers.Formatters;
 
 namespace xFunc.Maths.Expressions
 {
@@ -35,6 +37,22 @@ namespace xFunc.Maths.Expressions
         /// <returns>A result of the execution.</returns>
         /// <seealso cref="ExpressionParameters"/>
         object Execute(ExpressionParameters parameters);
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="formatter">The formatter.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        string ToString(IFormatter formatter);
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>The analysis result.</returns>
+        TResult Analyze<TResult>(IAnalyzer<TResult> analyzer);
 
         /// <summary>
         /// Clones this instance of the <see cref="IExpression"/>.
@@ -68,13 +86,16 @@ namespace xFunc.Maths.Expressions
         /// The count of parameters.
         /// </value>
         int ParametersCount { get; }
-        
+
         /// <summary>
         /// Gets the type of the result.
         /// </summary>
         /// <value>
         /// The type of the result.
         /// </value>
+        /// <remarks>
+        /// Usage of this property can affect performance. Don't use this property each time if you need to check result type of current expression. Just store/cache value only once and use it everywhere.
+        /// </remarks>
         ExpressionResultType ResultType { get; }
 
     }

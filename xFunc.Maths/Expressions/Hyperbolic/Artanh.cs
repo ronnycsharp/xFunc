@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,9 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions.Hyperbolic
 {
@@ -25,17 +27,14 @@ namespace xFunc.Maths.Expressions.Hyperbolic
     public class Artanh : HyperbolicExpression
     {
 
+        [ExcludeFromCodeCoverage]
         internal Artanh() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Artanh"/> class.
         /// </summary>
         /// <param name="expression">The argument of function.</param>
-        public Artanh(IExpression expression)
-            : base(expression)
-        {
-
-        }
+        public Artanh(IExpression expression) : base(expression) { }
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -49,12 +48,16 @@ namespace xFunc.Maths.Expressions.Hyperbolic
         }
 
         /// <summary>
-        /// Converts this expression to the equivalent string.
+        /// Executes this expression.
         /// </summary>
-        /// <returns>The string that represents this expression.</returns>
-        public override string ToString()
+        /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
+        /// <returns>
+        /// A result of the execution.
+        /// </returns>
+        /// <seealso cref="ExpressionParameters" />
+        protected override Complex ExecuteComplex(ExpressionParameters parameters)
         {
-            return ToString("artanh({0})");
+            return ComplexExtensions.Atanh((Complex)m_argument.Execute(parameters));
         }
 
         /// <summary>
@@ -65,13 +68,22 @@ namespace xFunc.Maths.Expressions.Hyperbolic
         /// A result of the execution.
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
-        public override object Execute(ExpressionParameters parameters)
+        protected override double ExecuteNumber(ExpressionParameters parameters)
         {
-            var result = m_argument.Execute(parameters);
-            if (ResultType == ExpressionResultType.ComplexNumber)
-                return ComplexExtensions.Atanh((Complex)result);
+            return MathExtensions.Atanh((double)m_argument.Execute(parameters));
+        }
 
-            return MathExtensions.Atanh((double)result);
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
         }
 
         /// <summary>

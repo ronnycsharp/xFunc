@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,9 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions.ComplexNumbers
 {
@@ -25,15 +27,24 @@ namespace xFunc.Maths.Expressions.ComplexNumbers
     public class Phase : UnaryExpression
     {
 
+        [ExcludeFromCodeCoverage]
         internal Phase() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Phase"/> class.
         /// </summary>
         /// <param name="argument">The expression.</param>
-        public Phase(IExpression argument)
-            : base(argument)
+        public Phase(IExpression argument) : base(argument) { }
+
+        /// <summary>
+        /// Gets the result type.
+        /// </summary>
+        /// <returns>
+        /// The result type of current expression.
+        /// </returns>
+        protected override ExpressionResultType GetResultType()
         {
+            return ExpressionResultType.Number;
         }
 
         /// <summary>
@@ -48,17 +59,6 @@ namespace xFunc.Maths.Expressions.ComplexNumbers
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return base.ToString("phase({0})");
-        }
-
-        /// <summary>
         /// Executes this expression.
         /// </summary>
         /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
@@ -69,6 +69,19 @@ namespace xFunc.Maths.Expressions.ComplexNumbers
         public override object Execute(ExpressionParameters parameters)
         {
             return ((Complex)m_argument.Execute(parameters)).Phase;
+        }
+
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
         }
 
         /// <summary>
@@ -86,27 +99,7 @@ namespace xFunc.Maths.Expressions.ComplexNumbers
         /// <value>
         /// The count of parameters.
         /// </value>
-        public override ExpressionResultType ArgumentType
-        {
-            get
-            {
-                return ExpressionResultType.ComplexNumber;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the result.
-        /// </summary>
-        /// <value>
-        /// The type of the result.
-        /// </value>
-        public override ExpressionResultType ResultType
-        {
-            get
-            {
-                return ExpressionResultType.Number;
-            }
-        }
+        public override ExpressionResultType ArgumentType => ExpressionResultType.ComplexNumber;
 
     }
 

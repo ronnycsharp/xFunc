@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
 // limitations under the License.
 using System;
 using System.Linq;
-using System.Text;
+using xFunc.Maths.Analyzers;
+using xFunc.Maths.Analyzers.Formatters;
 using xFunc.Maths.Resources;
 
 namespace xFunc.Maths.Expressions
@@ -27,26 +28,15 @@ namespace xFunc.Maths.Expressions
     {
 
         /// <summary>
-        /// The parent expression of this expression.
-        /// </summary>
-        protected IExpression m_parent;
-        /// <summary>
         /// The arguments.
         /// </summary>
         protected IExpression[] m_arguments;
-        /// <summary>
-        /// The count of parameters.
-        /// </summary>
-        protected int countOfParams;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DifferentParametersExpression"/> class.
         /// </summary>
         /// <param name="countOfParams">The count of parameters.</param>
-        protected DifferentParametersExpression(int countOfParams)
-            : this(null, countOfParams)
-        {
-        }
+        protected DifferentParametersExpression(int countOfParams) : this(null, countOfParams) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DifferentParametersExpression" /> class.
@@ -55,8 +45,46 @@ namespace xFunc.Maths.Expressions
         /// <param name="countOfParams">The count of parameters.</param>
         protected DifferentParametersExpression(IExpression[] arguments, int countOfParams)
         {
-            this.countOfParams = countOfParams;
+            this.ParametersCount = countOfParams;
             this.Arguments = arguments;
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            if (this == obj)
+                return true;
+
+            if (obj == null || this.GetType() != obj.GetType())
+                return false;
+
+            var diff = (DifferentParametersExpression)obj;
+
+            if (this.m_arguments == null && diff.m_arguments == null)
+                return true;
+
+            if (this.m_arguments == null || diff.m_arguments == null ||
+                this.m_arguments.Length != diff.m_arguments.Length)
+                return false;
+
+            return this.m_arguments.SequenceEqual(diff.m_arguments);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
+        {
+            return GetHashCode(7951, 8807);
         }
 
         /// <summary>
@@ -75,24 +103,24 @@ namespace xFunc.Maths.Expressions
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
-        /// <param name="function">The function.</param>
+        /// <param name="formatter">The formatter.</param>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
-        protected string ToString(string function)
+        public string ToString(IFormatter formatter)
         {
-            var sb = new StringBuilder();
+            return this.Analyze(formatter);
+        }
 
-            sb.Append(function).Append('(');
-            if (m_arguments != null)
-            {
-                foreach (var item in m_arguments)
-                    sb.Append(item).Append(", ");
-                sb.Remove(sb.Length - 2, 2);
-            }
-            sb.Append(')');
-
-            return sb.ToString();
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            return this.ToString(new CommonFormatter());
         }
 
         /// <summary>
@@ -117,6 +145,16 @@ namespace xFunc.Maths.Expressions
         public abstract object Execute(ExpressionParameters parameters);
 
         /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public abstract TResult Analyze<TResult>(IAnalyzer<TResult> analyzer);
+
+        /// <summary>
         /// Clones this instance of the <see cref="IExpression" />.
         /// </summary>
         /// <returns>
@@ -131,7 +169,7 @@ namespace xFunc.Maths.Expressions
         protected IExpression[] CloneArguments()
         {
             var args = new IExpression[m_arguments.Length];
-            for (int i = 0; i < m_arguments.Length; i++)
+            for (var i = 0; i < m_arguments.Length; i++)
                 args[i] = m_arguments[i].Clone();
 
             return args;
@@ -140,17 +178,7 @@ namespace xFunc.Maths.Expressions
         /// <summary>
         /// Get or Set the parent expression.
         /// </summary>
-        public IExpression Parent
-        {
-            get
-            {
-                return m_parent;
-            }
-            set
-            {
-                m_parent = value;
-            }
-        }
+        public IExpression Parent { get; set; }
 
         /// <summary>
         /// Gets or sets the arguments.
@@ -171,7 +199,7 @@ namespace xFunc.Maths.Expressions
                     if (m_arguments.Length != types.Length)
                         throw new ArgumentException(Resource.InvalidExpression);
 
-                    for (int i = 0; i < m_arguments.Length; i++)
+                    for (var i = 0; i < m_arguments.Length; i++)
                     {
                         var item = m_arguments[i];
 
@@ -198,7 +226,7 @@ namespace xFunc.Maths.Expressions
             get
             {
                 var results = new ExpressionResultType[m_arguments?.Length ?? MinParameters];
-                for (int i = 0; i < results.Length; i++)
+                for (var i = 0; i < results.Length; i++)
                     results[i] = ExpressionResultType.All;
 
                 return results;
@@ -227,17 +255,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The count of parameters.
         /// </value>
-        public int ParametersCount
-        {
-            get
-            {
-                return countOfParams;
-            }
-            set
-            {
-                countOfParams = value;
-            }
-        }
+        public int ParametersCount { get; set; }
 
         /// <summary>
         /// Gets the type of the result.
@@ -245,13 +263,10 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The type of the result.
         /// </value>
-        public virtual ExpressionResultType ResultType
-        {
-            get
-            {
-                return ExpressionResultType.Number;
-            }
-        }
+        /// <remarks>
+        /// Usage of this property can affect performance. Don't use this property each time if you need to check result type of current expression. Just store/cache value only once and use it everywhere.
+        /// </remarks>
+        public virtual ExpressionResultType ResultType => ExpressionResultType.Number;
 
     }
 

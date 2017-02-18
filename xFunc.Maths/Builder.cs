@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using xFunc.Maths.Analyzers;
+using xFunc.Maths.Analyzers.Formatters;
 using xFunc.Maths.Expressions;
 using xFunc.Maths.Expressions.Hyperbolic;
 using xFunc.Maths.Expressions.Trigonometric;
@@ -61,6 +63,18 @@ namespace xFunc.Maths
         public Builder(string variable)
         {
             Init(variable);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="formatter">The formatter.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatter formatter)
+        {
+            return this.Analyze(formatter);
         }
 
         /// <summary>
@@ -857,6 +871,19 @@ namespace xFunc.Maths
         public object Execute(ExpressionParameters parameters)
         {
             return current.Execute(parameters);
+        }
+
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return this.current.Analyze(analyzer);
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,9 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions
 {
@@ -24,10 +26,8 @@ namespace xFunc.Maths.Expressions
     public class GCD : DifferentParametersExpression
     {
 
-        internal GCD()
-            : base(null, -1)
-        {
-        }
+        [ExcludeFromCodeCoverage]
+        internal GCD() : base(null, -1) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GCD"/> class.
@@ -50,10 +50,7 @@ namespace xFunc.Maths.Expressions
         /// </summary>
         /// <param name="firstMathExpression">The first operand.</param>
         /// <param name="secondMathExpression">The second operand.</param>
-        public GCD(IExpression firstMathExpression, IExpression secondMathExpression)
-            : base(new[] { firstMathExpression, secondMathExpression }, 2)
-        {
-        }
+        public GCD(IExpression firstMathExpression, IExpression secondMathExpression) : base(new[] { firstMathExpression, secondMathExpression }, 2) { }
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -64,15 +61,6 @@ namespace xFunc.Maths.Expressions
         public override int GetHashCode()
         {
             return base.GetHashCode(2087, 1283);
-        }
-
-        /// <summary>
-        /// Converts this expression to the equivalent string.
-        /// </summary>
-        /// <returns>The string that represents this expression.</returns>
-        public override string ToString()
-        {
-            return base.ToString("gcd");
         }
 
         /// <summary>
@@ -91,6 +79,19 @@ namespace xFunc.Maths.Expressions
         }
 
         /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
+        }
+
+        /// <summary>
         /// Clones this instance of the <see cref="GCD"/>.
         /// </summary>
         /// <returns>Returns the new instance of <see cref="GCD"/> that is a clone of this instance.</returns>
@@ -105,13 +106,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The minimum count of parameters.
         /// </value>
-        public override int MinParameters
-        {
-            get
-            {
-                return 2;
-            }
-        }
+        public override int MinParameters => 2;
 
         /// <summary>
         /// Gets the maximum count of parameters. -1 - Infinity.
@@ -119,13 +114,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The maximum count of parameters.
         /// </value>
-        public override int MaxParameters
-        {
-            get
-            {
-                return -1;
-            }
-        }
+        public override int MaxParameters => -1;
 
     }
 

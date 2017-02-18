@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,26 @@ namespace xFunc.Maths.Tokens
     public enum Functions
     {
 
+        /// <summary>
+        /// The Add function
+        /// </summary>
+        Add,
+        /// <summary>
+        /// The Sub function
+        /// </summary>
+        Sub,
+        /// <summary>
+        /// The Mul function
+        /// </summary>
+        Mul,
+        /// <summary>
+        /// The Div function
+        /// </summary>
+        Div,
+        /// <summary>
+        /// The Pow function
+        /// </summary>
+        Pow,
         /// <summary>
         /// abs
         /// </summary>
@@ -276,7 +296,40 @@ namespace xFunc.Maths.Tokens
         /// <summary>
         /// The user function
         /// </summary>
-        UserFunction
+        UserFunction,
+
+        /// <summary>
+        /// The Min function
+        /// </summary>
+        Min,
+        /// <summary>
+        /// The Max function
+        /// </summary>
+        Max,
+        /// <summary>
+        /// The Avg function
+        /// </summary>
+        Avg,
+        /// <summary>
+        /// The Count function
+        /// </summary>
+        Count,
+        /// <summary>
+        /// The VAR function
+        /// </summary>
+        Var,
+        /// <summary>
+        /// The VARP function
+        /// </summary>
+        Varp,
+        /// <summary>
+        /// The STDEV function
+        /// </summary>
+        Stdev,
+        /// <summary>
+        /// The STDEVP function
+        /// </summary>
+        Stdevp
 
     }
 

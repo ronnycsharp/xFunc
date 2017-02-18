@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -163,6 +163,20 @@ namespace xFunc.Tests
         }
 
         [Fact]
+        public void SubAlt()
+        {
+            var tokens = lexer.Tokenize("2 − 2");
+
+            var expected = new List<IToken>()
+            {
+                new NumberToken(2),
+                new OperationToken(Operations.Subtraction),
+                new NumberToken(2)
+            };
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
         public void SubAfterOpenBracket()
         {
             var tokens = lexer.Tokenize("(-2)");
@@ -224,6 +238,20 @@ namespace xFunc.Tests
         public void Mul()
         {
             var tokens = lexer.Tokenize("2 * 2");
+
+            var expected = new List<IToken>()
+            {
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new NumberToken(2)
+            };
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void MulAlt()
+        {
+            var tokens = lexer.Tokenize("2 × 2");
 
             var expected = new List<IToken>()
             {
@@ -381,6 +409,21 @@ namespace xFunc.Tests
         public void EqualitySymbolTest1()
         {
             var tokens = lexer.Tokenize("true <-> false");
+
+            var expected = new List<IToken>()
+            {
+                new BooleanToken(true),
+                new OperationToken(Operations.Equality),
+                new BooleanToken(false)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void EqualitySymbolTestAlt1()
+        {
+            var tokens = lexer.Tokenize("true <−> false");
 
             var expected = new List<IToken>()
             {
@@ -1252,36 +1295,6 @@ namespace xFunc.Tests
         }
 
         [Fact]
-        public void BinError1()
-        {
-            Assert.Throws<FormatException>(() => lexer.Tokenize("0b*01100110"));
-        }
-
-        [Fact]
-        public void BinError2()
-        {
-            Assert.Throws<ArgumentException>(() => lexer.Tokenize("0b-01100110"));
-        }
-
-        [Fact]
-        public void HexError1()
-        {
-            Assert.Throws<FormatException>(() => lexer.Tokenize("0x*FF00"));
-        }
-
-        [Fact]
-        public void HexError2()
-        {
-            Assert.Throws<ArgumentException>(() => lexer.Tokenize("0x-FF00"));
-        }
-
-        [Fact]
-        public void HexError3()
-        {
-            Assert.Throws<FormatException>(() => lexer.Tokenize("0xJFF00"));
-        }
-
-        [Fact]
         public void GCDTest()
         {
             var tokens = lexer.Tokenize("gcd(12, 16)");
@@ -2074,18 +2087,6 @@ namespace xFunc.Tests
         }
 
         [Fact]
-        public void IncPrefixTest()
-        {
-            Assert.Throws<LexerException>(() => lexer.Tokenize("++x"));
-        }
-
-        [Fact]
-        public void IncWithNumFail()
-        {
-            Assert.Throws<LexerException>(() => lexer.Tokenize("2++"));
-        }
-
-        [Fact]
         public void DecTest()
         {
             var tokens = lexer.Tokenize("x--");
@@ -2097,18 +2098,6 @@ namespace xFunc.Tests
             };
 
             Assert.Equal(expected, tokens.ToList());
-        }
-
-        [Fact]
-        public void DecPrefixTest()
-        {
-            Assert.Throws<LexerException>(() => lexer.Tokenize("--x"));
-        }
-
-        [Fact]
-        public void DecWithNumFail()
-        {
-            Assert.Throws<LexerException>(() => lexer.Tokenize("2--"));
         }
 
         [Fact]
@@ -2127,12 +2116,6 @@ namespace xFunc.Tests
         }
 
         [Fact]
-        public void AddAssignNotVarFail()
-        {
-            Assert.Throws<LexerException>(() => lexer.Tokenize("sin(x) += 2"));
-        }
-
-        [Fact]
         public void SubAssign()
         {
             var tokens = lexer.Tokenize("x -= 2");
@@ -2145,12 +2128,6 @@ namespace xFunc.Tests
             };
 
             Assert.Equal(expected, tokens.ToList());
-        }
-
-        [Fact]
-        public void SubAssignNotVarFail()
-        {
-            Assert.Throws<LexerException>(() => lexer.Tokenize("sin(x) -= 2"));
         }
 
         [Fact]
@@ -2169,12 +2146,6 @@ namespace xFunc.Tests
         }
 
         [Fact]
-        public void MulAssignNotVarFail()
-        {
-            Assert.Throws<LexerException>(() => lexer.Tokenize("sin(x) *= 2"));
-        }
-
-        [Fact]
         public void DivAssign()
         {
             var tokens = lexer.Tokenize("x /= 2");
@@ -2187,12 +2158,6 @@ namespace xFunc.Tests
             };
 
             Assert.Equal(expected, tokens.ToList());
-        }
-
-        [Fact]
-        public void DivAssignNotVarFail()
-        {
-            Assert.Throws<LexerException>(() => lexer.Tokenize("sin(x) /= 2"));
         }
 
         [Fact]
@@ -2298,7 +2263,11 @@ namespace xFunc.Tests
 
             var expected = new List<IToken>
             {
-                new ComplexNumberToken(new Complex(3, 2))
+                new NumberToken(3),
+                new OperationToken(Operations.Addition),
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne),
             };
 
             Assert.Equal(expected, tokens.ToList());
@@ -2311,7 +2280,11 @@ namespace xFunc.Tests
 
             var expected = new List<IToken>
             {
-                new ComplexNumberToken(new Complex(3, -2))
+                new NumberToken(3),
+                new OperationToken(Operations.Subtraction),
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne)
             };
 
             Assert.Equal(expected, tokens.ToList());
@@ -2324,7 +2297,12 @@ namespace xFunc.Tests
 
             var expected = new List<IToken>
             {
-                new ComplexNumberToken(new Complex(-3, -2))
+                new OperationToken(Operations.UnaryMinus),
+                new NumberToken(3),
+                new OperationToken(Operations.Subtraction),
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne),
             };
 
             Assert.Equal(expected, tokens.ToList());
@@ -2337,7 +2315,11 @@ namespace xFunc.Tests
 
             var expected = new List<IToken>
             {
-                new ComplexNumberToken(new Complex(3, 0))
+                new NumberToken(3),
+                new OperationToken(Operations.Addition),
+                new NumberToken(0),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne),
             };
 
             Assert.Equal(expected, tokens.ToList());
@@ -2350,7 +2332,9 @@ namespace xFunc.Tests
 
             var expected = new List<IToken>
             {
-                new ComplexNumberToken(new Complex(0, 2))
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne)
             };
 
             Assert.Equal(expected, tokens.ToList());
@@ -2363,7 +2347,10 @@ namespace xFunc.Tests
 
             var expected = new List<IToken>
             {
-                new ComplexNumberToken(new Complex(0, -2))
+                new OperationToken(Operations.UnaryMinus),
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne)
             };
 
             Assert.Equal(expected, tokens.ToList());
@@ -2376,7 +2363,7 @@ namespace xFunc.Tests
 
             var expected = new List<IToken>
             {
-                new ComplexNumberToken(new Complex(0, 1))
+                new ComplexNumberToken(Complex.ImaginaryOne)
             };
 
             Assert.Equal(expected, tokens.ToList());
@@ -2389,7 +2376,9 @@ namespace xFunc.Tests
 
             var expected = new List<IToken>
             {
-                new ComplexNumberToken(new Complex(2, 1))
+                new NumberToken(2),
+                new OperationToken(Operations.Addition),
+                new ComplexNumberToken(Complex.ImaginaryOne)
             };
 
             Assert.Equal(expected, tokens.ToList());
@@ -2404,7 +2393,9 @@ namespace xFunc.Tests
             {
                 new VariableToken("x"),
                 new OperationToken(Operations.Subtraction),
-                new ComplexNumberToken(new Complex(0, 2))
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne)
             };
 
             Assert.Equal(expected, tokens.ToList());
@@ -2419,7 +2410,11 @@ namespace xFunc.Tests
             {
                 new VariableToken("x"),
                 new OperationToken(Operations.Addition),
-                new ComplexNumberToken(new Complex(3, -2))
+                new NumberToken(3),
+                new OperationToken(Operations.Subtraction),
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne),
             };
 
             Assert.Equal(expected, tokens.ToList());
@@ -2447,7 +2442,11 @@ namespace xFunc.Tests
             {
                 new FunctionToken(Functions.Im, 1),
                 new SymbolToken(Symbols.OpenBracket),
-                new ComplexNumberToken(new Complex(3, -2)),
+                new NumberToken(3),
+                new OperationToken(Operations.Subtraction),
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne),
                 new SymbolToken(Symbols.CloseBracket)
             };
 
@@ -2463,7 +2462,11 @@ namespace xFunc.Tests
             {
                 new FunctionToken(Functions.Im, 1),
                 new SymbolToken(Symbols.OpenBracket),
-                new ComplexNumberToken(new Complex(3, -2)),
+                new NumberToken(3),
+                new OperationToken(Operations.Subtraction),
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne),
                 new SymbolToken(Symbols.CloseBracket)
             };
 
@@ -2479,7 +2482,11 @@ namespace xFunc.Tests
             {
                 new FunctionToken(Functions.Re, 1),
                 new SymbolToken(Symbols.OpenBracket),
-                new ComplexNumberToken(new Complex(3, -2)),
+                new NumberToken(3),
+                new OperationToken(Operations.Subtraction),
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne),
                 new SymbolToken(Symbols.CloseBracket)
             };
 
@@ -2495,7 +2502,11 @@ namespace xFunc.Tests
             {
                 new FunctionToken(Functions.Re, 1),
                 new SymbolToken(Symbols.OpenBracket),
-                new ComplexNumberToken(new Complex(3, -2)),
+                new NumberToken(3),
+                new OperationToken(Operations.Subtraction),
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne),
                 new SymbolToken(Symbols.CloseBracket)
             };
 
@@ -2511,7 +2522,11 @@ namespace xFunc.Tests
             {
                 new FunctionToken(Functions.Phase, 1),
                 new SymbolToken(Symbols.OpenBracket),
-                new ComplexNumberToken(new Complex(3, -2)),
+                new NumberToken(3),
+                new OperationToken(Operations.Subtraction),
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne),
                 new SymbolToken(Symbols.CloseBracket)
             };
 
@@ -2527,7 +2542,11 @@ namespace xFunc.Tests
             {
                 new FunctionToken(Functions.Conjugate, 1),
                 new SymbolToken(Symbols.OpenBracket),
-                new ComplexNumberToken(new Complex(3, -2)),
+                new NumberToken(3),
+                new OperationToken(Operations.Subtraction),
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne),
                 new SymbolToken(Symbols.CloseBracket)
             };
 
@@ -2543,7 +2562,11 @@ namespace xFunc.Tests
             {
                 new FunctionToken(Functions.Reciprocal, 1),
                 new SymbolToken(Symbols.OpenBracket),
-                new ComplexNumberToken(new Complex(3, -2)),
+                new NumberToken(3),
+                new OperationToken(Operations.Subtraction),
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne),
                 new SymbolToken(Symbols.CloseBracket)
             };
 
@@ -2557,7 +2580,11 @@ namespace xFunc.Tests
 
             var expected = new List<IToken>
             {
-                new ComplexNumberToken(new Complex(3, -2)),
+                new NumberToken(3),
+                new OperationToken(Operations.Subtraction),
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne),
                 new OperationToken(Operations.Exponentiation),
                 new NumberToken(2)
             };
@@ -2587,12 +2614,130 @@ namespace xFunc.Tests
 
             var expected = new List<IToken>
             {
-                new ComplexNumberToken(new Complex(3, -2)),
+                new NumberToken(3),
+                new OperationToken(Operations.Subtraction),
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne),
                 new OperationToken(Operations.Exponentiation),
-                new ComplexNumberToken(new Complex(2, 3))
+                new NumberToken(2),
+                new OperationToken(Operations.Addition),
+                new NumberToken(3),
+                new OperationToken(Operations.Multiplication),
+                new ComplexNumberToken(Complex.ImaginaryOne)
             };
 
             Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void ComplexPolarPosPosTest()
+        {
+            var tokens = lexer.Tokenize("2.3 + 7.1°");
+
+            var expected = new List<IToken>
+            {
+                new ComplexNumberToken(Complex.FromPolarCoordinates(2.3, 7.1))
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void ComplexPolarPosNegTest()
+        {
+            var tokens = lexer.Tokenize("2.3 - 7.1°");
+
+            var expected = new List<IToken>
+            {
+                new ComplexNumberToken(Complex.FromPolarCoordinates(2.3, -7.1))
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void ComplexPolarNegNegTest()
+        {
+            var tokens = lexer.Tokenize("-2.3 - 7.1°");
+
+            var expected = new List<IToken>
+            {
+                new ComplexNumberToken(Complex.FromPolarCoordinates(-2.3, -7.1))
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void ComplexPolarPhaseTest()
+        {
+            var tokens = lexer.Tokenize("7.1°");
+
+            var expected = new List<IToken>
+            {
+                new ComplexNumberToken(Complex.FromPolarCoordinates(0, 7.1))
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void ComplexPolarNegPhaseTest()
+        {
+            var tokens = lexer.Tokenize("-7.1°");
+
+            var expected = new List<IToken>
+            {
+                new ComplexNumberToken(Complex.FromPolarCoordinates(0, -7.1))
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void ComplexPolarMagnitudeTest()
+        {
+            var tokens = lexer.Tokenize("2.3 + 0°");
+
+            var expected = new List<IToken>
+            {
+                new ComplexNumberToken(Complex.FromPolarCoordinates(2.3, 0))
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void ComplexPolarNegMagnitudeTest()
+        {
+            var tokens = lexer.Tokenize("-2.3 + 0°");
+
+            var expected = new List<IToken>
+            {
+                new ComplexNumberToken(Complex.FromPolarCoordinates(-2.3, 0))
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void ComplexPolarTest()
+        {
+            var tokens = lexer.Tokenize("10 ∠ 45°");
+
+            var expected = new List<IToken>
+            {
+                new ComplexNumberToken(Complex.FromPolarCoordinates(10, 45))
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void ComplexPolarInvalidTest()
+        {
+            Assert.Throws<LexerException>(() => lexer.Tokenize("x°"));
         }
 
         [Fact]
@@ -2623,6 +2768,283 @@ namespace xFunc.Tests
             };
 
             Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void MinTest()
+        {
+            var tokens = lexer.Tokenize("min(1, 2)");
+            var expected = new List<IToken>
+            {
+                new FunctionToken(Functions.Min, 2),
+                new SymbolToken(Symbols.OpenBracket),
+                new NumberToken(1),
+                new SymbolToken(Symbols.Comma),
+                new NumberToken(2),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void MaxTest()
+        {
+            var tokens = lexer.Tokenize("max(1, 2)");
+            var expected = new List<IToken>
+            {
+                new FunctionToken(Functions.Max, 2),
+                new SymbolToken(Symbols.OpenBracket),
+                new NumberToken(1),
+                new SymbolToken(Symbols.Comma),
+                new NumberToken(2),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void AvgTest()
+        {
+            var tokens = lexer.Tokenize("avg(1, 2)");
+            var expected = new List<IToken>
+            {
+                new FunctionToken(Functions.Avg, 2),
+                new SymbolToken(Symbols.OpenBracket),
+                new NumberToken(1),
+                new SymbolToken(Symbols.Comma),
+                new NumberToken(2),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void CountTest()
+        {
+            var tokens = lexer.Tokenize("count(1, 2)");
+            var expected = new List<IToken>
+            {
+                new FunctionToken(Functions.Count, 2),
+                new SymbolToken(Symbols.OpenBracket),
+                new NumberToken(1),
+                new SymbolToken(Symbols.Comma),
+                new NumberToken(2),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void VarTest()
+        {
+            var tokens = lexer.Tokenize("var(4, 9)");
+            var expected = new List<IToken>
+            {
+                new FunctionToken(Functions.Var, 2),
+                new SymbolToken(Symbols.OpenBracket),
+                new NumberToken(4),
+                new SymbolToken(Symbols.Comma),
+                new NumberToken(9),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void VarpTest()
+        {
+            var tokens = lexer.Tokenize("varp(4, 9)");
+            var expected = new List<IToken>
+            {
+                new FunctionToken(Functions.Varp, 2),
+                new SymbolToken(Symbols.OpenBracket),
+                new NumberToken(4),
+                new SymbolToken(Symbols.Comma),
+                new NumberToken(9),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void StdevTest()
+        {
+            var tokens = lexer.Tokenize("stdev(4, 9)");
+            var expected = new List<IToken>
+            {
+                new FunctionToken(Functions.Stdev, 2),
+                new SymbolToken(Symbols.OpenBracket),
+                new NumberToken(4),
+                new SymbolToken(Symbols.Comma),
+                new NumberToken(9),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void StdevpTest()
+        {
+            var tokens = lexer.Tokenize("stdevp(4, 9)");
+            var expected = new List<IToken>
+            {
+                new FunctionToken(Functions.Stdevp, 2),
+                new SymbolToken(Symbols.OpenBracket),
+                new NumberToken(4),
+                new SymbolToken(Symbols.Comma),
+                new NumberToken(9),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void DelTest()
+        {
+            var tokens = lexer.Tokenize("del(2x + 3y + 4z)");
+            var expected = new List<IToken>
+            {
+                new FunctionToken(Functions.Del, 1),
+                new SymbolToken(Symbols.OpenBracket),
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new VariableToken("x"),
+                new OperationToken(Operations.Addition),
+                new NumberToken(3),
+                new OperationToken(Operations.Multiplication),
+                new VariableToken("y"),
+                new OperationToken(Operations.Addition),
+                new NumberToken(4),
+                new OperationToken(Operations.Multiplication),
+                new VariableToken("z"),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void NablaTest()
+        {
+            var tokens = lexer.Tokenize("nabla(2x + 3y + 4z)");
+            var expected = new List<IToken>
+            {
+                new FunctionToken(Functions.Del, 1),
+                new SymbolToken(Symbols.OpenBracket),
+                new NumberToken(2),
+                new OperationToken(Operations.Multiplication),
+                new VariableToken("x"),
+                new OperationToken(Operations.Addition),
+                new NumberToken(3),
+                new OperationToken(Operations.Multiplication),
+                new VariableToken("y"),
+                new OperationToken(Operations.Addition),
+                new NumberToken(4),
+                new OperationToken(Operations.Multiplication),
+                new VariableToken("z"),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void AddTest()
+        {
+            var tokens = lexer.Tokenize("add(1, 2)");
+            var expected = new List<IToken>
+            {
+                new FunctionToken(Functions.Add, 2),
+                new SymbolToken(Symbols.OpenBracket),
+                new NumberToken(1),
+                new SymbolToken(Symbols.Comma),
+                new NumberToken(2),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void SubTest()
+        {
+            var tokens = lexer.Tokenize("sub(1, 2)");
+            var expected = new List<IToken>
+            {
+                new FunctionToken(Functions.Sub, 2),
+                new SymbolToken(Symbols.OpenBracket),
+                new NumberToken(1),
+                new SymbolToken(Symbols.Comma),
+                new NumberToken(2),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void MulTest()
+        {
+            var tokens = lexer.Tokenize("mul(1, 2)");
+            var expected = new List<IToken>
+            {
+                new FunctionToken(Functions.Mul, 2),
+                new SymbolToken(Symbols.OpenBracket),
+                new NumberToken(1),
+                new SymbolToken(Symbols.Comma),
+                new NumberToken(2),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void DivTest()
+        {
+            var tokens = lexer.Tokenize("div(1, 2)");
+            var expected = new List<IToken>
+            {
+                new FunctionToken(Functions.Div, 2),
+                new SymbolToken(Symbols.OpenBracket),
+                new NumberToken(1),
+                new SymbolToken(Symbols.Comma),
+                new NumberToken(2),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void PowTest()
+        {
+            var tokens = lexer.Tokenize("pow(1, 2)");
+            var expected = new List<IToken>
+            {
+                new FunctionToken(Functions.Pow, 2),
+                new SymbolToken(Symbols.OpenBracket),
+                new NumberToken(1),
+                new SymbolToken(Symbols.Comma),
+                new NumberToken(2),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void NotEnoughParamsTest()
+        {
+            Assert.Throws<LexerException>(() => lexer.Tokenize("deriv(x,)"));
         }
 
     }

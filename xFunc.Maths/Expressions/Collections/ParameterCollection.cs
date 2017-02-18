@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -220,11 +220,8 @@ namespace xFunc.Maths.Expressions.Collections
                 throw new ArgumentException(Resource.ConstError);
 
             collection.Add(param);
-#if PORTABLE
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, param, collection.Count - 1));
-#else
+
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, param));
-#endif
         }
 
         /// <summary>
@@ -260,11 +257,8 @@ namespace xFunc.Maths.Expressions.Collections
                 throw new ArgumentException(Resource.ConstError);
 
             collection.Remove(param);
-#if PORTABLE
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, param, collection.Count));
-#else
+
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, param));
-#endif
         }
 
         /// <summary>
@@ -336,13 +330,7 @@ namespace xFunc.Maths.Expressions.Collections
         /// <value>
         /// The constants.
         /// </value>
-        public IEnumerable<Parameter> Constants
-        {
-            get
-            {
-                return consts;
-            }
-        }
+        public IEnumerable<Parameter> Constants => consts;
 
         /// <summary>
         /// Gets the collection of variables.
@@ -350,13 +338,7 @@ namespace xFunc.Maths.Expressions.Collections
         /// <value>
         /// The collection.
         /// </value>
-        public IEnumerable<Parameter> Collection
-        {
-            get
-            {
-                return collection;
-            }
-        }
+        public IEnumerable<Parameter> Collection => collection;
 
     }
 

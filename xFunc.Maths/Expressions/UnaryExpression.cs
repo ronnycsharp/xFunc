@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using xFunc.Maths.Analyzers.Formatters;
 
 namespace xFunc.Maths.Expressions
 {
@@ -20,13 +21,9 @@ namespace xFunc.Maths.Expressions
     /// <summary>
     /// The abstract base class that represents the unary operation.
     /// </summary>
-    public abstract class UnaryExpression : IExpression
+    public abstract class UnaryExpression : CachedResultTypeExpression
     {
 
-        /// <summary>
-        /// The parent expression of this expression.
-        /// </summary>
-        protected IExpression m_parent;
         /// <summary>
         /// The (first) operand.
         /// </summary>
@@ -86,13 +83,37 @@ namespace xFunc.Maths.Expressions
         }
 
         /// <summary>
-        /// Returns a <see cref="String" /> that represents this instance.
+        /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
-        /// <param name="format">The format.</param>
-        /// <returns>A <see cref="String" /> that represents this instance.</returns>
-        protected string ToString(string format)
+        /// <param name="formatter">The formatter.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString(IFormatter formatter)
         {
-            return string.Format(format, m_argument);
+            return this.Analyze(formatter);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            return this.ToString(new CommonFormatter());
+        }
+
+        /// <summary>
+        /// Gets the result type.
+        /// </summary>
+        /// <returns>
+        /// The result type of current expression.
+        /// </returns>
+        protected override ExpressionResultType GetResultType()
+        {
+            return ExpressionResultType.Number;
         }
 
         /// <summary>
@@ -101,26 +122,10 @@ namespace xFunc.Maths.Expressions
         /// <returns>
         /// A result of the execution.
         /// </returns>
-        public virtual object Execute()
+        public override object Execute()
         {
             return Execute(null);
         }
-
-        /// <summary>
-        /// Executes this expression.
-        /// </summary>
-        /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
-        /// <returns>
-        /// A result of the execution.
-        /// </returns>
-        /// <seealso cref="ExpressionParameters" />
-        public abstract object Execute(ExpressionParameters parameters);
-
-        /// <summary>
-        /// Clones this instance.
-        /// </summary>
-        /// <returns>Returns the new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
-        public abstract IExpression Clone();
 
         /// <summary>
         /// Gets or sets the expression.
@@ -141,6 +146,8 @@ namespace xFunc.Maths.Expressions
 
                 m_argument = value;
                 m_argument.Parent = this;
+
+                IsChanged = true;
             }
         }
 
@@ -150,28 +157,12 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The type of the argument.
         /// </value>
-        public virtual ExpressionResultType ArgumentType
-        {
-            get
-            {
-                return ExpressionResultType.Number;
-            }
-        }
+        public virtual ExpressionResultType ArgumentType => ExpressionResultType.Number;
 
         /// <summary>
         /// Get or Set the parent expression.
         /// </summary>
-        public IExpression Parent
-        {
-            get
-            {
-                return m_parent;
-            }
-            set
-            {
-                m_parent = value;
-            }
-        }
+        public override IExpression Parent { get; set; }
 
         /// <summary>
         /// Gets the minimum count of parameters.
@@ -179,13 +170,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The minimum count of parameters.
         /// </value>
-        public int MinParameters
-        {
-            get
-            {
-                return 1;
-            }
-        }
+        public override int MinParameters => 1;
 
         /// <summary>
         /// Gets the maximum count of parameters. -1 - Infinity.
@@ -193,13 +178,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The maximum count of parameters.
         /// </value>
-        public int MaxParameters
-        {
-            get
-            {
-                return 1;
-            }
-        }
+        public override int MaxParameters => 1;
 
         /// <summary>
         /// Gets the count of parameters.
@@ -207,28 +186,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The count of parameters.
         /// </value>
-        public int ParametersCount
-        {
-            get
-            {
-                return 1;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the result.
-        /// Default: Number.
-        /// </summary>
-        /// <value>
-        /// The type of the result.
-        /// </value>
-        public virtual ExpressionResultType ResultType
-        {
-            get
-            {
-                return ExpressionResultType.Number;
-            }
-        }
+        public override int ParametersCount => 1;
 
     }
 

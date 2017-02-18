@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -29,15 +29,13 @@ namespace xFunc.Maths
     /// </summary>
     public class Parser : IParser
     {
+
         private IExpressionFactory factory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Parser"/> class with default implementations of <see cref="IExpressionFactory"/>.
         /// </summary>
-        public Parser()
-            : this(new ExpressionFactory())
-        {
-        }
+        public Parser() : this(new ExpressionFactory()) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Parser" /> class.
@@ -46,54 +44,15 @@ namespace xFunc.Maths
         public Parser(IExpressionFactory factory)
         {
             this.factory = factory;
-			this.simplifier = new Simplifier ();
         }
-
-        /// <summary>
-        /// Checks the <paramref name="expression"/> parameter has <paramref name="arg"/>.
-        /// </summary>
-        /// <param name="expression">A expression that is checked.</param>
-        /// <param name="arg">A variable that can be contained in the expression.</param>
-		/// <remarks>
-		/// backward-compatibility
-		/// </remarks>
-        /// <returns>true if <paramref name="expression"/> has <paramref name="arg"/>; otherwise, false.</returns>
-        public static bool HasVar(IExpression expression, Variable arg) {
-            if (expression is BinaryExpression) {
-                var bin = expression as BinaryExpression;
-                if (HasVar(bin.Left, arg))
-                    return true;
-
-                return HasVar(bin.Right, arg);
-            }
-            if (expression is UnaryExpression) {
-                var un = expression as UnaryExpression;
-                return HasVar(un.Argument, arg);
-            }
-            if (expression is DifferentParametersExpression) {
-                var paramExp = expression as DifferentParametersExpression;
-                return paramExp.Arguments.Any(e => HasVar(e, arg));
-            }
-            return expression is Variable && expression.Equals(arg);
-        }
-
-		/// <summary>
-		/// Parse the specified string-expression.
-		/// </summary>
-		/// <remarks>
-		/// backward-compatibility
-		/// </remarks>
-		/// <param name="expression">Expression.</param>
-		public IExpression Parse (string expression) {
-			return this.Parse (new Lexer ().Tokenize (expression));
-		}
 
         /// <summary>
         /// Parses the specified function.
         /// </summary>
         /// <param name="tokens">The list of tokens.</param>
         /// <returns>The parsed expression.</returns>
-        public IExpression Parse(IEnumerable<IToken> tokens){
+        public IExpression Parse(IEnumerable<IToken> tokens)
+        {
             if (tokens == null)
                 throw new ArgumentNullException(nameof(tokens));
 
@@ -235,10 +194,6 @@ namespace xFunc.Maths
                             break;
                     }
                 }
-                else if (token is NumberToken || token is VariableToken)
-                {
-                    output.Add(token);
-                }
                 else
                 {
                     while (stack.Count != 0 && (stackToken = stack.Peek()).Priority >= token.Priority)
@@ -257,7 +212,7 @@ namespace xFunc.Maths
 
             return output;
         }
-        
+
         /// <summary>
         /// Gets or sets the expression factory.
         /// </summary>
@@ -276,18 +231,6 @@ namespace xFunc.Maths
             }
         }
 
-		/// <summary>
-		/// gets the simplifier-object for simplifying an expression
-		/// </summary>
-		/// <remarks>
-		/// only for backward-compatibility
-		/// </remarks>
-		/// <value>The simplifier.</value>
-		public Simplifier Simplifier {
-			get { return simplifier; }
-		}
-
-		private Simplifier simplifier;
     }
 
 }

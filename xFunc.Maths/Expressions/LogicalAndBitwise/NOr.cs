@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions.LogicalAndBitwise
 {
@@ -23,6 +25,7 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
     public class NOr : BinaryExpression
     {
 
+        [ExcludeFromCodeCoverage]
         internal NOr() { }
 
         /// <summary>
@@ -30,8 +33,18 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// </summary>
         /// <param name="left">The left (first) operand.</param>
         /// <param name="right">The right (second) operand.</param>
-        public NOr(IExpression left, IExpression right)
-            : base(left, right) { }
+        public NOr(IExpression left, IExpression right) : base(left, right) { }
+
+        /// <summary>
+        /// Gets the result type.
+        /// </summary>
+        /// <returns>
+        /// The result type of current expression.
+        /// </returns>
+        protected override ExpressionResultType GetResultType()
+        {
+            return ExpressionResultType.Boolean;
+        }
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -45,18 +58,6 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         }
 
         /// <summary>
-        /// Converts this expression to the equivalent string.
-        /// </summary>
-        /// <returns>The string that represents this expression.</returns>
-        public override string ToString()
-        {
-            if (m_parent is BinaryExpression)
-                return ToString("({0} nor {1})");
-
-            return ToString("{0} nor {1}");
-        }
-
-        /// <summary>
         /// Executes this NOR expression.
         /// </summary>
         /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
@@ -67,6 +68,19 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         public override object Execute(ExpressionParameters parameters)
         {
             return !((bool)m_left.Execute(parameters) | (bool)m_right.Execute(parameters));
+        }
+
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
         }
 
         /// <summary>
@@ -84,13 +98,7 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// <value>
         /// The type of the left parameter.
         /// </value>
-        public override ExpressionResultType LeftType
-        {
-            get
-            {
-                return ExpressionResultType.Boolean;
-            }
-        }
+        public override ExpressionResultType LeftType => ExpressionResultType.Boolean;
 
         /// <summary>
         /// Gets the type of the right parameter.
@@ -98,27 +106,7 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// <value>
         /// The type of the right parameter.
         /// </value>
-        public override ExpressionResultType RightType
-        {
-            get
-            {
-                return ExpressionResultType.Boolean;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the result.
-        /// </summary>
-        /// <value>
-        /// The type of the result.
-        /// </value>
-        public override ExpressionResultType ResultType
-        {
-            get
-            {
-                return ExpressionResultType.Boolean;
-            }
-        }
+        public override ExpressionResultType RightType => ExpressionResultType.Boolean;
 
     }
 

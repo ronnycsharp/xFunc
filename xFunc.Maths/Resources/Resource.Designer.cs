@@ -169,6 +169,15 @@ namespace xFunc.Maths.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not enough parameters..
+        /// </summary>
+        internal static string NotEnoughParams {
+            get {
+                return ResourceManager.GetString("NotEnoughParams", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The function is not specified..
         /// </summary>
         internal static string NotSpecifiedFunction {
@@ -237,6 +246,15 @@ namespace xFunc.Maths.Resources {
         internal static string VariableNotFoundExceptionError {
             get {
                 return ResourceManager.GetString("VariableNotFoundExceptionError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The size of vector should equal to 3..
+        /// </summary>
+        internal static string VectorCrossException {
+            get {
+                return ResourceManager.GetString("VectorCrossException", resourceCulture);
             }
         }
     }

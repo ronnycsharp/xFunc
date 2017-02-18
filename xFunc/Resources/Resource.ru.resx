@@ -517,7 +517,7 @@
     <value>"x" в степени "y". Пример: 7^4</value>
   </data>
   <data name="ProductToolTip" xml:space="preserve">
-    <value>Произведение. Пример: product(body, from, to, increment, variable)</value>
+    <value>Произведение. Пример: product(x, y, z).</value>
   </data>
   <data name="ProgExpanderHeader" xml:space="preserve">
     <value>Программирование</value>
@@ -649,7 +649,7 @@
     <value>Оператор "-=". Пример: x -= 2.</value>
   </data>
   <data name="SumToolTip" xml:space="preserve">
-    <value>Сумма. Пример: sum(body, from, to, increment, variable)</value>
+    <value>Сумма. Пример: sum(x, y, z).</value>
   </data>
   <data name="TangentToolTip" xml:space="preserve">
     <value>Тангенс числа. Пример: tan(90) или tg(90)</value>
@@ -785,5 +785,32 @@
   </data>
   <data name="ModuleToolTip" xml:space="preserve">
     <value>Остаток от деления. Пример: 7 % 2, 7 mod 2.</value>
+  </data>
+  <data name="AvgToolTip" xml:space="preserve">
+    <value>Среднее арифметическое. Пример: avg(1, 2, 3).</value>
+  </data>
+  <data name="MaxToolTip" xml:space="preserve">
+    <value>Максимум. Пример: max(1, 2, 3).</value>
+  </data>
+  <data name="MinToolTip" xml:space="preserve">
+    <value>Минимум. Пример: min(1, 2, 3).</value>
+  </data>
+  <data name="StatisticalExpanderHeader" xml:space="preserve">
+    <value>Статистические</value>
+  </data>
+  <data name="CountToolTip" xml:space="preserve">
+    <value>Количество аргументов. Пример: count(1, 2, 3).</value>
+  </data>
+  <data name="VarToolTip" xml:space="preserve">
+    <value>Дисперсия случайной величины. Пример: var(1, 2, 3).</value>
+  </data>
+  <data name="VarpToolTip" xml:space="preserve">
+    <value>Дисперсия случайной величины. Пример: varp(1, 2, 3).</value>
+  </data>
+  <data name="StdevToolTip" xml:space="preserve">
+    <value>Среднеквадратическое отклонение. Пример: stdev(1, 2, 3).</value>
+  </data>
+  <data name="StdevpToolTip" xml:space="preserve">
+    <value>Среднеквадратическое отклонение. Пример: stdevp(1, 2, 3).</value>
   </data>
 </root>

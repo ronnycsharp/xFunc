@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -18,11 +18,19 @@ using Xunit;
 
 namespace xFunc.Tests.Converters
 {
-    
+
     public class PowerTest
     {
 
         private PowerConverter conv = new PowerConverter();
+
+        [Fact]
+        public void ConvertToSame()
+        {
+            var value = conv.Convert(12, PowerUnits.Watts, PowerUnits.Watts);
+
+            Assert.Equal(12, value);
+        }
 
         [Fact]
         public void FromWtoK()

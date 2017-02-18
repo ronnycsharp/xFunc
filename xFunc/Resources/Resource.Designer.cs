@@ -421,6 +421,15 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Avg function. Example: avg(1, 2, 3)..
+        /// </summary>
+        public static string AvgToolTip {
+            get {
+                return ResourceManager.GetString("AvgToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Bitwise &amp; Logical.
         /// </summary>
         public static string BitwiseExpanderHeader {
@@ -669,6 +678,15 @@ namespace xFunc.Resources {
         public static string CothToolTip {
             get {
                 return ResourceManager.GetString("CothToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Count function. Example: count(1, 2, 3)..
+        /// </summary>
+        public static string CountToolTip {
+            get {
+                return ResourceManager.GetString("CountToolTip", resourceCulture);
             }
         }
         
@@ -1204,6 +1222,24 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Max function. Example: max(1, 2, 3)..
+        /// </summary>
+        public static string MaxToolTip {
+            get {
+                return ResourceManager.GetString("MaxToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Min function. Example: min(1, 2, 3)..
+        /// </summary>
+        public static string MinToolTip {
+            get {
+                return ResourceManager.GetString("MinToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The modulo operator. Example: 7 % 2, 7 mod 2..
         /// </summary>
         public static string ModuleToolTip {
@@ -1384,7 +1420,7 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Product. Example: product(body, from, to, increment, variable).
+        ///   Looks up a localized string similar to Product. Example: product(x, y, z)..
         /// </summary>
         public static string ProductToolTip {
             get {
@@ -1807,6 +1843,33 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Statistical.
+        /// </summary>
+        public static string StatisticalExpanderHeader {
+            get {
+                return ResourceManager.GetString("StatisticalExpanderHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The STDEVP function. Example: stdevp(1, 2, 3)..
+        /// </summary>
+        public static string StdevpToolTip {
+            get {
+                return ResourceManager.GetString("StdevpToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The STDEV function. Example: stdev(1, 2, 3)..
+        /// </summary>
+        public static string StdevToolTip {
+            get {
+                return ResourceManager.GetString("StdevToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The &quot;-=&quot; operator. Example: x -= 2..
         /// </summary>
         public static string SubAssignToolTip {
@@ -1816,7 +1879,7 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Summation. Example: sum(body, from, to, increment, variable).
+        ///   Looks up a localized string similar to Summation. Example: sum(x, y, z)..
         /// </summary>
         public static string SumToolTip {
             get {
@@ -2014,6 +2077,15 @@ namespace xFunc.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The VARP function. Example: varp(1, 2, 3)..
+        /// </summary>
+        public static string VarpToolTip {
+            get {
+                return ResourceManager.GetString("VarpToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Shows the window with all entered variables..
         /// </summary>
         public static string VarScreenTitText {
@@ -2028,6 +2100,15 @@ namespace xFunc.Resources {
         public static string VarScreenTitTitle {
             get {
                 return ResourceManager.GetString("VarScreenTitTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The VAR function. Example: var(1, 2, 3)..
+        /// </summary>
+        public static string VarToolTip {
+            get {
+                return ResourceManager.GetString("VarToolTip", resourceCulture);
             }
         }
         

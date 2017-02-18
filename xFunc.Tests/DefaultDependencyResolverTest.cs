@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 // limitations under the License.
 using System;
 using xFunc.Maths;
+using xFunc.Maths.Analyzers;
 using xFunc.Maths.Expressions;
 using Xunit;
 
@@ -30,7 +31,7 @@ namespace xFunc.Tests
         public DefaultDependencyResolverTest()
         {
             this.simplifier = new Simplifier();
-            this.differentiator = new Differentiator(simplifier);
+            this.differentiator = new Differentiator();
 
             this.resolver = new DefaultDependencyResolver(
                 new Type[] { typeof(ISimplifier), typeof(IDifferentiator) },

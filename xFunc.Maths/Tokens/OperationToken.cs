@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -23,17 +23,14 @@ namespace xFunc.Maths.Tokens
     public class OperationToken : IToken
     {
 
-        private readonly Operations operation;
-        private readonly int priority;
-
         /// <summary>
         /// Initializes the <see cref="OperationToken"/> class.
         /// </summary>
         /// <param name="operation">A operation.</param>
         public OperationToken(Operations operation)
         {
-            this.operation = operation;
-            this.priority = GetPriority();
+            this.Operation = operation;
+            this.Priority = GetPriority();
         }
 
         /// <summary>
@@ -65,7 +62,7 @@ namespace xFunc.Maths.Tokens
         /// </returns>
         public override int GetHashCode()
         {
-            return operation.GetHashCode();
+            return Operation.GetHashCode();
         }
 
         /// <summary>
@@ -74,12 +71,12 @@ namespace xFunc.Maths.Tokens
         /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
-            return $"Operation: {operation}";
+            return $"Operation: {Operation}";
         }
 
         private int GetPriority()
         {
-            switch (operation)
+            switch (Operation)
             {
                 case Operations.ConditionalAnd:
                 case Operations.ConditionalOr:
@@ -131,24 +128,12 @@ namespace xFunc.Maths.Tokens
         /// <summary>
         /// Gets a priority of current token.
         /// </summary>
-        public int Priority
-        {
-            get
-            {
-                return priority;
-            }
-        }
+        public int Priority { get; }
 
         /// <summary>
         /// Gets the operation.
         /// </summary>
-        public Operations Operation
-        {
-            get
-            {
-                return operation;
-            }
-        }
+        public Operations Operation { get; }
 
     }
 

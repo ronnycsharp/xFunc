@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,16 +13,19 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using xFunc.Maths.Analyzers;
+using xFunc.Maths.Analyzers.Formatters;
 
 namespace xFunc.Maths.Expressions
 {
+
     /// <summary>
     /// Represents variables in expressions.
     /// </summary>
-    public class Variable : IExpression {
-		
-        private IExpression parent;
-        private string name;
+    public class Variable : IExpression
+    {
+
+        private readonly string name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Variable"/> class.
@@ -75,12 +78,26 @@ namespace xFunc.Maths.Expressions
         }
 
         /// <summary>
-        /// Returns a string that represents the current object.
+        /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
-        /// <returns>A string that represents the current object.</returns>
+        /// <param name="formatter">The formatter.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatter formatter)
+        {
+            return this.Analyze(formatter);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
-            return name;
+            return this.ToString(new CommonFormatter());
         }
 
         /// <summary>
@@ -107,6 +124,19 @@ namespace xFunc.Maths.Expressions
         }
 
         /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
+        }
+
+        /// <summary>
         /// Clones this instance of the <see cref="Variable"/>.
         /// </summary>
         /// <returns>Returns the new instance of <see cref="Variable"/> that is a clone of this instance.</returns>
@@ -118,31 +148,12 @@ namespace xFunc.Maths.Expressions
         /// <summary>
         /// A name of this variable.
         /// </summary>
-        public string Name
-        {
-            get
-            {
-                return name;
-            }
-			set {
-				name = value;
-			}
-        }
+        public string Name => name;
 
         /// <summary>
         /// Get or Set the parent expression.
         /// </summary>
-        public IExpression Parent
-        {
-            get
-            {
-                return parent;
-            }
-            set
-            {
-                parent = value;
-            }
-        }
+        public IExpression Parent { get; set; }
 
         /// <summary>
         /// Gets the minimum count of parameters. -1 - Infinity.
@@ -150,13 +161,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The minimum count of parameters.
         /// </value>
-        public int MinParameters
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public int MinParameters => 0;
 
         /// <summary>
         /// Gets the maximum count of parameters. -1 - Infinity.
@@ -164,13 +169,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The maximum count of parameters.
         /// </value>
-        public int MaxParameters
-        {
-            get
-            {
-                return -1;
-            }
-        }
+        public int MaxParameters => -1;
 
         /// <summary>
         /// Gets the count of parameters.
@@ -178,13 +177,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The count of parameters.
         /// </value>
-        public int ParametersCount
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public int ParametersCount => 0;
 
         /// <summary>
         /// Gets the type of the result.
@@ -192,13 +185,10 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The type of the result.
         /// </value>
-        public ExpressionResultType ResultType
-        {
-            get
-            {
-                return ExpressionResultType.Number | ExpressionResultType.Boolean;
-            }
-        }
+        /// <remarks>
+        /// Usage of this property can affect performance. Don't use this property each time if you need to check result type of current expression. Just store/cache value only once and use it everywhere.
+        /// </remarks>
+        public ExpressionResultType ResultType => ExpressionResultType.Number | ExpressionResultType.Boolean;
 
     }
 

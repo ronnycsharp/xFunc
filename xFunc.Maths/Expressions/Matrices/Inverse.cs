@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Diagnostics.CodeAnalysis;
+using xFunc.Maths.Analyzers;
 
 namespace xFunc.Maths.Expressions.Matrices
 {
@@ -23,16 +25,24 @@ namespace xFunc.Maths.Expressions.Matrices
     public class Inverse : UnaryExpression
     {
 
+        [ExcludeFromCodeCoverage]
         internal Inverse() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Inverse"/> class.
         /// </summary>
         /// <param name="argument">A matrix.</param>
-        public Inverse(IExpression argument)
-            : base(argument)
-        {
+        public Inverse(IExpression argument) : base(argument) { }
 
+        /// <summary>
+        /// Gets the result type.
+        /// </summary>
+        /// <returns>
+        /// The result type of current expression.
+        /// </returns>
+        protected override ExpressionResultType GetResultType()
+        {
+            return ExpressionResultType.Matrix;
         }
 
         /// <summary>
@@ -47,17 +57,6 @@ namespace xFunc.Maths.Expressions.Matrices
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return ToString("inverse({0})");
-        }
-
-        /// <summary>
         /// Executes this expression.
         /// </summary>
         /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
@@ -68,6 +67,19 @@ namespace xFunc.Maths.Expressions.Matrices
         public override object Execute(ExpressionParameters parameters)
         {
             return ((Matrix)m_argument.Execute(parameters)).Inverse(parameters);
+        }
+
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
+        {
+            return analyzer.Analyze(this);
         }
 
         /// <summary>
@@ -87,27 +99,7 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <value>
         /// The type of the argument.
         /// </value>
-        public override ExpressionResultType ArgumentType
-        {
-            get
-            {
-                return ExpressionResultType.Matrix;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the result.
-        /// </summary>
-        /// <value>
-        /// The type of the result.
-        /// </value>
-        public override ExpressionResultType ResultType
-        {
-            get
-            {
-                return ExpressionResultType.Matrix;
-            }
-        }
+        public override ExpressionResultType ArgumentType => ExpressionResultType.Matrix;
 
     }
 

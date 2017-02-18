@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Globalization;
 
 namespace xFunc.Maths.Tokens
 {
@@ -23,15 +24,13 @@ namespace xFunc.Maths.Tokens
     public class NumberToken : IToken
     {
 
-        private readonly double number;
-
         /// <summary>
         /// Initializes the <see cref="NumberToken"/> class.
         /// </summary>
         /// <param name="number">A number.</param>
         public NumberToken(double number)
         {
-            this.number = number;
+            this.Number = number;
         }
 
         /// <summary>
@@ -51,8 +50,8 @@ namespace xFunc.Maths.Tokens
                 return false;
 
             var token = (NumberToken)obj;
-            
-            return this.number == token.number;
+
+            return this.Number == token.Number;
         }
 
         /// <summary>
@@ -63,7 +62,7 @@ namespace xFunc.Maths.Tokens
         /// </returns>
         public override int GetHashCode()
         {
-            return number.GetHashCode();
+            return Number.GetHashCode();
         }
 
         /// <summary>
@@ -72,30 +71,18 @@ namespace xFunc.Maths.Tokens
         /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
-            return $"Number: {number}";
+            return $"Number: {Number.ToString(CultureInfo.InvariantCulture)}";
         }
 
         /// <summary>
         /// Gets a priority of current token.
         /// </summary>
-        public int Priority
-        {
-            get
-            {
-                return 101;
-            }
-        }
+        public int Priority => 101;
 
         /// <summary>
         /// Gets the number.
         /// </summary>
-        public double Number
-        {
-            get
-            {
-                return number;
-            }
-        }
+        public double Number { get; }
 
     }
 

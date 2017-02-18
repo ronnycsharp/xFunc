@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2016 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
 // limitations under the License.
 using System;
 using System.Numerics;
+using xFunc.Maths.Analyzers;
 using xFunc.Maths.Expressions;
 using xFunc.Maths.Expressions.Collections;
-using xFunc.Maths.Resources;
 using xFunc.Maths.Results;
 
 namespace xFunc.Maths
@@ -28,29 +28,22 @@ namespace xFunc.Maths
     public class Processor
     {
 
-        private ILexer lexer;
-        private ISimplifier simplifier;
-        private IDifferentiator differentiator;
-        private IParser parser;
-
-        private readonly ExpressionParameters parameters;
-        private NumeralSystem numeralSystem;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Processor"/> class.
         /// </summary>
         public Processor()
         {
-            lexer = new Lexer();
-            simplifier = new Simplifier();
-            differentiator = new Differentiator(simplifier);
-            parser = new Parser(new ExpressionFactory(
+            Lexer = new Lexer();
+            Simplifier = new Simplifier();
+            Differentiator = new Differentiator();
+            Parser = new Parser(new ExpressionFactory(
                                     new DefaultDependencyResolver(new Type[] { typeof(ISimplifier), typeof(IDifferentiator) },
-                                                                  new object[] { simplifier, differentiator })
+                                                                  new object[] { Simplifier, Differentiator })
                                 ));
 
-            parameters = new ExpressionParameters(AngleMeasurement.Degree, new ParameterCollection(), new FunctionCollection());
-            numeralSystem = NumeralSystem.Decimal;
+            Parameters = new ExpressionParameters(AngleMeasurement.Degree, new ParameterCollection(), new FunctionCollection());
+            NumeralSystem = NumeralSystem.Decimal;
+            DoSimplify = true;
         }
 
         /// <summary>
@@ -75,13 +68,14 @@ namespace xFunc.Maths
         /// <param name="parameters">The collection of parameters.</param>
         public Processor(ILexer lexer, IParser parser, ISimplifier simplifier, IDifferentiator differentiator, ExpressionParameters parameters)
         {
-            this.lexer = lexer;
-            this.simplifier = simplifier;
-            this.differentiator = differentiator;
-            this.parser = parser;
+            Lexer = lexer;
+            Simplifier = simplifier;
+            Differentiator = differentiator;
+            Parser = parser;
 
-            this.parameters = parameters;
-            this.numeralSystem = NumeralSystem.Decimal;
+            Parameters = parameters;
+            NumeralSystem = NumeralSystem.Decimal;
+            DoSimplify = true;
         }
 
         /// <summary>
@@ -91,25 +85,18 @@ namespace xFunc.Maths
         /// <returns>The result of solving.</returns>
         public IResult Solve(string function)
         {
-            var exp = Parse(function, true);
-            var result = exp.Execute(parameters);
+            var exp = Parse(function);
+            var result = exp.Execute(Parameters);
             if (result is double)
             {
-                if (numeralSystem == NumeralSystem.Decimal)
+                if (NumeralSystem == NumeralSystem.Decimal)
                     return new NumberResult((double)result);
 
-                return new StringResult(MathExtensions.ToNewBase((int)(double)result, numeralSystem));
+                return new StringResult(MathExtensions.ToNewBase((int)(double)result, NumeralSystem));
             }
             if (result is Complex)
             {
                 return new ComplexNumberResult((Complex)result);
-            }
-            if (result is int)
-            {
-                if (numeralSystem == NumeralSystem.Decimal)
-                    return new NumberResult((int)result);
-
-                return new StringResult(MathExtensions.ToNewBase((int)result, numeralSystem));
             }
             if (result is bool)
             {
@@ -121,6 +108,9 @@ namespace xFunc.Maths
             }
             if (result is IExpression)
             {
+                if (DoSimplify)
+                    return new ExpressionResult(Simplify((IExpression)result));
+
                 return new ExpressionResult((IExpression)result);
             }
 
@@ -145,7 +135,7 @@ namespace xFunc.Maths
         /// <returns>A simplified expression.</returns>
         public IExpression Simplify(IExpression expression)
         {
-            return simplifier.Simplify(expression);
+            return expression.Analyze(Simplifier);
         }
 
         /// <summary>
@@ -155,7 +145,7 @@ namespace xFunc.Maths
         /// <returns>Returns the derivative.</returns>
         public IExpression Differentiate(IExpression expression)
         {
-            return differentiator.Differentiate(expression);
+            return Differentiate(expression, new Variable("x"));
         }
 
         /// <summary>
@@ -166,7 +156,7 @@ namespace xFunc.Maths
         /// <returns>Returns the derivative.</returns>
         public IExpression Differentiate(IExpression expression, Variable variable)
         {
-            return differentiator.Differentiate(expression, variable);
+            return Differentiate(expression, variable, new ExpressionParameters());
         }
 
         /// <summary>
@@ -180,49 +170,28 @@ namespace xFunc.Maths
         /// </returns>
         public IExpression Differentiate(IExpression expression, Variable variable, ExpressionParameters parameters)
         {
-            return differentiator.Differentiate(expression, variable, parameters);
+            Differentiator.Variable = variable;
+            Differentiator.Parameters = parameters;
+
+            return expression.Analyze(Differentiator);
         }
 
         /// <summary>
         /// Parses the specified function.
         /// </summary>
         /// <param name="function">The function.</param>
-        /// <returns>The parsed expression.</returns>
-        public IExpression Parse(string function)
-        {
-            return Parse(function, true);
-        }
-
-        /// <summary>
-        /// Parses the specified function.
-        /// </summary>
-        /// <param name="function">The function.</param>
-        /// <param name="simplify">if set to <c>true</c>, simplifies the expression.</param>
         /// <returns>The parsed expression.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="function"/> is null.</exception>
         /// <exception cref="ParserException">Error while parsing.</exception>
-        public IExpression Parse(string function, bool simplify)
+        public IExpression Parse(string function)
         {
-            if (simplify)
-                return simplifier.Simplify(parser.Parse(lexer.Tokenize(function)));
-
-            return parser.Parse(lexer.Tokenize(function));
+            return Parser.Parse(Lexer.Tokenize(function));
         }
 
         /// <summary>
         /// Gets or sets a implementation of <see cref="ILexer"/>.
         /// </summary>
-        public ILexer Lexer
-        {
-            get
-            {
-                return lexer;
-            }
-            set
-            {
-                lexer = value;
-            }
-        }
+        public ILexer Lexer { get; set; }
 
         /// <summary>
         /// Gets or sets the parser.
@@ -230,17 +199,7 @@ namespace xFunc.Maths
         /// <value>
         /// The parser.
         /// </value>
-        public IParser Parser
-        {
-            get
-            {
-                return parser;
-            }
-            set
-            {
-                parser = value;
-            }
-        }
+        public IParser Parser { get; set; }
 
         /// <summary>
         /// Gets or sets the simplifier.
@@ -248,17 +207,7 @@ namespace xFunc.Maths
         /// <value>
         /// The simplifier.
         /// </value>
-        public ISimplifier Simplifier
-        {
-            get
-            {
-                return simplifier;
-            }
-            set
-            {
-                simplifier = value;
-            }
-        }
+        public ISimplifier Simplifier { get; set; }
 
         /// <summary>
         /// Gets or sets the differentiator.
@@ -266,17 +215,7 @@ namespace xFunc.Maths
         /// <value>
         /// The differentiator.
         /// </value>
-        public IDifferentiator Differentiator
-        {
-            get
-            {
-                return differentiator;
-            }
-            set
-            {
-                differentiator = value;
-            }
-        }
+        public IDifferentiator Differentiator { get; set; }
 
         /// <summary>
         /// Gets expression parameters object.
@@ -284,13 +223,7 @@ namespace xFunc.Maths
         /// <value>
         /// The expression parameters object.
         /// </value>
-        public ExpressionParameters Parameters
-        {
-            get
-            {
-                return parameters;
-            }
-        }
+        public ExpressionParameters Parameters { get; }
 
         /// <summary>
         /// Gets or sets the numeral system.
@@ -298,17 +231,12 @@ namespace xFunc.Maths
         /// <value>
         /// The numeral system.
         /// </value>
-        public NumeralSystem Base
-        {
-            get
-            {
-                return numeralSystem;
-            }
-            set
-            {
-                numeralSystem = value;
-            }
-        }
+        public NumeralSystem NumeralSystem { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether do simplify or not.
+        /// </summary>
+        public bool DoSimplify { get; set; }
 
     }
 
