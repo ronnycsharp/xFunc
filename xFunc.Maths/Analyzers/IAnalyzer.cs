@@ -215,6 +215,18 @@ namespace xFunc.Maths.Analyzers
         /// <returns>The result of analysis.</returns>
         TResult Analyze(DelegateExpression exp);
 
+		/// <summary>
+		/// Analyze the specified expression
+		/// </summary>
+		/// <param name="exp">Exp.</param>
+		TResult Analyze (DefiniteIntegral exp);
+
+		/// <summary>
+		/// Analyze the specified expression
+		/// </summary>
+		/// <param name="exp">Exp.</param>
+		TResult Analyze (RoundUnary exp);
+
         #endregion Standard
 
         #region Matrix

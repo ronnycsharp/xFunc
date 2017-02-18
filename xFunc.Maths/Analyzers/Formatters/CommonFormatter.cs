@@ -417,6 +417,14 @@ namespace xFunc.Maths.Analyzers.Formatters
             return "{Delegate Expression}";
         }
 
+		public string Analyze (DefiniteIntegral exp) {
+			return exp.ToString ();
+		}
+
+		public string Analyze (RoundUnary exp){
+			return ToString (exp, "roundunary({0})");
+		}
+
         #endregion Standard
 
         #region Matrix
@@ -1232,8 +1240,8 @@ namespace xFunc.Maths.Analyzers.Formatters
             return ToString(exp, "while({0}, {1})");
         }
 
-        #endregion Programming
+		#endregion Programming
 
-    }
+	}
 
 }

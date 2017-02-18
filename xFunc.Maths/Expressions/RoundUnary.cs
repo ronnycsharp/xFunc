@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using xFunc.Maths.Analyzers;
+
 namespace xFunc.Maths.Expressions {
     /// <summary>
     /// Represents the "round" function.
@@ -37,15 +39,11 @@ namespace xFunc.Maths.Expressions {
             return base.GetHashCode(5680);
         }
 
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
+
+		/*
         public override string ToString() {
             return ToString("roundunary({0})");
-        }
+        } */
 
         /// <summary>
         /// Calculates this mathemarical expression.
@@ -68,5 +66,9 @@ namespace xFunc.Maths.Expressions {
         public override IExpression Clone() {
             return new RoundUnary(this.Argument.Clone ( ));
         }
-    }
+
+		public override TResult Analyze<TResult> (IAnalyzer<TResult> analyzer) {
+			return analyzer.Analyze (this);
+		}
+	}
 }

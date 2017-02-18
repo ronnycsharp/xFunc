@@ -1,6 +1,7 @@
 ﻿// 2014-2016 Ronny Weidemann
 
 using System;
+using xFunc.Maths.Analyzers;
 using xFunc.Maths.Expressions.Collections;
 
 namespace xFunc.Maths.Expressions {
@@ -154,7 +155,11 @@ namespace xFunc.Maths.Expressions {
 		/// <returns>Returns the new instance of <see cref="IExpression"/> that is a clone of this instance.</returns>
 		public override IExpression Clone () {
 			return new DefiniteIntegral (
-				CloneArguments (), countOfParams);
+				CloneArguments (), 4);
+		}
+
+		public override TResult Analyze<TResult> (IAnalyzer<TResult> analyzer) {
+			return analyzer.Analyze (this);
 		}
 
 		#region Properties
