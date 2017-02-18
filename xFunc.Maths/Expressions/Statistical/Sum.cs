@@ -48,6 +48,19 @@ namespace xFunc.Maths.Expressions.Statistical
                 throw new ArgumentException();
         }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Sum"/> class.
+		/// </summary>
+		/// <param name="body">The function that is executed on each iteration.</param>
+		/// <param name="from">The initial value (including).</param>
+		/// <param name="to">The final value (including).</param>
+		/// <param name="inc">The increment.</param>
+		/// <param name="variable">The increment variable.</param>
+		public Sum (IExpression body, IExpression from, IExpression to, IExpression inc, Variable variable)
+			: base (new [] { body, from, to, inc, variable }, 5)
+		{
+		}
+
         /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
@@ -121,6 +134,69 @@ namespace xFunc.Maths.Expressions.Statistical
         /// The maximum count of parameters.
         /// </value>
         public override int MaxParameters => -1;
+
+
+
+		/// <summary>
+		/// Gets the function that is executed on each iteration.
+		/// </summary>
+		/// <value>
+		/// The function that is executed on each iteration.
+		/// </value>
+		public IExpression Body {
+			get {
+				return m_arguments [0];
+			}
+		}
+
+		/// <summary>
+		/// Gets ghe initial value (including).
+		/// </summary>
+		/// <value>
+		/// The initial value (including).
+		/// </value>
+		public IExpression From {
+			get {
+				return ParametersCount >= 3 ? m_arguments [1] : null;
+			}
+		}
+
+		/// <summary>
+		/// Gets the final value (including).
+		/// </summary>
+		/// <value>
+		/// The final value (including).
+		/// </value>
+		public IExpression To {
+			get {
+				return ParametersCount == 2 ? m_arguments [1] : m_arguments [2];
+			}
+		}
+
+		/// <summary>
+		/// Gets the increment.
+		/// </summary>
+		/// <value>
+		/// The increment.
+		/// </value>
+		public IExpression Increment {
+			get {
+				return ParametersCount >= 4 ? m_arguments [3] : null;
+			}
+		}
+
+		/// <summary>
+		/// Gets the increment variable.
+		/// </summary>
+		/// <value>
+		/// The increment variable.
+		/// </value>
+		public Variable Variable {
+			get {
+				return ParametersCount == 5 ? (Variable)m_arguments [4] : null;
+			}
+		}
+
 
         /// <summary>
         /// Gets the arguments types.

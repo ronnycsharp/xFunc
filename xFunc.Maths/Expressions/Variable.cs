@@ -25,7 +25,7 @@ namespace xFunc.Maths.Expressions
     public class Variable : IExpression
     {
 
-        private readonly string name;
+        private string name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Variable"/> class.
@@ -145,10 +145,15 @@ namespace xFunc.Maths.Expressions
             return new Variable(name);
         }
 
+		// The Name-Property must be writeable, because we need backward-compatibility
+
         /// <summary>
         /// A name of this variable.
         /// </summary>
-        public string Name => name;
+		public string Name { 
+			get { return name; } 
+			set { name = value; } 
+		}
 
         /// <summary>
         /// Get or Set the parent expression.
