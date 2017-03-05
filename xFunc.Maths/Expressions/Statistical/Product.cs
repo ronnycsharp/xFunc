@@ -16,6 +16,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using xFunc.Maths.Analyzers;
+using xFunc.Maths.Expressions.Collections;
 using xFunc.Maths.Expressions.Matrices;
 
 namespace xFunc.Maths.Expressions.Statistical
@@ -80,20 +81,50 @@ namespace xFunc.Maths.Expressions.Statistical
         /// A result of the execution.
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
-        public override object Execute(ExpressionParameters parameters)
-        {
-            if (ParametersCount == 1)
-            {
-                var result = this.m_arguments[0].Execute(parameters);
-                var vector = result as Vector;
-                if (vector != null)
-                    return vector.Arguments.Aggregate(1.0, (acc, exp) => acc * (double)exp.Execute(parameters));
-
-                return result;
-            }
-
-            return this.m_arguments.Aggregate(1.0, (acc, exp) => acc * (double)exp.Execute(parameters));
+        public override object Execute(ExpressionParameters parameters) {
+			return this.Calculate (parameters);
         }
+
+		/// <summary>
+		/// Calculates this mathemarical expression.
+		/// </summary>
+		/// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
+		/// <returns>
+		/// A result of the calculation.
+		/// </returns>
+		/// <seealso cref="ExpressionParameters" />
+		private object Calculate (ExpressionParameters parameters) {
+			var body = Body;
+			var from = (double)(From?.Execute (parameters) ?? 1.0);
+			var to = (double)To.Execute (parameters);
+			var inc = (double)(Increment?.Execute (parameters) ?? 1.0);
+
+			var localParams = new ParameterCollection (parameters.Variables.Collection);
+			var variable = Variable != null ? Variable.Name : GetVarName (localParams);
+
+			localParams.Add (variable, from);
+			var param = new ExpressionParameters (
+				parameters.AngleMeasurement, localParams, parameters.Functions);
+
+			double S = 1;
+			for (; from <= to; from += inc) {
+				localParams [variable] = from;
+				S *= (double)body.Execute (param);
+			}
+			return S;
+		}
+
+		private static string GetVarName (ParameterCollection parameters) {
+			const string variable = "n";
+			if (!parameters.ContainsKey (variable))
+				return variable;
+
+			for (int i = 1; ; i++) {
+				var localVar = variable + i;
+				if (!parameters.ContainsKey (localVar))
+					return localVar;
+			}
+		}
 
         /// <summary>
         /// Analyzes the current expression.

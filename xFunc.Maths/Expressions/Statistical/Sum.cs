@@ -16,6 +16,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using xFunc.Maths.Analyzers;
+using xFunc.Maths.Expressions.Collections;
 using xFunc.Maths.Expressions.Matrices;
 
 namespace xFunc.Maths.Expressions.Statistical
@@ -67,8 +68,7 @@ namespace xFunc.Maths.Expressions.Statistical
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode()
-        {
+        public override int GetHashCode() {
             return base.GetHashCode(6089, 9949);
         }
 
@@ -80,10 +80,8 @@ namespace xFunc.Maths.Expressions.Statistical
         /// A result of the execution.
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
-        public override object Execute(ExpressionParameters parameters)
-        {
-            if (ParametersCount == 1)
-            {
+        public override object Execute(ExpressionParameters parameters) {
+            if (ParametersCount == 1) {
                 var result = this.m_arguments[0].Execute(parameters);
                 var vector = result as Vector;
                 if (vector != null)
@@ -91,9 +89,47 @@ namespace xFunc.Maths.Expressions.Statistical
 
                 return result;
             }
-
-            return this.m_arguments.Sum(exp => (double)exp.Execute(parameters));
+			return this.Calculate (parameters); // this.m_arguments.Sum(exp => (double)exp.Execute(parameters));
         }
+
+		// added calculate-method from v3.0
+		// it's needed for bug-fix the newer execute-method
+
+		private object Calculate (ExpressionParameters parameters) {
+			var body = this.Body;
+			var from = (double)(this.From?.Execute (parameters) ?? 1.0);
+			var to = (double)this.To.Execute (parameters);
+			var inc = (double)(this.Increment.Execute (parameters) ?? 1.0);
+
+			var localParams = new ParameterCollection (parameters.Variables.Collection);
+
+			var variable = Variable != null ? this.Variable.Name : GetVarName (localParams);
+			localParams.Add (variable, from);
+
+			var param = new ExpressionParameters (
+				parameters.AngleMeasurement, 
+				localParams, 
+				parameters.Functions);
+
+			double S = 0;
+			for (; from <= to; from += inc) {
+				localParams [variable] = from;
+				S += (double)body.Execute (param);
+			}
+			return S;
+		}
+
+		private static string GetVarName (ParameterCollection parameters) {
+			const string variable = "n";
+			if (!parameters.ContainsKey (variable))
+				return variable;
+
+			for (int i = 1; ; i++) {
+				var localVar = variable + i;
+				if (!parameters.ContainsKey (localVar))
+					return localVar;
+			}
+		}
 
         /// <summary>
         /// Analyzes the current expression.
@@ -103,8 +139,7 @@ namespace xFunc.Maths.Expressions.Statistical
         /// <returns>
         /// The analysis result.
         /// </returns>
-        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
-        {
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer) {
             return analyzer.Analyze(this);
         }
 
