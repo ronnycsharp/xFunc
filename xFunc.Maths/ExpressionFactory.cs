@@ -312,6 +312,10 @@ namespace xFunc.Maths
                     exp = new Stdev(); break;
                 case Functions.Stdevp:
                     exp = new Stdevp(); break;
+				case Functions.RoundUnary:
+					exp = new RoundUnary (); break;
+				case Functions.DefiniteIntegral:
+					exp = new DefiniteIntegral (); break;
                 default:
                     exp = null; break;
             }

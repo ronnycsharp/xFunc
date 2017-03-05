@@ -81,14 +81,6 @@ namespace xFunc.Maths.Expressions.Statistical
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters) {
-            if (ParametersCount == 1) {
-                var result = this.m_arguments[0].Execute(parameters);
-                var vector = result as Vector;
-                if (vector != null)
-                    return vector.Arguments.Sum(exp => (double)exp.Execute(parameters));
-
-                return result;
-            }
 			return this.Calculate (parameters); // this.m_arguments.Sum(exp => (double)exp.Execute(parameters));
         }
 
