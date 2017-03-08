@@ -150,6 +150,15 @@ namespace xFunc.Maths
             }
         }
 
+		public static double DegToRad (double angle) {
+			return Math.PI * angle / 180.0;
+		}
+
+		public static double RadToDeg (double angle) {
+			return angle * (180.0 / Math.PI);
+		}
+
+
     }
 
 }

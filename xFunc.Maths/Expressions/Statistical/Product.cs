@@ -15,6 +15,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Numerics;
 using xFunc.Maths.Analyzers;
 using xFunc.Maths.Expressions.Collections;
 using xFunc.Maths.Expressions.Matrices;
@@ -106,12 +107,34 @@ namespace xFunc.Maths.Expressions.Statistical
 			var param = new ExpressionParameters (
 				parameters.AngleMeasurement, localParams, parameters.Functions);
 
-			double S = 1;
+			var cmpResult = default (Complex?);
+			var isComplex = false;
+
 			for (; from <= to; from += inc) {
 				localParams [variable] = from;
-				S *= (double)body.Execute (param);
+
+				var r = body.Execute (param);
+				if (r is Double) {
+					if (cmpResult == null)
+						cmpResult = (double)r;
+					else
+						cmpResult *= (double)r;
+				} else if (r is Complex) {
+					if (cmpResult == null)
+						cmpResult = (Complex)r;
+					else 
+						cmpResult *= (Complex)r;
+					
+					isComplex = true;
+				} else {
+					throw new NotSupportedException ();
+				}
 			}
-			return S;
+			if (isComplex) {
+				return cmpResult.Value;
+			} else {
+				return cmpResult.Value.Real;
+			}
 		}
 
 		private static string GetVarName (ParameterCollection parameters) {
@@ -242,7 +265,7 @@ namespace xFunc.Maths.Expressions.Statistical
                 var result = new ExpressionResultType[ParametersCount];
                 if (ParametersCount > 0)
                 {
-                    result[0] = ExpressionResultType.Number | ExpressionResultType.Vector;
+					result [0] = ExpressionResultType.Number | ExpressionResultType.Vector | ExpressionResultType.ComplexNumber;
                     for (var i = 1; i < result.Length; i++)
                         result[i] = ExpressionResultType.Number;
                 }

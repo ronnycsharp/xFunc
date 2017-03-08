@@ -18,6 +18,8 @@ using System.Linq;
 using xFunc.Maths.Analyzers;
 using xFunc.Maths.Expressions.Collections;
 using xFunc.Maths.Expressions.Matrices;
+using xFunc.Maths.Expressions.ComplexNumbers;
+using System.Numerics;
 
 namespace xFunc.Maths.Expressions.Statistical
 {
@@ -94,7 +96,6 @@ namespace xFunc.Maths.Expressions.Statistical
 			var inc = (double)(this.Increment.Execute (parameters) ?? 1.0);
 
 			var localParams = new ParameterCollection (parameters.Variables.Collection);
-
 			var variable = Variable != null ? this.Variable.Name : GetVarName (localParams);
 			localParams.Add (variable, from);
 
@@ -103,12 +104,63 @@ namespace xFunc.Maths.Expressions.Statistical
 				localParams, 
 				parameters.Functions);
 
-			double S = 0;
-			for (; from <= to; from += inc) {
-				localParams [variable] = from;
-				S += (double)body.Execute (param);
+			// check if body argument is type of vector
+			if (body is Vector) {
+				var vBody = (Vector)body.Execute (param);
+
+				var result = new Vector (vBody.Arguments.Length);
+				for (var i = 0; i < result.Arguments.Length; i++) {
+					result.Arguments [i] = new Number (0);
+				}
+
+				for (; from <= to; from += inc) {
+					localParams [variable] = from;
+					result = result.Add ((Vector)body.Execute (param));
+				}
+				return result;
+			} else if (body is Matrix) {
+				var mBody = (Matrix)body.Execute (param);
+
+				var matrixSize = mBody.Arguments.Length;
+				var vectorSize = ((Vector)mBody.Arguments [0]).Arguments.Length;
+
+				// create empty matrix
+				var result = new Matrix (matrixSize, vectorSize);
+				for (var i = 0; i < matrixSize; i++) {
+					result.Arguments [i] = new Vector (vectorSize);
+					for (var v = 0; v < vectorSize; v++) {
+						((Vector)result.Arguments [i]).Arguments [v] = new Number (0);
+					}
+				}
+
+				for (; from <= to; from += inc) {
+					localParams [variable] = from;
+					result = result.Add ((Matrix)body.Execute (param));
+				}
+				return result;
+			} else {
+				var cmpResult = new Complex(0,0);
+				var isComplex = false;
+
+				for (; from <= to; from += inc) {
+					localParams [variable] = from;
+
+					var r = body.Execute (param);
+					if (r is Double) {
+						cmpResult += (double)r;
+					} else if (r is Complex) {
+						cmpResult += (Complex)r;
+						isComplex = true;
+					} else {
+						throw new NotSupportedException ();
+					}
+				}
+				if (isComplex) {
+					return cmpResult;
+				} else {
+					return cmpResult.Real;
+				}
 			}
-			return S;
 		}
 
 		private static string GetVarName (ParameterCollection parameters) {
@@ -238,7 +290,7 @@ namespace xFunc.Maths.Expressions.Statistical
                 var result = new ExpressionResultType[ParametersCount];
                 if (ParametersCount > 0)
                 {
-                    result[0] = ExpressionResultType.Number | ExpressionResultType.Vector;
+					result [0] = ExpressionResultType.Number | ExpressionResultType.Vector | ExpressionResultType.Matrix | ExpressionResultType.ComplexNumber;
                     for (var i = 1; i < result.Length; i++)
                         result[i] = ExpressionResultType.Number;
                 }
