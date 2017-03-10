@@ -227,6 +227,12 @@ namespace xFunc.Maths.Analyzers
 		/// <param name="exp">Exp.</param>
 		TResult Analyze (RoundUnary exp);
 
+		/// <summary>
+		/// Analyze the specified expression
+		/// </summary>
+		/// <param name="exp">Exp.</param>
+		TResult Analyze (NDerivative exp);
+
         #endregion Standard
 
         #region Matrix

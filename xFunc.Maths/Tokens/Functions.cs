@@ -293,6 +293,11 @@ namespace xFunc.Maths.Tokens
 		/// </summary>
 		RoundUnary,
 
+		/// <summary>
+		/// Nth-Derivative
+		/// </summary>
+		NDerivative,
+
         /// <summary>
         /// The user function
         /// </summary>

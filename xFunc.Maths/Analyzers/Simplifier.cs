@@ -306,6 +306,18 @@ namespace xFunc.Maths.Analyzers
             return exp;
         }
 
+		/// <summary>
+		/// Analyzes the specified expression.
+		/// </summary>
+		/// <param name="exp">The expression.</param>
+		/// <returns>
+		/// The result of analysis.
+		/// </returns>
+		public IExpression Analyze (NDerivative exp) {
+			exp.Expression = exp.Expression.Analyze (this);
+			return exp;
+		}
+
         /// <summary>
         /// Analyzes the specified expression.
         /// </summary>

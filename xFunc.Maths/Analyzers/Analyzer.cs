@@ -115,6 +115,18 @@ namespace xFunc.Maths.Analyzers
             throw new NotSupportedException();
         }
 
+		/// <summary>
+		/// Analyzes the specified expression.
+		/// </summary>
+		/// <param name="exp">The expression.</param>
+		/// <returns>
+		/// The result of analysis.
+		/// </returns>
+		/// <exception cref="System.NotSupportedException">Always.</exception>
+		public virtual TResult Analyze (NDerivative exp) {
+			throw new NotSupportedException ();
+		}
+
         /// <summary>
         /// Analyzes the specified expression.
         /// </summary>

@@ -471,6 +471,8 @@ namespace xFunc.Maths
 				tokens.Add (new FunctionToken (Functions.DefiniteIntegral));
 			} else if (match == "roundunary") {
 				tokens.Add (new FunctionToken (Functions.RoundUnary));
+			} else if (match == "nderivative") {
+				tokens.Add (new FunctionToken (Functions.NDerivative));
 			} else {
 				tokens.Add (new UserFunctionToken (match));
 			}

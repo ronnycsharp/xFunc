@@ -316,6 +316,8 @@ namespace xFunc.Maths
 					exp = new RoundUnary (); break;
 				case Functions.DefiniteIntegral:
 					exp = new DefiniteIntegral (); break;
+				case Functions.NDerivative:
+					exp = new NDerivative (); break;
                 default:
                     exp = null; break;
             }

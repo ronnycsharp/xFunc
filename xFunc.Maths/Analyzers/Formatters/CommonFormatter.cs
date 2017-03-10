@@ -131,6 +131,16 @@ namespace xFunc.Maths.Analyzers.Formatters
             return ToString(exp, "deriv");
         }
 
+		/// <summary>
+		/// Analyzes the specified expression.
+		/// </summary>
+		/// <param name="exp">The expression.</param>
+		/// <returns>The result of analysis.</returns>
+		public string Analyze (NDerivative exp)
+		{
+			return ToString (exp, "nderiv");
+		}
+
         /// <summary>
         /// Analyzes the specified expression.
         /// </summary>
