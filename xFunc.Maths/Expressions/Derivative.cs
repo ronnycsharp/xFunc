@@ -109,7 +109,7 @@ namespace xFunc.Maths.Expressions
                 return diff.Execute(parameters);
             }
 
-            return diff.Analyze(Simplifier);
+			return diff.Execute (parameters); // diff.Analyze(Simplifier);
         }
 
         /// <summary>

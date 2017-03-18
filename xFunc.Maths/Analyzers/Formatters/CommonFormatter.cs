@@ -138,7 +138,7 @@ namespace xFunc.Maths.Analyzers.Formatters
 		/// <returns>The result of analysis.</returns>
 		public string Analyze (NDerivative exp)
 		{
-			return ToString (exp, "nderiv");
+			return ToString (exp, "nderivative");
 		}
 
         /// <summary>

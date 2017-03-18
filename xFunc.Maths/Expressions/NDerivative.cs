@@ -39,24 +39,29 @@ namespace xFunc.Maths.Expressions {
 				throw new ArgumentNullException (nameof (args));
 			if (args.Length != countOfParams)
 				throw new ArgumentException ();
+			/*
 			if (countOfParams == 2 && ( !(args[1] is Number) || !(args [2] is Variable)))
 				throw new ArgumentException (Resource.InvalidExpression);
+				*/
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NDerivative" /> class.
 		/// </summary>
-		public NDerivative (IExpression expression, Number number) : base (new [] { expression, number }, 2) { }
+		public NDerivative (IExpression expression, IExpression number) 
+			: base (new [] { expression, number }, 2) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NDerivative" /> class.
 		/// </summary>
-		public NDerivative (IExpression expression, Number number, Variable variable) : base (new [] { expression, number, variable }, 3) { }
+		public NDerivative (IExpression expression, IExpression number, Variable variable) 
+			: base (new [] { expression, number, variable }, 3) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NDerivative" /> class.
 		/// </summary>
-		public NDerivative (IExpression expression, Number number, Variable variable, Number point) : base (new [] { expression, number, variable, point }, 4) { }
+		public NDerivative (IExpression expression, IExpression number, Variable variable, Number point) 
+			: base (new [] { expression, number, variable, point }, 4) { }
 
 		/// <summary>
 		/// Returns a hash code for this instance.
@@ -88,7 +93,7 @@ namespace xFunc.Maths.Expressions {
 			var exp = this.Expression;
 
 			// iterate number of derivations
-			for (var n = 0; n < (int)this.Number.Value; n++) {
+			for (var n = 0; n < (int)((Number)this.Number).Value; n++) {
 				exp = exp.Analyze (this.Differentiator);
 			}
 
@@ -101,7 +106,11 @@ namespace xFunc.Maths.Expressions {
 				return exp.Execute (parameters);
 			}
 
+			return exp.Execute (parameters);
+
+			/*
 			return exp.Analyze (this.Simplifier);
+			*/
 		}
 
 		/// <summary>
@@ -149,7 +158,12 @@ namespace xFunc.Maths.Expressions {
 		/// <value>
 		/// The variable.
 		/// </value>
-		public Number Number => ParametersCount >= 2 ? (Number)m_arguments [1] : new Number (2);
+		public IExpression Number {
+			get { return m_arguments [1]; }
+			set {
+				m_arguments [1] = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the variable.
@@ -178,11 +192,13 @@ namespace xFunc.Maths.Expressions {
 				return base.Arguments;
 			}
 			set {
+				/*
 				if (value != null &&
 					((value.Length >= 2 && !(value [1] is Number)) ||
 				     (value.Length >= 3 && !(value [2] is Variable)) ||
 					 (value.Length >= 4 && !(value [3] is Number))))
 					throw new ArgumentException (Resource.InvalidExpression);
+				*/
 
 				base.Arguments = value;
 			}
