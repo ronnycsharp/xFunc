@@ -318,6 +318,9 @@ namespace xFunc.Maths
 					exp = new DefiniteIntegral (); break;
 				case Functions.NDerivative:
 					exp = new NDerivative (); break;
+				case Functions.Fract: {
+					exp = new Fract (); break;
+				}
                 default:
                     exp = null; break;
             }

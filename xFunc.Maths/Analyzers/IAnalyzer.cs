@@ -233,6 +233,12 @@ namespace xFunc.Maths.Analyzers
 		/// <param name="exp">Exp.</param>
 		TResult Analyze (NDerivative exp);
 
+		/// <summary>
+		/// Analyze the specified expression
+		/// </summary>
+		/// <param name="exp">Exp.</param>
+		TResult Analyze (Fract exp);
+
         #endregion Standard
 
         #region Matrix

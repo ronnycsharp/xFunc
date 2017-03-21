@@ -49,12 +49,54 @@ namespace xFunc.Maths
             return Math.Cos(d) / Math.Sin(d);
         }
 
-        /// <summary>
-        /// Returns the hyperbolic cotangent of the specified angle.
-        /// </summary>
-        /// <param name="d">An angle, measured in radians.</param>
-        /// <returns>The hyperbolic cotangent of value.</returns>
-        public static double Coth(double d)
+		public static void Fract (double value, out int numerator, out int denominator, double accuracy = 0.00000000001) {
+			if (accuracy <= 0.0 || accuracy >= 1.0)
+				throw new ArgumentOutOfRangeException (nameof (accuracy), "Must be > 0 and < 1.");
+
+			int sign = Math.Sign (value);
+			if (sign == -1) {
+				value = Math.Abs (value);
+			}
+
+			// Accuracy is the maximum relative error; convert to absolute maxError
+			double maxError = sign == 0 ? accuracy : value * accuracy;
+			int n = (int)Math.Floor (value);
+			value -= n;
+
+			if (value < maxError) {
+				numerator = sign * n;
+				denominator = 1;
+
+				return;
+			}
+
+			if (1 - maxError < value) {
+				numerator = sign * (n + 1);
+				denominator = 1;
+
+				return;
+			}
+
+			var z = value;
+			var previousDenominator = 0;
+			denominator = 1;
+			do {
+				z = 1.0 / (z - (int)z);
+				int temp = denominator;
+				denominator = denominator * (int)z + previousDenominator;
+				previousDenominator = temp;
+				numerator = Convert.ToInt32 (value * denominator);
+			}
+			while (Math.Abs (value - (double)numerator / denominator) > maxError && z != (int)z);
+			numerator = (n * denominator + numerator) * sign;
+		}
+
+		/// <summary>
+		/// Returns the hyperbolic cotangent of the specified angle.
+		/// </summary>
+		/// <param name="d">An angle, measured in radians.</param>
+		/// <returns>The hyperbolic cotangent of value.</returns>
+		public static double Coth(double d)
         {
             return (Math.Exp(d) + Math.Exp(-d)) / (Math.Exp(d) - Math.Exp(-d));
         }

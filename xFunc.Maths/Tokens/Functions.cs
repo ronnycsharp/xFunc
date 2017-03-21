@@ -298,6 +298,11 @@ namespace xFunc.Maths.Tokens
 		/// </summary>
 		NDerivative,
 
+		/// <summary>
+		/// Fraction
+		/// </summary>
+		Fract,
+
         /// <summary>
         /// The user function
         /// </summary>

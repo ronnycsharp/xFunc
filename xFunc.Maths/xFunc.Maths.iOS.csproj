@@ -225,6 +225,7 @@
     <Compile Include="Expressions\Programming\While.cs" />
     <Compile Include="ExcludeFromCodeCoverageAttribute.cs" />
     <Compile Include="Expressions\NDerivative.cs" />
+    <Compile Include="Expressions\Fract.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Resource.uk.resx">

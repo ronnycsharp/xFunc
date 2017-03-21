@@ -463,6 +463,14 @@ namespace xFunc.Maths.Analyzers
 			throw new NotSupportedException ();
 		}
 
+		/// <summary>
+		/// Analyzes the specified expression
+		/// </summary>
+		/// <param name="exp">Exp.</param>
+		public virtual TResult Analyze (Fract exp) {
+			throw new NotSupportedException ();
+		}
+
         #endregion Standard
 
         #region Matrix

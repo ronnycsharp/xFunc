@@ -435,16 +435,25 @@ namespace xFunc.Maths.Analyzers.Formatters
 			return ToString (exp, "roundunary({0})");
 		}
 
-        #endregion Standard
+		/// <summary>
+		/// Analyzes the specified expression.
+		/// </summary>
+		/// <param name="exp">The expression.</param>
+		/// <returns>The result of analysis.</returns>
+		public string Analyze (Fract exp) {
+			return ToString (exp, "fract({0})");
+		}
 
-        #region Matrix
+		#endregion Standard
 
-        /// <summary>
-        /// Analyzes the specified expression.
-        /// </summary>
-        /// <param name="exp">The expression.</param>
-        /// <returns>The result of analysis.</returns>
-        public string Analyze(Vector exp)
+		#region Matrix
+
+		/// <summary>
+		/// Analyzes the specified expression.
+		/// </summary>
+		/// <param name="exp">The expression.</param>
+		/// <returns>The result of analysis.</returns>
+		public string Analyze(Vector exp)
         {
             var sb = new StringBuilder();
 

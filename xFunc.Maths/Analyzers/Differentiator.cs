@@ -153,6 +153,7 @@ namespace xFunc.Maths.Analyzers
             return new Div(exp.Left.Clone().Analyze(this), exp.Right.Clone());
         }
 
+
         /// <summary>
         /// Analyzes the specified expression.
         /// </summary>

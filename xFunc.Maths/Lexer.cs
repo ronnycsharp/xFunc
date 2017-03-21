@@ -473,6 +473,8 @@ namespace xFunc.Maths
 				tokens.Add (new FunctionToken (Functions.RoundUnary));
 			} else if (match == "nderivative") {
 				tokens.Add (new FunctionToken (Functions.NDerivative));
+			} else if (match == "fract") {
+				tokens.Add (new FunctionToken (Functions.Fract));
 			} else {
 				tokens.Add (new UserFunctionToken (match));
 			}
