@@ -49,7 +49,7 @@ namespace xFunc.Maths
             return Math.Cos(d) / Math.Sin(d);
         }
 
-		public static void Fract (double value, out int numerator, out int denominator, double accuracy = 0.00000000001) {
+		public static void Fract (double value, out int numerator, out int denominator, double accuracy = 0.0000000001) {
 			if (accuracy <= 0.0 || accuracy >= 1.0)
 				throw new ArgumentOutOfRangeException (nameof (accuracy), "Must be > 0 and < 1.");
 
