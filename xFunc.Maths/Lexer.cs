@@ -56,12 +56,12 @@ namespace xFunc.Maths
 
         private void InitRegex()
         {
-            var options = RegexOptions.Compiled | RegexOptions.IgnoreCase;
+			var options = RegexOptions.Compiled | RegexOptions.IgnoreCase;
 
             regexSymbols = new Regex(@"\G(\(|\)|{|}|,)", options);
             regexOperations = new Regex(@"\G([^a-zα-ω0-9(){},°\s]+|nand|nor|and|or|xor|not|eq|impl|mod)", options);
             regexFunctions = new Regex(@"\G([a-zα-ω][0-9a-zα-ω]*)(\(|{)?", options);
-            regexConst = new Regex(@"\G(true|false)", options);
+			regexConst = new Regex (@"\G(true|false)", RegexOptions.Compiled);
 
             regexNumberHex = new Regex(@"\G[+-]?0x[0-9a-f]+", options);
             regexNumberBin = new Regex(@"\G[+-]?0b[01]+", options);
@@ -545,7 +545,7 @@ namespace xFunc.Maths
             if (!IsBalanced(function))
                 throw new LexerException(Resource.NotBalanced);
 
-            function = function.ToLower()
+            function = function/*.ToLower()*/
                                .Replace("\n", "")
                                .Replace("\r", "");
 
