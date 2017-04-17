@@ -66,12 +66,16 @@ namespace xFunc.Maths.Expressions.ComplexNumbers
         /// A result of the execution.
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
-        public override object Execute(ExpressionParameters parameters) {
-			var radians = ((Complex)m_argument.Execute (parameters)).Phase;
-			if (parameters.AngleMeasurement == AngleMeasurement.Degree) {
-				return Helpers.RadToDeg (radians);
-			}
-			return radians;
+        public override object Execute(ExpressionParameters parameters)
+        {
+            var angleMeasurement = parameters?.AngleMeasurement ?? AngleMeasurement.Degree;
+
+            if (angleMeasurement == AngleMeasurement.Degree)
+                return ((Complex)m_argument.Execute(parameters)).Phase * 180 / Math.PI;
+            if (angleMeasurement == AngleMeasurement.Gradian)
+                return ((Complex)m_argument.Execute(parameters)).Phase * 200 / Math.PI;
+
+            return ((Complex)m_argument.Execute(parameters)).Phase;
         }
 
         /// <summary>

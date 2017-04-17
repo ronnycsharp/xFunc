@@ -562,6 +562,23 @@ namespace xFunc.Tests
         }
 
         [Fact]
+        public void NumAndFunc()
+        {
+            var tokens = lexer.Tokenize("5cos(x)");
+
+            var expected = new List<IToken>()
+            {
+                new NumberToken(5),
+                new OperationToken(Operations.Multiplication),
+                new FunctionToken(Functions.Cosine, 1),
+                new SymbolToken(Symbols.OpenBracket),
+                new VariableToken("x"),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
         public void VarWithNumber1()
         {
             var tokens = lexer.Tokenize("x1");
@@ -2442,7 +2459,7 @@ namespace xFunc.Tests
 
             var expected = new List<IToken>
             {
-                new ComplexNumberToken(Complex.FromPolarCoordinates(10, 45))
+                new ComplexNumberToken(Complex.FromPolarCoordinates(10, 45 * Math.PI / 180))
             };
 
             Assert.Equal(expected, tokens.ToList());
@@ -2652,7 +2669,7 @@ namespace xFunc.Tests
 
             var expected = new List<IToken>
             {
-                new ComplexNumberToken(Complex.FromPolarCoordinates(2.3, 7.1))
+                new ComplexNumberToken(Complex.FromPolarCoordinates(2.3, 7.1 * Math.PI / 180))
             };
 
             Assert.Equal(expected, tokens.ToList());
@@ -2665,7 +2682,7 @@ namespace xFunc.Tests
 
             var expected = new List<IToken>
             {
-                new ComplexNumberToken(Complex.FromPolarCoordinates(2.3, -7.1))
+                new ComplexNumberToken(Complex.FromPolarCoordinates(2.3, -7.1 * Math.PI / 180))
             };
 
             Assert.Equal(expected, tokens.ToList());
@@ -2678,7 +2695,7 @@ namespace xFunc.Tests
 
             var expected = new List<IToken>
             {
-                new ComplexNumberToken(Complex.FromPolarCoordinates(-2.3, -7.1))
+                new ComplexNumberToken(Complex.FromPolarCoordinates(-2.3, -7.1 * Math.PI / 180))
             };
 
             Assert.Equal(expected, tokens.ToList());
@@ -2729,7 +2746,7 @@ namespace xFunc.Tests
 
             var expected = new List<IToken>
             {
-                new ComplexNumberToken(Complex.FromPolarCoordinates(10, 45))
+                new ComplexNumberToken(Complex.FromPolarCoordinates(10, 45 * Math.PI / 180))
             };
 
             Assert.Equal(expected, tokens.ToList());
@@ -3057,6 +3074,99 @@ namespace xFunc.Tests
                 new NumberToken(4),
                 new OperationToken(Operations.Multiplication),
                 new VariableToken("φ")
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void NotOperationCaseInsensitive()
+        {
+            var tokens = lexer.Tokenize("nOt(4)");
+            var expected = new List<IToken>
+            {
+                new OperationToken(Operations.Not),
+                new SymbolToken(Symbols.OpenBracket),
+                new NumberToken(4),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void HexNumberCaseInsensitive()
+        {
+            var tokens = lexer.Tokenize("0XFF");
+            var expected = new List<IToken>
+            {
+                new NumberToken(0xFF)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void BinNumberCaseInsensitive()
+        {
+            var tokens = lexer.Tokenize("0b1001");
+            var expected = new List<IToken>
+            {
+                new NumberToken(0b1001)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void TrueConstCaseInsensitive()
+        {
+            var tokens = lexer.Tokenize("tRuE");
+            var expected = new List<IToken>
+            {
+                new BooleanToken(true)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void SinCaseInsensitive()
+        {
+            var tokens = lexer.Tokenize("sIn(x)");
+            var expected = new List<IToken>
+            {
+                new FunctionToken(Functions.Sine, 1),
+                new SymbolToken(Symbols.OpenBracket),
+                new VariableToken("x"),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void UserFuncCaseSensitive()
+        {
+            var tokens = lexer.Tokenize("caSe(x)");
+            var expected = new List<IToken>
+            {
+                new UserFunctionToken("caSe", 1),
+                new SymbolToken(Symbols.OpenBracket),
+                new VariableToken("x"),
+                new SymbolToken(Symbols.CloseBracket)
+            };
+
+            Assert.Equal(expected, tokens.ToList());
+        }
+
+        [Fact]
+        public void VarCaseSensitive()
+        {
+            var tokens = lexer.Tokenize("caseSensitive");
+            var expected = new List<IToken>
+            {
+                new VariableToken("caseSensitive")
             };
 
             Assert.Equal(expected, tokens.ToList());
