@@ -325,149 +325,290 @@ namespace xFunc.Maths
         /// <param name="tokens">The list of tokens.</param>
         private void CreateFunction(string match, IList<IToken> tokens)
         {
-			if (match == "add") {
-				tokens.Add (new FunctionToken (Functions.Add));
-			} else if (match == "sub") {
-				tokens.Add (new FunctionToken (Functions.Sub));
-			} else if (match == "mul") {
-				tokens.Add (new FunctionToken (Functions.Mul));
-			} else if (match == "div") {
-				tokens.Add (new FunctionToken (Functions.Div));
-			} else if (match == "pow") {
-				tokens.Add (new FunctionToken (Functions.Pow));
-			} else if (match == "abs") {
-				tokens.Add (new FunctionToken (Functions.Absolute));
-			} else if (match == "sin") {
-				tokens.Add (new FunctionToken (Functions.Sine));
-			} else if (match == "cos") {
-				tokens.Add (new FunctionToken (Functions.Cosine));
-			} else if (match == "tg" || match == "tan") {
-				tokens.Add (new FunctionToken (Functions.Tangent));
-			} else if (match == "ctg" || match == "cot") {
-				tokens.Add (new FunctionToken (Functions.Cotangent));
-			} else if (match == "sec") {
-				tokens.Add (new FunctionToken (Functions.Secant));
-			} else if (match == "csc" || match == "cosec") {
-				tokens.Add (new FunctionToken (Functions.Cosecant));
-			} else if (match == "arcsin") {
-				tokens.Add (new FunctionToken (Functions.Arcsine));
-			} else if (match == "arccos") {
-				tokens.Add (new FunctionToken (Functions.Arccosine));
-			} else if (match == "arctg" || match == "arctan") {
-				tokens.Add (new FunctionToken (Functions.Arctangent));
-			} else if (match == "arcctg" || match == "arccot") {
-				tokens.Add (new FunctionToken (Functions.Arccotangent));
-			} else if (match == "arcsec") {
-				tokens.Add (new FunctionToken (Functions.Arcsecant));
-			} else if (match == "arccsc" || match == "arccosec") {
-				tokens.Add (new FunctionToken (Functions.Arccosecant));
-			} else if (match == "sqrt") {
-				tokens.Add (new FunctionToken (Functions.Sqrt));
-			} else if (match == "root") {
-				tokens.Add (new FunctionToken (Functions.Root));
-			} else if (match == "ln") {
-				tokens.Add (new FunctionToken (Functions.Ln));
-			} else if (match == "lg") {
-				tokens.Add (new FunctionToken (Functions.Lg));
-			} else if (match == "lb" || match == "log2") {
-				tokens.Add (new FunctionToken (Functions.Lb));
-			} else if (match == "log") {
-				tokens.Add (new FunctionToken (Functions.Log));
-			} else if (match == "sh" || match == "sinh") {
-				tokens.Add (new FunctionToken (Functions.Sineh));
-			} else if (match == "ch" || match == "cosh") {
-				tokens.Add (new FunctionToken (Functions.Cosineh));
-			} else if (match == "th" || match == "tanh") {
-				tokens.Add (new FunctionToken (Functions.Tangenth));
-			} else if (match == "cth" || match == "coth") {
-				tokens.Add (new FunctionToken (Functions.Cotangenth));
-			} else if (match == "sech") {
-				tokens.Add (new FunctionToken (Functions.Secanth));
-			} else if (match == "csch") {
-				tokens.Add (new FunctionToken (Functions.Cosecanth));
-			} else if (match == "arsh" || match == "arsinh") {
-				tokens.Add (new FunctionToken (Functions.Arsineh));
-			} else if (match == "arch" || match == "arcosh") {
-				tokens.Add (new FunctionToken (Functions.Arcosineh));
-			} else if (match == "arth" || match == "artanh") {
-				tokens.Add (new FunctionToken (Functions.Artangenth));
-			} else if (match == "arcth" || match == "arcoth") {
-				tokens.Add (new FunctionToken (Functions.Arcotangenth));
-			} else if (match == "arsch" || match == "arsech") {
-				tokens.Add (new FunctionToken (Functions.Arsecanth));
-			} else if (match == "arcsch") {
-				tokens.Add (new FunctionToken (Functions.Arcosecanth));
-			} else if (match == "exp") {
-				tokens.Add (new FunctionToken (Functions.Exp));
-			} else if (match == "gcd" || match == "gcf" || match == "hcf") {
-				tokens.Add (new FunctionToken (Functions.GCD));
-			} else if (match == "lcm" || match == "scm") {
-				tokens.Add (new FunctionToken (Functions.LCM));
-			} else if (match == "fact") {
-				tokens.Add (new FunctionToken (Functions.Factorial));
-			} else if (match == "sum") {
-				tokens.Add (new FunctionToken (Functions.Sum));
-			} else if (match == "product") {
-				tokens.Add (new FunctionToken (Functions.Product));
-			} else if (match == "round") {
-				tokens.Add (new FunctionToken (Functions.Round));
-			} else if (match == "floor") {
-				tokens.Add (new FunctionToken (Functions.Floor));
-			} else if (match == "ceil") {
-				tokens.Add (new FunctionToken (Functions.Ceil));
-			} else if (match == "if") {
-				tokens.Add (new FunctionToken (Functions.If));
-			} else if (match == "for") {
-				tokens.Add (new FunctionToken (Functions.For));
-			} else if (match == "while") {
-				tokens.Add (new FunctionToken (Functions.While));
-			} else if (match == "del" || match == "nabla") {
-				tokens.Add (new FunctionToken (Functions.Del));
-			} else if (match == "deriv") {
-				tokens.Add (new FunctionToken (Functions.Derivative));
-			} else if (match == "simplify") {
-				tokens.Add (new FunctionToken (Functions.Simplify));
-			} else if (match == "def") {
-				tokens.Add (new FunctionToken (Functions.Define));
-			} else if (match == "undef") {
-				tokens.Add (new FunctionToken (Functions.Undefine));
-			} else if (match == "transpose") {
-				tokens.Add (new FunctionToken (Functions.Transpose));
-			} else if (match == "det" || match == "determinant") {
-				tokens.Add (new FunctionToken (Functions.Determinant));
-			} else if (match == "inverse") {
-				tokens.Add (new FunctionToken (Functions.Inverse));
-			} else if (match == "vector") {
-				tokens.Add (new FunctionToken (Functions.Vector));
-			} else if (match == "matrix") {
-				tokens.Add (new FunctionToken (Functions.Matrix));
-			} else if (match == "re" || match == "real") {
-				tokens.Add (new FunctionToken (Functions.Re));
-			} else if (match == "im" || match == "imaginary") {
-				tokens.Add (new FunctionToken (Functions.Im));
-			} else if (match == "phase") {
-				tokens.Add (new FunctionToken (Functions.Phase));
-			} else if (match == "conjugate") {
-				tokens.Add (new FunctionToken (Functions.Conjugate));
-			} else if (match == "reciprocal") {
-				tokens.Add (new FunctionToken (Functions.Reciprocal));
-			} else if (match == "min") {
-				tokens.Add (new FunctionToken (Functions.Min));
-			} else if (match == "max") {
-				tokens.Add (new FunctionToken (Functions.Max));
-			} else if (match == "avg") {
-				tokens.Add (new FunctionToken (Functions.Avg));
-			} else if (match == "count") {
-				tokens.Add (new FunctionToken (Functions.Count));
-			} else if (match == "var") {
-				tokens.Add (new FunctionToken (Functions.Var));
-			} else if (match == "varp") {
-				tokens.Add (new FunctionToken (Functions.Varp));
-			} else if (match == "stdev") {
-				tokens.Add (new FunctionToken (Functions.Stdev));
-			} else if (match == "stdevp") {
-				tokens.Add (new FunctionToken (Functions.Stdevp));
-			} else if (match == "integral") {
+            var lowerMatch = match.ToLower();
+            if (lowerMatch == "add")
+            {
+                tokens.Add(new FunctionToken(Functions.Add));
+            }
+            else if (lowerMatch == "sub")
+            {
+                tokens.Add(new FunctionToken(Functions.Sub));
+            }
+            else if (lowerMatch == "mul")
+            {
+                tokens.Add(new FunctionToken(Functions.Mul));
+            }
+            else if (lowerMatch == "div")
+            {
+                tokens.Add(new FunctionToken(Functions.Div));
+            }
+            else if (lowerMatch == "pow")
+            {
+                tokens.Add(new FunctionToken(Functions.Pow));
+            }
+            else if (lowerMatch == "abs")
+            {
+                tokens.Add(new FunctionToken(Functions.Absolute));
+            }
+            else if (lowerMatch == "sin")
+            {
+                tokens.Add(new FunctionToken(Functions.Sine));
+            }
+            else if (lowerMatch == "cos")
+            {
+                tokens.Add(new FunctionToken(Functions.Cosine));
+            }
+            else if (lowerMatch == "tg" || lowerMatch == "tan")
+            {
+                tokens.Add(new FunctionToken(Functions.Tangent));
+            }
+            else if (lowerMatch == "ctg" || lowerMatch == "cot")
+            {
+                tokens.Add(new FunctionToken(Functions.Cotangent));
+            }
+            else if (lowerMatch == "sec")
+            {
+                tokens.Add(new FunctionToken(Functions.Secant));
+            }
+            else if (lowerMatch == "csc" || lowerMatch == "cosec")
+            {
+                tokens.Add(new FunctionToken(Functions.Cosecant));
+            }
+            else if (lowerMatch == "arcsin")
+            {
+                tokens.Add(new FunctionToken(Functions.Arcsine));
+            }
+            else if (lowerMatch == "arccos")
+            {
+                tokens.Add(new FunctionToken(Functions.Arccosine));
+            }
+            else if (lowerMatch == "arctg" || lowerMatch == "arctan")
+            {
+                tokens.Add(new FunctionToken(Functions.Arctangent));
+            }
+            else if (lowerMatch == "arcctg" || lowerMatch == "arccot")
+            {
+                tokens.Add(new FunctionToken(Functions.Arccotangent));
+            }
+            else if (lowerMatch == "arcsec")
+            {
+                tokens.Add(new FunctionToken(Functions.Arcsecant));
+            }
+            else if (lowerMatch == "arccsc" || lowerMatch == "arccosec")
+            {
+                tokens.Add(new FunctionToken(Functions.Arccosecant));
+            }
+            else if (lowerMatch == "sqrt")
+            {
+                tokens.Add(new FunctionToken(Functions.Sqrt));
+            }
+            else if (lowerMatch == "root")
+            {
+                tokens.Add(new FunctionToken(Functions.Root));
+            }
+            else if (lowerMatch == "ln")
+            {
+                tokens.Add(new FunctionToken(Functions.Ln));
+            }
+            else if (lowerMatch == "lg")
+            {
+                tokens.Add(new FunctionToken(Functions.Lg));
+            }
+            else if (lowerMatch == "lb" || lowerMatch == "log2")
+            {
+                tokens.Add(new FunctionToken(Functions.Lb));
+            }
+            else if (lowerMatch == "log")
+            {
+                tokens.Add(new FunctionToken(Functions.Log));
+            }
+            else if (lowerMatch == "sh" || lowerMatch == "sinh")
+            {
+                tokens.Add(new FunctionToken(Functions.Sineh));
+            }
+            else if (lowerMatch == "ch" || lowerMatch == "cosh")
+            {
+                tokens.Add(new FunctionToken(Functions.Cosineh));
+            }
+            else if (lowerMatch == "th" || lowerMatch == "tanh")
+            {
+                tokens.Add(new FunctionToken(Functions.Tangenth));
+            }
+            else if (lowerMatch == "cth" || lowerMatch == "coth")
+            {
+                tokens.Add(new FunctionToken(Functions.Cotangenth));
+            }
+            else if (lowerMatch == "sech")
+            {
+                tokens.Add(new FunctionToken(Functions.Secanth));
+            }
+            else if (lowerMatch == "csch")
+            {
+                tokens.Add(new FunctionToken(Functions.Cosecanth));
+            }
+            else if (lowerMatch == "arsh" || lowerMatch == "arsinh")
+            {
+                tokens.Add(new FunctionToken(Functions.Arsineh));
+            }
+            else if (lowerMatch == "arch" || lowerMatch == "arcosh")
+            {
+                tokens.Add(new FunctionToken(Functions.Arcosineh));
+            }
+            else if (lowerMatch == "arth" || lowerMatch == "artanh")
+            {
+                tokens.Add(new FunctionToken(Functions.Artangenth));
+            }
+            else if (lowerMatch == "arcth" || lowerMatch == "arcoth")
+            {
+                tokens.Add(new FunctionToken(Functions.Arcotangenth));
+            }
+            else if (lowerMatch == "arsch" || lowerMatch == "arsech")
+            {
+                tokens.Add(new FunctionToken(Functions.Arsecanth));
+            }
+            else if (lowerMatch == "arcsch")
+            {
+                tokens.Add(new FunctionToken(Functions.Arcosecanth));
+            }
+            else if (lowerMatch == "exp")
+            {
+                tokens.Add(new FunctionToken(Functions.Exp));
+            }
+            else if (lowerMatch == "gcd" || lowerMatch == "gcf" || lowerMatch == "hcf")
+            {
+                tokens.Add(new FunctionToken(Functions.GCD));
+            }
+            else if (lowerMatch == "lcm" || lowerMatch == "scm")
+            {
+                tokens.Add(new FunctionToken(Functions.LCM));
+            }
+            else if (lowerMatch == "fact")
+            {
+                tokens.Add(new FunctionToken(Functions.Factorial));
+            }
+            else if (lowerMatch == "sum")
+            {
+                tokens.Add(new FunctionToken(Functions.Sum));
+            }
+            else if (lowerMatch == "product")
+            {
+                tokens.Add(new FunctionToken(Functions.Product));
+            }
+            else if (lowerMatch == "round")
+            {
+                tokens.Add(new FunctionToken(Functions.Round));
+            }
+            else if (lowerMatch == "floor")
+            {
+                tokens.Add(new FunctionToken(Functions.Floor));
+            }
+            else if (lowerMatch == "ceil")
+            {
+                tokens.Add(new FunctionToken(Functions.Ceil));
+            }
+            else if (lowerMatch == "if")
+            {
+                tokens.Add(new FunctionToken(Functions.If));
+            }
+            else if (lowerMatch == "for")
+            {
+                tokens.Add(new FunctionToken(Functions.For));
+            }
+            else if (lowerMatch == "while")
+            {
+                tokens.Add(new FunctionToken(Functions.While));
+            }
+            else if (lowerMatch == "del" || lowerMatch == "nabla")
+            {
+                tokens.Add(new FunctionToken(Functions.Del));
+            }
+            else if (lowerMatch == "deriv")
+            {
+                tokens.Add(new FunctionToken(Functions.Derivative));
+            }
+            else if (lowerMatch == "simplify")
+            {
+                tokens.Add(new FunctionToken(Functions.Simplify));
+            }
+            else if (lowerMatch == "def")
+            {
+                tokens.Add(new FunctionToken(Functions.Define));
+            }
+            else if (lowerMatch == "undef")
+            {
+                tokens.Add(new FunctionToken(Functions.Undefine));
+            }
+            else if (lowerMatch == "transpose")
+            {
+                tokens.Add(new FunctionToken(Functions.Transpose));
+            }
+            else if (lowerMatch == "det" || lowerMatch == "determinant")
+            {
+                tokens.Add(new FunctionToken(Functions.Determinant));
+            }
+            else if (lowerMatch == "inverse")
+            {
+                tokens.Add(new FunctionToken(Functions.Inverse));
+            }
+            else if (lowerMatch == "vector")
+            {
+                tokens.Add(new FunctionToken(Functions.Vector));
+            }
+            else if (lowerMatch == "matrix")
+            {
+                tokens.Add(new FunctionToken(Functions.Matrix));
+            }
+            else if (lowerMatch == "re" || lowerMatch == "real")
+            {
+                tokens.Add(new FunctionToken(Functions.Re));
+            }
+            else if (lowerMatch == "im" || lowerMatch == "imaginary")
+            {
+                tokens.Add(new FunctionToken(Functions.Im));
+            }
+            else if (lowerMatch == "phase")
+            {
+                tokens.Add(new FunctionToken(Functions.Phase));
+            }
+            else if (lowerMatch == "conjugate")
+            {
+                tokens.Add(new FunctionToken(Functions.Conjugate));
+            }
+            else if (lowerMatch == "reciprocal")
+            {
+                tokens.Add(new FunctionToken(Functions.Reciprocal));
+            }
+            else if (lowerMatch == "min")
+            {
+                tokens.Add(new FunctionToken(Functions.Min));
+            }
+            else if (lowerMatch == "max")
+            {
+                tokens.Add(new FunctionToken(Functions.Max));
+            }
+            else if (lowerMatch == "avg")
+            {
+                tokens.Add(new FunctionToken(Functions.Avg));
+            }
+            else if (lowerMatch == "count")
+            {
+                tokens.Add(new FunctionToken(Functions.Count));
+            }
+            else if (lowerMatch == "var")
+            {
+                tokens.Add(new FunctionToken(Functions.Var));
+            }
+            else if (lowerMatch == "varp")
+            {
+                tokens.Add(new FunctionToken(Functions.Varp));
+            }
+            else if (lowerMatch == "stdev")
+            {
+                tokens.Add(new FunctionToken(Functions.Stdev));
+            }
+            else if (lowerMatch == "stdevp") {
+                tokens.Add(new FunctionToken(Functions.Stdevp));
+            } else if (match == "integral") {
 				tokens.Add (new FunctionToken (Functions.DefiniteIntegral));
 			} else if (match == "roundunary") {
 				tokens.Add (new FunctionToken (Functions.RoundUnary));
@@ -476,8 +617,8 @@ namespace xFunc.Maths
 			} else if (match == "fract") {
 				tokens.Add (new FunctionToken (Functions.Fract));
 			} else {
-				tokens.Add (new UserFunctionToken (match));
-			}
+                tokens.Add(new UserFunctionToken(match));
+            }
         }
 
         /// <summary>
@@ -545,17 +686,11 @@ namespace xFunc.Maths
             if (!IsBalanced(function))
                 throw new LexerException(Resource.NotBalanced);
 
-            function = function/*.ToLower()*/
-                               .Replace("\n", "")
-                               .Replace("\r", "");
-
+            function = function.Replace("\n", "").Replace("\r", "");
             var tokens = new List<IToken>();
-            Match match = null;
-
-            for (int i = 0; i < function.Length;)
-            {
+            for (var i = 0; i < function.Length;) {
                 // whitespaces
-                match = regexSkip.Match(function, i);
+                var match = regexSkip.Match(function, i);
                 if (match.Success)
                 {
                     i += match.Length;
@@ -584,9 +719,7 @@ namespace xFunc.Maths
                     if (!double.TryParse(regexAllWhitespaces.Replace(match.Groups[2].Value, string.Empty).Replace("∠", ""), NumberStyles.Number, CultureInfo.InvariantCulture, out phase))
                         phase = 1.0;
 
-					tokens.Add (
-						new ComplexNumberToken (
-							Complex.FromPolarCoordinates (magnitude, Helpers.DegToRad (phase))));
+                    tokens.Add(new ComplexNumberToken(Complex.FromPolarCoordinates(magnitude, phase * Math.PI / 180)));
 
                     i += match.Length;
                     continue;

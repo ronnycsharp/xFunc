@@ -16,26 +16,24 @@ using System;
 
 namespace xFunc.Maths.Expressions
 {
-    
-    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-    internal sealed class ReverseFunctionAttribute : Attribute
-    {
 
-        private readonly Type reverseType;
+	[AttributeUsage (AttributeTargets.Class, Inherited = false)]
+	internal sealed class ReverseFunctionAttribute : Attribute
+	{
 
-        public ReverseFunctionAttribute(Type reverseType)
-        {
-            this.reverseType = reverseType;
-        }
+		private readonly Type reverseType;
 
-        public Type ReverseType
-        {
-            get
-            {
-                return reverseType;
-            }
-        }
+		public ReverseFunctionAttribute (Type reverseType)
+		{
+			this.reverseType = reverseType;
+		}
 
-    }
+		public Type ReverseType {
+			get {
+				return reverseType;
+			}
+		}
+
+	}
 
 }

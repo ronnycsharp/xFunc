@@ -325,9 +325,8 @@ namespace xFunc.Maths
                     exp = null; break;
             }
 
-            var diff = exp as DifferentParametersExpression;
-            if (diff != null)
-                diff.ParametersCount = token.CountOfParams;
+            if (exp is DifferentParametersExpression)
+				((DifferentParametersExpression)exp).ParametersCount = token.CountOfParams;
 
             return exp;
         }
@@ -337,8 +336,7 @@ namespace xFunc.Maths
         /// </summary>
         /// <param name="token">The user-function token.</param>
         /// <returns>An expression.</returns>
-        protected virtual IExpression CreateUserFunction(UserFunctionToken token)
-        {
+        protected virtual IExpression CreateUserFunction(UserFunctionToken token) {
             return new UserFunction(token.FunctionName, token.CountOfParams);
         }
 

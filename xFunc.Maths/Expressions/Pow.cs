@@ -77,7 +77,7 @@ namespace xFunc.Maths.Expressions
             var rightResult = m_right.Execute(parameters);
 
             if (resultType == ExpressionResultType.ComplexNumber)
-                return Complex.Pow((Complex)leftResult, rightResult as Complex? ?? (double)rightResult);
+                return Complex.Pow(leftResult as Complex? ?? (double)leftResult, rightResult as Complex? ?? (double)rightResult);
 
             return MathExtensions.Pow((double)leftResult, (double)rightResult);
         }

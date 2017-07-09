@@ -27,8 +27,6 @@ namespace xFunc.Maths {
     /// The parser for mathematical expressions.
     /// </summary>
     public class Parser : IParser {
-        private IExpressionFactory factory;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Parser"/> class with default implementations of <see cref="IExpressionFactory"/>.
         /// </summary>
@@ -39,8 +37,7 @@ namespace xFunc.Maths {
         /// </summary>
         /// <param name="factory">The factory.</param>
         public Parser(IExpressionFactory factory) {
-            this.factory = factory;
-			this.simplifier = new Simplifier ();
+            ExpressionFactory = factory;
         }
 
         /// <summary>
@@ -169,7 +166,7 @@ namespace xFunc.Maths {
 
             foreach (var token in tokens)
             {
-                var exp = factory.Create(token);
+                var exp = ExpressionFactory.Create(token);
                 if (exp == null)
                     throw new ParserException(Resource.ErrorWhileParsingTree);
 
@@ -255,17 +252,7 @@ namespace xFunc.Maths {
         /// <value>
         /// The expression factory.
         /// </value>
-        public IExpressionFactory ExpressionFactory
-        {
-            get
-            {
-                return factory;
-            }
-            set
-            {
-                factory = value;
-            }
-        }
+        public IExpressionFactory ExpressionFactory { get; set; }
 
 		/// <summary>
 		/// gets the simplifier-object for simplifying an expression

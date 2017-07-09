@@ -38,7 +38,7 @@ namespace xFunc.Maths.Expressions
         /// <param name="key">The key.</param>
         public Undefine(IExpression key)
         {
-            this.Key = key;
+            Key = key;
         }
 
         /// <summary>

@@ -57,11 +57,22 @@ namespace xFunc.Maths.Analyzers
             return exp;
         }
 
-        private IExpression AnalyzeTrigonometric<T>(UnaryExpression exp) where T : UnaryExpression
+		private IExpression AnalyzeTrigonometric<T> (UnaryExpression exp) where T : IExpression {
+			return _AnalyzeTrigonometric (exp);
+		}
+
+        private IExpression _AnalyzeTrigonometric(UnaryExpression exp)
         {
             exp.Argument = exp.Argument.Analyze(this);
-            if (exp.Argument is T trigonometric)
-                return trigonometric.Argument;
+
+            var attrs = exp.GetType().GetCustomAttributes(typeof(ReverseFunctionAttribute), false);
+            if (attrs.Length > 0)
+            {
+                var attr = (ReverseFunctionAttribute)attrs[0];
+
+                if (exp.Argument.GetType() == attr.ReverseType)
+                    return ((UnaryExpression)exp.Argument).Argument;
+            }
 
             return exp;
         }
@@ -111,7 +122,9 @@ namespace xFunc.Maths.Analyzers
                 return new Number((double)exp.Execute());
 
             // x + x
-            if (exp.Left is Variable leftVar && exp.Right is Variable rightVar && leftVar.Name == rightVar.Name)
+            var leftVar = exp.Left as Variable;
+            var rightVar = exp.Right as Variable;
+            if (leftVar != null && rightVar != null && leftVar.Name == rightVar.Name)
                 return new Mul(new Number(2), leftVar);
 
             if (exp.Left is UnaryMinus)
@@ -120,9 +133,13 @@ namespace xFunc.Maths.Analyzers
                 exp.Left = exp.Right;
                 exp.Right = temp;
             }
+            if (exp.Right is UnaryMinus)
+            {
+                var unMinus = exp.Right as UnaryMinus;
+                var sub = new Sub(exp.Left, unMinus.Argument);
 
-            if (exp.Right is UnaryMinus unMinus)
-                return Analyze(new Sub(exp.Left, unMinus.Argument));
+                return Analyze(sub);
+            }
 
             // 2 + (2 + x)
             // 2 + (x + 2)
@@ -137,11 +154,20 @@ namespace xFunc.Maths.Analyzers
             }
             if (bracketAdd != null && firstNumber != null)
             {
-                if (bracketAdd.Left is Number secondNumberLeft)
-                    return Analyze(new Add(bracketAdd.Right, new Number(firstNumber.Value + secondNumberLeft.Value)));
+                if (bracketAdd.Left is Number)
+                {
+                    var secondNumber = bracketAdd.Left as Number;
+                    var result = new Add(bracketAdd.Right, new Number(firstNumber.Value + secondNumber.Value));
 
-                if (bracketAdd.Right is Number secondNumberRight)
-                    return Analyze(new Add(bracketAdd.Left, new Number(firstNumber.Value + secondNumberRight.Value)));
+                    return Analyze(result);
+                }
+                if (bracketAdd.Right is Number)
+                {
+                    var secondNumber = bracketAdd.Right as Number;
+                    var result = new Add(bracketAdd.Left, new Number(firstNumber.Value + secondNumber.Value));
+
+                    return Analyze(result);
+                }
             }
 
             // 2 + (2 - x)
@@ -157,11 +183,13 @@ namespace xFunc.Maths.Analyzers
             }
             if (bracketSub != null && firstNumber != null)
             {
-                if (bracketSub.Left is Number secondNumberLeft)
-                    return Analyze(new Sub(new Number(firstNumber.Value + secondNumberLeft.Value), bracketSub.Right));
+                var secondNumber = bracketSub.Left as Number;
+                if (secondNumber != null)
+                    return Analyze(new Sub(new Number(firstNumber.Value + secondNumber.Value), bracketSub.Right));
 
-                if (bracketSub.Right is Number secondNumberRight)
-                    return Analyze(new Add(new Number(firstNumber.Value - secondNumberRight.Value), bracketSub.Left));
+                secondNumber = bracketSub.Right as Number;
+                if (secondNumber != null)
+                    return Analyze(new Add(new Number(firstNumber.Value - secondNumber.Value), bracketSub.Left));
             }
 
             // x + 2x
@@ -169,46 +197,49 @@ namespace xFunc.Maths.Analyzers
             Number leftMultiplier = null;
             Number rightMultiplier = null;
             Variable varMultiplier = null;
-            if (exp.Left is Variable leftVariable && exp.Right is Mul rightMul1)
+            if (exp.Left is Variable && exp.Right is Mul)
             {
                 leftMultiplier = 1;
-                varMultiplier = leftVariable;
+                varMultiplier = (Variable)exp.Left;
 
-                if (rightMul1.Left is Number mulLeftNumber && rightMul1.Right.Equals(varMultiplier))
-                    rightMultiplier = mulLeftNumber;
-                else if (rightMul1.Right is Number mulRightNumber && rightMul1.Left.Equals(varMultiplier))
-                    rightMultiplier = mulRightNumber;
+                var rightMul = (Mul)exp.Right;
+                if (rightMul.Left is Number && rightMul.Right.Equals(varMultiplier))
+                    rightMultiplier = (Number)rightMul.Left;
+                else if (rightMul.Right is Number && rightMul.Left.Equals(varMultiplier))
+                    rightMultiplier = (Number)rightMul.Right;
             }
-            else if (exp.Right is Variable rightVariable && exp.Left is Mul leftMul1)
+            else if (exp.Right is Variable && exp.Left is Mul)
             {
                 rightMultiplier = 1;
-                varMultiplier = rightVariable;
+                varMultiplier = (Variable)exp.Right;
 
-                if (leftMul1.Left is Number mulLeftNumber && leftMul1.Right.Equals(varMultiplier))
-                    leftMultiplier = mulLeftNumber;
-                else if (leftMul1.Right is Number mulRightNumber && leftMul1.Left.Equals(varMultiplier))
-                    leftMultiplier = mulRightNumber;
+                var leftMul = (Mul)exp.Left;
+                if (leftMul.Left is Number && leftMul.Right.Equals(varMultiplier))
+                    leftMultiplier = (Number)leftMul.Left;
+                else if (leftMul.Right is Number && leftMul.Left.Equals(varMultiplier))
+                    leftMultiplier = (Number)leftMul.Right;
             }
-            else if (exp.Left is Mul leftMul2 && exp.Right is Mul rightMul3)
+            else if (exp.Left is Mul && exp.Right is Mul)
             {
-                varMultiplier = leftMul2.Left as Variable;
+                var leftMul = (Mul)exp.Left;
+                varMultiplier = leftMul.Left as Variable;
                 if (varMultiplier == null)
-                    varMultiplier = leftMul2.Right as Variable;
+                    varMultiplier = leftMul.Right as Variable;
 
                 if (varMultiplier != null)
                 {
-                    if (leftMul2.Left is Number mulLeftNumber1 && leftMul2.Right.Equals(varMultiplier))
-                        leftMultiplier = mulLeftNumber1;
-                    else if (leftMul2.Right is Number mulRightNumber1 && leftMul2.Left.Equals(varMultiplier))
-                        leftMultiplier = mulRightNumber1;
+                    if (leftMul.Left is Number && leftMul.Right.Equals(varMultiplier))
+                        leftMultiplier = (Number)leftMul.Left;
+                    else if (leftMul.Right is Number && leftMul.Left.Equals(varMultiplier))
+                        leftMultiplier = (Number)leftMul.Right;
 
-                    if (rightMul3.Left is Number mulLeftNumber2 && rightMul3.Right.Equals(varMultiplier))
-                        rightMultiplier = mulLeftNumber2;
-                    else if (rightMul3.Right is Number mulRightNumber2 && rightMul3.Left.Equals(varMultiplier))
-                        rightMultiplier = mulRightNumber2;
+                    var rightMul = (Mul)exp.Right;
+                    if (rightMul.Left is Number && rightMul.Right.Equals(varMultiplier))
+                        rightMultiplier = (Number)rightMul.Left;
+                    else if (rightMul.Right is Number && rightMul.Left.Equals(varMultiplier))
+                        rightMultiplier = (Number)rightMul.Right;
                 }
             }
-
             if (leftMultiplier != null && rightMultiplier != null)
             {
                 var multiplier = leftMultiplier.Value + rightMultiplier.Value;
@@ -320,43 +351,63 @@ namespace xFunc.Maths.Analyzers
 
             // (2 * x) / 2
             // (x * 2) / 2
-            if (exp.Left is Mul bracketMulLeft && exp.Right is Number firstNumberRight)
+            if (exp.Left is Mul && exp.Right is Number)
             {
-                if (bracketMulLeft.Left is Number secondNumberLeft)
-                    return Analyze(new Div(bracketMulLeft.Right, new Number((double)firstNumberRight.Execute() / (double)secondNumberLeft.Execute())));
+                var bracketMul = exp.Left as Mul;
+                var firstNumber = exp.Right as Number;
 
-                if (bracketMulLeft.Right is Number secondNumberRight)
-                    return Analyze(new Div(bracketMulLeft.Left, new Number((double)firstNumberRight.Execute() / (double)secondNumberRight.Execute())));
+                var secondNumber = bracketMul.Left as Number;
+                if (secondNumber != null)
+                    return Analyze(new Div(bracketMul.Right, new Number((double)firstNumber.Execute() / (double)secondNumber.Execute())));
+
+                secondNumber = bracketMul.Right as Number;
+                if (secondNumber != null)
+                    return Analyze(new Div(bracketMul.Left, new Number((double)firstNumber.Execute() / (double)secondNumber.Execute())));
             }
             // 2 / (2 * x)
             // 2 / (x * 2)
-            else if (exp.Right is Mul bracketMulRight && exp.Left is Number firstNumberLeft)
+            else if (exp.Right is Mul && exp.Left is Number)
             {
-                if (bracketMulRight.Left is Number secondNumberLeft)
-                    return Analyze(new Div(new Number((double)firstNumberLeft.Execute() / (double)secondNumberLeft.Execute()), bracketMulRight.Right));
+                var bracketMul = exp.Right as Mul;
+                var firstNumber = exp.Left as Number;
 
-                if (bracketMulRight.Right is Number secondNumberRight)
-                    return Analyze(new Div(new Number((double)firstNumberLeft.Execute() / (double)secondNumberRight.Execute()), bracketMulRight.Left));
+                var secondNumber = bracketMul.Left as Number;
+                if (secondNumber != null)
+                    return Analyze(new Div(new Number((double)firstNumber.Execute() / (double)secondNumber.Execute()), bracketMul.Right));
+
+                secondNumber = bracketMul.Right as Number;
+                if (secondNumber != null)
+                    return Analyze(new Div(new Number((double)firstNumber.Execute() / (double)secondNumber.Execute()), bracketMul.Left));
             }
             // (2 / x) / 2
             // (x / 2) / 2
-            else if (exp.Left is Div bracketDivLeft && exp.Right is Number firstNumberDivRight)
+            else if (exp.Left is Div && exp.Right is Number)
             {
-                if (bracketDivLeft.Left is Number secondNumberLeft)
-                    return Analyze(new Div(new Number((double)firstNumberDivRight.Execute() / (double)secondNumberLeft.Execute()), bracketDivLeft.Right));
+                var bracketDiv = exp.Left as Div;
+                var firstNumber = exp.Right as Number;
 
-                if (bracketDivLeft.Right is Number secondNumberRight)
-                    return Analyze(new Div(bracketDivLeft.Left, new Number((double)firstNumberDivRight.Execute() * (double)secondNumberRight.Execute())));
+                var secondNumber = bracketDiv.Left as Number;
+                if (secondNumber != null)
+                    return Analyze(new Div(new Number((double)firstNumber.Execute() / (double)secondNumber.Execute()), bracketDiv.Right));
+
+                secondNumber = bracketDiv.Right as Number;
+                if (secondNumber != null)
+                    return Analyze(new Div(bracketDiv.Left, new Number((double)firstNumber.Execute() * (double)secondNumber.Execute())));
             }
             // 2 / (2 / x)
             // 2 / (x / 2)
-            else if (exp.Right is Div bracketDivRight && exp.Left is Number firstNumberDivLeft)
+            else if (exp.Right is Div && exp.Left is Number)
             {
-                if (bracketDivRight.Left is Number secondNumberLeft)
-                    return Analyze(new Mul(new Number((double)firstNumberDivLeft.Execute() / (double)secondNumberLeft.Execute()), bracketDivRight.Right));
+                var bracketDiv = exp.Right as Div;
+                var firstNumber = exp.Left as Number;
 
-                if (bracketDivRight.Right is Number secondNumberRight)
-                    return Analyze(new Div(new Number((double)firstNumberDivLeft.Execute() * (double)secondNumberRight.Execute()), bracketDivRight.Left));
+                var secondNumber = bracketDiv.Left as Number;
+                if (secondNumber != null)
+                    return Analyze(new Mul(new Number((double)firstNumber.Execute() / (double)secondNumber.Execute()), bracketDiv.Right));
+
+                secondNumber = bracketDiv.Right as Number;
+                if (secondNumber != null)
+                    return Analyze(new Div(new Number((double)firstNumber.Execute() * (double)secondNumber.Execute()), bracketDiv.Left));
             }
 
             return exp;
@@ -551,11 +602,13 @@ namespace xFunc.Maths.Analyzers
             }
             if (bracketMul != null && firstNumber != null)
             {
-                if (bracketMul.Left is Number secondNumberLeft)
-                    return Analyze(new Mul(new Number(firstNumber.Value * secondNumberLeft.Value), bracketMul.Right));
+                var secondNumber = bracketMul.Left as Number;
+                if (secondNumber != null)
+                    return Analyze(new Mul(new Number(firstNumber.Value * secondNumber.Value), bracketMul.Right));
 
-                if (bracketMul.Right is Number secondNumberRight)
-                    return Analyze(new Mul(new Number(firstNumber.Value * secondNumberRight.Value), bracketMul.Left));
+                secondNumber = bracketMul.Right as Number;
+                if (secondNumber != null)
+                    return Analyze(new Mul(new Number(firstNumber.Value * secondNumber.Value), bracketMul.Left));
             }
 
             // 2 * (2 / x)
@@ -571,11 +624,13 @@ namespace xFunc.Maths.Analyzers
             }
             if (bracketDiv != null && firstNumber != null)
             {
-                if (bracketDiv.Left is Number secondNumberLeft)
-                    return Analyze(new Div(new Number(firstNumber.Value * secondNumberLeft.Value), bracketDiv.Right));
+                var secondNumber = bracketDiv.Left as Number;
+                if (secondNumber != null)
+                    return Analyze(new Div(new Number(firstNumber.Value * secondNumber.Value), bracketDiv.Right));
 
-                if (bracketDiv.Right is Number secondNumberRight)
-                    return Analyze(new Mul(new Number(firstNumber.Value / secondNumberRight.Value), bracketDiv.Left));
+                secondNumber = bracketDiv.Right as Number;
+                if (secondNumber != null)
+                    return Analyze(new Mul(new Number(firstNumber.Value / secondNumber.Value), bracketDiv.Left));
             }
 
             // x * 2x
@@ -583,46 +638,49 @@ namespace xFunc.Maths.Analyzers
             Number leftMultiplier = null;
             Number rightMultiplier = null;
             Variable varMultiplier = null;
-            if (exp.Left is Variable leftVariable && exp.Right is Mul rightMul1)
+            if (exp.Left is Variable && exp.Right is Mul)
             {
                 leftMultiplier = 1;
-                varMultiplier = leftVariable;
+                varMultiplier = (Variable)exp.Left;
 
-                if (rightMul1.Left is Number mulLeftNumber && rightMul1.Right.Equals(varMultiplier))
-                    rightMultiplier = mulLeftNumber;
-                else if (rightMul1.Right is Number mulRightNumber && rightMul1.Left.Equals(varMultiplier))
-                    rightMultiplier = mulRightNumber;
+                var rightMul = (Mul)exp.Right;
+                if (rightMul.Left is Number && rightMul.Right.Equals(varMultiplier))
+                    rightMultiplier = (Number)rightMul.Left;
+                else if (rightMul.Right is Number && rightMul.Left.Equals(varMultiplier))
+                    rightMultiplier = (Number)rightMul.Right;
             }
-            else if (exp.Right is Variable rightVariable && exp.Left is Mul leftMul1)
+            else if (exp.Right is Variable && exp.Left is Mul)
             {
                 rightMultiplier = 1;
-                varMultiplier = rightVariable;
+                varMultiplier = (Variable)exp.Right;
 
-                if (leftMul1.Left is Number mulLeftNumber && leftMul1.Right.Equals(varMultiplier))
-                    leftMultiplier = mulLeftNumber;
-                else if (leftMul1.Right is Number mulRightNumber && leftMul1.Left.Equals(varMultiplier))
-                    leftMultiplier = mulRightNumber;
+                var leftMul = (Mul)exp.Left;
+                if (leftMul.Left is Number && leftMul.Right.Equals(varMultiplier))
+                    leftMultiplier = (Number)leftMul.Left;
+                else if (leftMul.Right is Number && leftMul.Left.Equals(varMultiplier))
+                    leftMultiplier = (Number)leftMul.Right;
             }
-            else if (exp.Left is Mul leftMul2 && exp.Right is Mul rightMul2)
+            else if (exp.Left is Mul && exp.Right is Mul)
             {
-                varMultiplier = leftMul2.Left as Variable;
+                var leftMul = (Mul)exp.Left;
+                varMultiplier = leftMul.Left as Variable;
                 if (varMultiplier == null)
-                    varMultiplier = leftMul2.Right as Variable;
+                    varMultiplier = leftMul.Right as Variable;
 
                 if (varMultiplier != null)
                 {
-                    if (leftMul2.Left is Number mulLeftNumber1 && leftMul2.Right.Equals(varMultiplier))
-                        leftMultiplier = mulLeftNumber1;
-                    else if (leftMul2.Right is Number mulRightNumber1 && leftMul2.Left.Equals(varMultiplier))
-                        leftMultiplier = mulRightNumber1;
+                    if (leftMul.Left is Number && leftMul.Right.Equals(varMultiplier))
+                        leftMultiplier = (Number)leftMul.Left;
+                    else if (leftMul.Right is Number && leftMul.Left.Equals(varMultiplier))
+                        leftMultiplier = (Number)leftMul.Right;
 
-                    if (rightMul2.Left is Number mulLeftNumber2 && rightMul2.Right.Equals(varMultiplier))
-                        rightMultiplier = mulLeftNumber2;
-                    else if (rightMul2.Right is Number mulRightNumber2 && rightMul2.Left.Equals(varMultiplier))
-                        rightMultiplier = mulRightNumber2;
+                    var rightMul = (Mul)exp.Right;
+                    if (rightMul.Left is Number && rightMul.Right.Equals(varMultiplier))
+                        rightMultiplier = (Number)rightMul.Left;
+                    else if (rightMul.Right is Number && rightMul.Left.Equals(varMultiplier))
+                        rightMultiplier = (Number)rightMul.Right;
                 }
             }
-
             if (leftMultiplier != null && rightMultiplier != null)
             {
                 var multiplier = leftMultiplier.Value * rightMultiplier.Value;
@@ -635,7 +693,8 @@ namespace xFunc.Maths.Analyzers
                 return new Mul(new Number(multiplier), new Pow(varMultiplier, new Number(2)));
             }
 
-            if (exp.Right is UnaryMinus rightNegative)
+            var rightNegative = exp.Right as UnaryMinus;
+            if (rightNegative != null)
                 return new UnaryMinus(new Mul(rightNegative.Argument, exp.Left));
 
             return exp;
@@ -754,91 +813,120 @@ namespace xFunc.Maths.Analyzers
             if (exp.Left is Variable && exp.Right is Variable)
                 return zero;
 
-            if (exp.Right is UnaryMinus unMinus)
-                return new Add(exp.Left, unMinus.Argument);
+            if (exp.Right is UnaryMinus)
+            {
+                var unMinus = exp.Right as UnaryMinus;
+                var add = new Add(exp.Left, unMinus.Argument);
+
+                return add;
+            }
 
             // (2 + x) - 2
             // (x + 2) - 2
-            if (exp.Left is Add bracketAddLeft1 && exp.Right is Number firstNumberRight1)
+            if (exp.Left is Add && exp.Right is Number)
             {
-                if (bracketAddLeft1.Left is Number secondNumberLeft)
-                    return Analyze(new Add(bracketAddLeft1.Right, new Number((double)firstNumberRight1.Execute() - (double)secondNumberLeft.Execute())));
+                var bracketAdd = exp.Left as Add;
+                var firstNumber = exp.Right as Number;
 
-                if (bracketAddLeft1.Right is Number secondNumberRight)
-                    return Analyze(new Add(bracketAddLeft1.Left, new Number((double)firstNumberRight1.Execute() - (double)secondNumberRight.Execute())));
+                var secondNumber = bracketAdd.Left as Number;
+                if (secondNumber != null)
+                    return Analyze(new Add(bracketAdd.Right, new Number((double)firstNumber.Execute() - (double)secondNumber.Execute())));
+
+                secondNumber = bracketAdd.Right as Number;
+                if (secondNumber != null)
+                    return Analyze(new Add(bracketAdd.Left, new Number((double)firstNumber.Execute() - (double)secondNumber.Execute())));
             }
             // 2 - (2 + x)
             // 2 - (x + 2)
-            else if (exp.Right is Add bracketAddRight1 && exp.Left is Number firstNumberLeft1)
+            else if (exp.Right is Add && exp.Left is Number)
             {
-                if (bracketAddRight1.Left is Number secondNumberLeft)
-                    return Analyze(new Sub(new Number((double)firstNumberLeft1.Execute() - (double)secondNumberLeft.Execute()), bracketAddRight1.Right));
+                var bracketAdd = exp.Right as Add;
+                var firstNumber = exp.Left as Number;
 
-                if (bracketAddRight1.Right is Number secondNumberRight)
-                    return Analyze(new Sub(new Number((double)firstNumberLeft1.Execute() - (double)secondNumberRight.Execute()), bracketAddRight1.Left));
+                var secondNumber = bracketAdd.Left as Number;
+                if (secondNumber != null)
+                    return Analyze(new Sub(new Number((double)firstNumber.Execute() - (double)secondNumber.Execute()), bracketAdd.Right));
+
+                secondNumber = bracketAdd.Right as Number;
+                if (secondNumber != null)
+                    return Analyze(new Sub(new Number((double)firstNumber.Execute() - (double)secondNumber.Execute()), bracketAdd.Left));
             }
             // (2 - x) - 2
             // (x - 2) - 2
-            else if (exp.Left is Sub bracketSubLeft && exp.Right is Number firstNumberRight2)
+            else if (exp.Left is Sub && exp.Right is Number)
             {
-                if (bracketSubLeft.Left is Number secondNumberLeft)
-                    return Analyze(new Sub(new Number((double)firstNumberRight2.Execute() - (double)secondNumberLeft.Execute()), bracketSubLeft.Right));
+                var bracketSub = exp.Left as Sub;
+                var firstNumber = exp.Right as Number;
 
-                if (bracketSubLeft.Right is Number secondNumberRight)
-                    return Analyze(new Sub(bracketSubLeft.Left, new Number((double)firstNumberRight2.Execute() + (double)secondNumberRight.Execute())));
+                var secondNumber = bracketSub.Left as Number;
+                if (secondNumber != null)
+                    return Analyze(new Sub(new Number((double)firstNumber.Execute() - (double)secondNumber.Execute()), bracketSub.Right));
+
+                secondNumber = bracketSub.Right as Number;
+                if (secondNumber != null)
+                    return Analyze(new Sub(bracketSub.Left, new Number((double)firstNumber.Execute() + (double)secondNumber.Execute())));
             }
             // 2 - (2 - x)
             // 2 - (x - 2)
-            else if (exp.Right is Sub bracketSubRight && exp.Left is Number firstNumberLeft2)
+            else if (exp.Right is Sub && exp.Left is Number)
             {
-                if (bracketSubRight.Left is Number secondNumberLeft)
-                    return Analyze(new Add(new Number((double)firstNumberLeft2.Execute() - (double)secondNumberLeft.Execute()), bracketSubRight.Right));
+                var bracketSub = exp.Right as Sub;
+                var firstNumber = exp.Left as Number;
 
-                if (bracketSubRight.Right is Number secondNumberRight)
-                    return Analyze(new Sub(new Number((double)firstNumberLeft2.Execute() + (double)secondNumberRight.Execute()), bracketSubRight.Left));
+                var secondNumber = bracketSub.Left as Number;
+                if (secondNumber != null)
+                    return Analyze(new Add(new Number((double)firstNumber.Execute() - (double)secondNumber.Execute()), bracketSub.Right));
+
+                secondNumber = bracketSub.Right as Number;
+                if (secondNumber != null)
+                    return Analyze(new Sub(new Number((double)firstNumber.Execute() + (double)secondNumber.Execute()), bracketSub.Left));
             }
 
             // 2x - x
             Number leftMultiplier = null;
             Number rightMultiplier = null;
             Variable varMultiplier = null;
-            if (exp.Left is Variable leftVariable && exp.Right is Mul rightMul1)
+            if (exp.Left is Variable && exp.Right is Mul)
             {
                 leftMultiplier = 1;
-                varMultiplier = leftVariable;
+                varMultiplier = (Variable)exp.Left;
 
-                if (rightMul1.Left is Number mulLeft && rightMul1.Right.Equals(varMultiplier))
-                    rightMultiplier = mulLeft;
-                else if (rightMul1.Right is Number mulRight && rightMul1.Left.Equals(varMultiplier))
-                    rightMultiplier = mulRight;
+                var rightMul = (Mul)exp.Right;
+                if (rightMul.Left is Number && rightMul.Right.Equals(varMultiplier))
+                    rightMultiplier = (Number)rightMul.Left;
+                else if (rightMul.Right is Number && rightMul.Left.Equals(varMultiplier))
+                    rightMultiplier = (Number)rightMul.Right;
             }
-            else if (exp.Right is Variable rightVariable && exp.Left is Mul leftMul1)
+            else if (exp.Right is Variable && exp.Left is Mul)
             {
                 rightMultiplier = 1;
-                varMultiplier = rightVariable;
+                varMultiplier = (Variable)exp.Right;
 
-                if (leftMul1.Left is Number mulLeft && leftMul1.Right.Equals(varMultiplier))
-                    leftMultiplier = mulLeft;
-                else if (leftMul1.Right is Number mulRight && leftMul1.Left.Equals(varMultiplier))
-                    leftMultiplier = mulRight;
+                var leftMul = (Mul)exp.Left;
+                if (leftMul.Left is Number && leftMul.Right.Equals(varMultiplier))
+                    leftMultiplier = (Number)leftMul.Left;
+                else if (leftMul.Right is Number && leftMul.Left.Equals(varMultiplier))
+                    leftMultiplier = (Number)leftMul.Right;
             }
-            else if (exp.Left is Mul leftMul2 && exp.Right is Mul rightMul2)
+            else if (exp.Left is Mul && exp.Right is Mul)
             {
-                varMultiplier = leftMul2.Left as Variable;
+                var leftMul = (Mul)exp.Left;
+                varMultiplier = leftMul.Left as Variable;
                 if (varMultiplier == null)
-                    varMultiplier = leftMul2.Right as Variable;
+                    varMultiplier = leftMul.Right as Variable;
 
                 if (varMultiplier != null)
                 {
-                    if (leftMul2.Left is Number mulLeft1 && leftMul2.Right.Equals(varMultiplier))
-                        leftMultiplier = mulLeft1;
-                    else if (leftMul2.Right is Number mulRight1 && leftMul2.Left.Equals(varMultiplier))
-                        leftMultiplier = mulRight1;
+                    if (leftMul.Left is Number && leftMul.Right.Equals(varMultiplier))
+                        leftMultiplier = (Number)leftMul.Left;
+                    else if (leftMul.Right is Number && leftMul.Left.Equals(varMultiplier))
+                        leftMultiplier = (Number)leftMul.Right;
 
-                    if (rightMul2.Left is Number mulLeft2 && rightMul2.Right.Equals(varMultiplier))
-                        rightMultiplier = mulLeft2;
-                    else if (rightMul2.Right is Number mulRight2 && rightMul2.Left.Equals(varMultiplier))
-                        rightMultiplier = mulRight2;
+                    var rightMul = (Mul)exp.Right;
+                    if (rightMul.Left is Number && rightMul.Right.Equals(varMultiplier))
+                        rightMultiplier = (Number)rightMul.Left;
+                    else if (rightMul.Right is Number && rightMul.Left.Equals(varMultiplier))
+                        rightMultiplier = (Number)rightMul.Right;
                 }
             }
             if (leftMultiplier != null && rightMultiplier != null)
