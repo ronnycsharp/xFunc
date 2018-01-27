@@ -222,6 +222,32 @@ namespace xFunc.Maths.Analyzers.TypeAnalyzers
             throw new ParameterTypeMismatchException();
         }
 
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public virtual ResultType Analyze(NDerivative exp) {
+            if (exp.ParametersCount == 1)
+                return ResultType.Expression;
+
+            if (exp.ParametersCount == 2 && exp.Arguments[1] is Variable)
+                return ResultType.Expression;
+
+            if (exp.ParametersCount == 3 && exp.Arguments[1] is Variable && exp.Arguments[2] is Number)
+                return ResultType.Number;
+
+            // TODO: !!!
+            throw new ParameterTypeMismatchException();
+        }
+
+
+        public virtual ResultType Analyze(DefiniteIntegral exp) {
+            return ResultType.Number;
+        }
+
+
         /// <summary>
         /// Analyzes the specified expression.
         /// </summary>
@@ -293,6 +319,17 @@ namespace xFunc.Maths.Analyzers.TypeAnalyzers
         /// <returns>The result of analysis.</returns>
         public virtual ResultType Analyze(Fact exp)
         {
+            var result = exp.Argument.Analyze(this);
+            if (result == ResultType.Undefined)
+                return ResultType.Undefined;
+
+            if (result == ResultType.Number)
+                return ResultType.Number;
+
+            throw new ParameterTypeMismatchException(ResultType.Number, result);
+        }
+
+        public virtual ResultType Analyze(Fract exp) {
             var result = exp.Argument.Analyze(this);
             if (result == ResultType.Undefined)
                 return ResultType.Undefined;
@@ -610,6 +647,20 @@ namespace xFunc.Maths.Analyzers.TypeAnalyzers
 
             return ResultType.Number;
         }
+
+
+        public virtual ResultType Analyze(RoundUnary exp) {
+            var result = exp.Argument.Analyze(this);
+            if (result == ResultType.Undefined)
+                return ResultType.Undefined;
+            else if ( result != ResultType.Number ) {
+                throw new DifferentParameterTypeMismatchException(
+                    ResultType.Number, result, 0);
+            }
+            return ResultType.Number;
+        }
+
+
 
         /// <summary>
         /// Analyzes the specified expression.

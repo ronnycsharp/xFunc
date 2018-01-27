@@ -80,7 +80,7 @@ namespace xFunc.Tests
         [Fact]
         public void ParseNull()
         {
-            Assert.Throws<ArgumentNullException>(() => parser.Parse(null));
+            Assert.Throws<ArgumentNullException>(() => parser.Parse((IEnumerable<IToken>)null));
         }
 
         [Fact]

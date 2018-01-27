@@ -221,6 +221,17 @@ namespace xFunc.Maths.Expressions {
 		public override int MaxParameters => 4;
 
 		/// <summary>
+		/// Gets the type of the result.
+		/// </summary>
+		/// <value>
+		/// The type of the result.
+		/// </value>
+		/// <remarks>
+		/// Usage of this property can affect performance. Don't use this property each time if you need to check result type of current expression. Just store/cache value only once and use it everywhere.
+		/// </remarks>
+		public override ExpressionResultType ResultType => ParametersCount == 4 ? ExpressionResultType.Number : ExpressionResultType.Expression;
+
+		/// <summary>
 		/// Gets or sets the simplifier.
 		/// </summary>
 		/// <value>

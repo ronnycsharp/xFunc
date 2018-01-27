@@ -25,18 +25,6 @@ namespace xFunc.Maths.Expressions {
 		[ExcludeFromCodeCoverage]
 		internal Fract () { }
 
-		public override ExpressionResultType ResultType {
-			get {
-				return ExpressionResultType.Expression | ExpressionResultType.Number;
-			}
-		}
-
-		public override ExpressionResultType ArgumentType {
-			get {
-				return ExpressionResultType.Number;
-			}
-		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Fact"/> class.
 		/// </summary>

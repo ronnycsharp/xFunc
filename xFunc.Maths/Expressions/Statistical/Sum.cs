@@ -276,29 +276,6 @@ namespace xFunc.Maths.Expressions.Statistical
 			}
 		}
 
-
-        /// <summary>
-        /// Gets the arguments types.
-        /// </summary>
-        /// <value>
-        /// The arguments types.
-        /// </value>
-        public override ExpressionResultType[] ArgumentsTypes
-        {
-            get
-            {
-                var result = new ExpressionResultType[ParametersCount];
-                if (ParametersCount > 0)
-                {
-					result [0] = ExpressionResultType.Number | ExpressionResultType.Vector | ExpressionResultType.Matrix | ExpressionResultType.ComplexNumber;
-                    for (var i = 1; i < result.Length; i++)
-                        result[i] = ExpressionResultType.Number;
-                }
-
-                return result;
-            }
-        }
-
     }
 
 }
