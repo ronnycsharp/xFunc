@@ -15,8 +15,8 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text;
 using xFunc.Maths.Analyzers;
+using xFunc.Maths.Resources;
 
 namespace xFunc.Maths.Expressions.Matrices
 {
@@ -35,11 +35,12 @@ namespace xFunc.Maths.Expressions.Matrices
         /// </summary>
         /// <param name="args">The arguments.</param>
         /// <exception cref="System.ArgumentNullException"><paramref name="args"/> is null.</exception>
-        public Matrix(Vector[] args)
-            : base(args, args.Length)
+        public Matrix(Vector[] args) : base(args, args.Length)
         {
             if (args == null)
                 throw new ArgumentNullException(nameof(args));
+            if (args.Length == 0)
+                throw new ArgumentException(Resource.MatrixArgException, nameof(args));
         }
 
         /// <summary>
@@ -114,10 +115,7 @@ namespace xFunc.Maths.Expressions.Matrices
             var args = new Vector[this.ParametersCount];
 
             for (var i = 0; i < this.ParametersCount; i++)
-                if (!(m_arguments[i] is Vector) && m_arguments[i].ResultType == ExpressionResultType.Matrix)
-                    args[i] = (Vector)m_arguments[i].Execute(parameters);
-                else
-                    args[i] = (Vector)m_arguments[i];
+                args[i] = (Vector)m_arguments[i].Execute(parameters);
 
             return args;
         }
@@ -250,24 +248,6 @@ namespace xFunc.Maths.Expressions.Matrices
         }
 
         /// <summary>
-        /// Gets the arguments types.
-        /// </summary>
-        /// <value>
-        /// The arguments types.
-        /// </value>
-        public override ExpressionResultType[] ArgumentsTypes
-        {
-            get
-            {
-                var results = new ExpressionResultType[m_arguments?.Length ?? MinParameters];
-                for (var i = 0; i < results.Length; i++)
-                    results[i] = ExpressionResultType.Vector;
-
-                return results;
-            }
-        }
-
-        /// <summary>
         /// Gets the size of vectors.
         /// </summary>
         /// <value>
@@ -298,17 +278,6 @@ namespace xFunc.Maths.Expressions.Matrices
         ///   <c>true</c> if matrix is square; otherwise, <c>false</c>.
         /// </value>
         public bool IsSquare => this.ParametersCount == this.SizeOfVectors;
-
-        /// <summary>
-        /// Gets the type of the result.
-        /// </summary>
-        /// <value>
-        /// The type of the result.
-        /// </value>
-        /// <remarks>
-        /// Usage of this property can affect performance. Don't use this property each time if you need to check result type of current expression. Just store/cache value only once and use it everywhere.
-        /// </remarks>
-        public override ExpressionResultType ResultType => ExpressionResultType.Matrix;
 
     }
 

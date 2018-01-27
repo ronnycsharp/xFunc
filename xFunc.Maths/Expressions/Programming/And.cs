@@ -34,18 +34,7 @@ namespace xFunc.Maths.Expressions.Programming
         /// <param name="left">The left (first) operand.</param>
         /// <param name="right">The right (second) operand.</param>
         public And(IExpression left, IExpression right) : base(left, right) { }
-
-        /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>
-        /// The result type of current expression.
-        /// </returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            return ExpressionResultType.Boolean;
-        }
-
+        
         /// <summary>
         /// Executes this expression.
         /// </summary>
@@ -56,7 +45,13 @@ namespace xFunc.Maths.Expressions.Programming
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            return (bool)m_left.Execute(parameters) && (bool)m_right.Execute(parameters);
+            var left = m_left.Execute(parameters);
+            var right = m_right.Execute(parameters);
+
+            if (left is bool leftBool && right is bool rightBool)
+                return leftBool && rightBool;
+
+            throw new ResultIsNotSupportedException(this, left, right);
         }
 
         /// <summary>
@@ -83,21 +78,6 @@ namespace xFunc.Maths.Expressions.Programming
             return new And(m_left.Clone(), m_right.Clone());
         }
 
-        /// <summary>
-        /// Gets the type of the left parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the left parameter.
-        /// </value>
-        public override ExpressionResultType LeftType => ExpressionResultType.Boolean;
-
-        /// <summary>
-        /// Gets the type of the right parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the right parameter.
-        /// </value>
-        public override ExpressionResultType RightType => ExpressionResultType.Boolean;
     }
 
 }

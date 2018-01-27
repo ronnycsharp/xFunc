@@ -19,7 +19,7 @@ using Xunit;
 
 namespace xFunc.Tests.Expressionss
 {
-    
+
     public class UnaryTest
     {
 
@@ -39,6 +39,12 @@ namespace xFunc.Tests.Expressionss
             var ln = new Ln(new Number(2));
 
             Assert.NotEqual<IExpression>(sine, ln);
+        }
+
+        [Fact]
+        public void ArgNullExceptionTest()
+        {
+            Assert.Throws<ArgumentNullException>(() => new Sin(null));
         }
 
     }

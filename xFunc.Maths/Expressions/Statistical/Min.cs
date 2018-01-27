@@ -56,6 +56,18 @@ namespace xFunc.Maths.Expressions.Statistical
             return base.GetHashCode(6217, 1301);
         }
 
+        private double _Execute(IExpression[] expressions, ExpressionParameters parameters)
+        {
+            return expressions.Min(exp =>
+            {
+                var result = exp.Execute(parameters);
+                if (result is double doubleResult)
+                    return doubleResult;
+
+                throw new ResultIsNotSupportedException();
+            });
+        }
+
         /// <summary>
         /// Executes this expression.
         /// </summary>
@@ -69,14 +81,13 @@ namespace xFunc.Maths.Expressions.Statistical
             if (ParametersCount == 1)
             {
                 var result = this.m_arguments[0].Execute(parameters);
-                var vector = result as Vector;
-                if (vector != null)
-                    return vector.Arguments.Min(exp => (double)exp.Execute(parameters));
+                if (result is Vector vector)
+                    return _Execute(vector.Arguments, parameters);
 
                 return result;
             }
 
-            return this.m_arguments.Min(exp => (double)exp.Execute(parameters));
+            return _Execute(m_arguments, parameters);
         }
 
         /// <summary>
@@ -101,28 +112,6 @@ namespace xFunc.Maths.Expressions.Statistical
         public override IExpression Clone()
         {
             return new Min(CloneArguments(), ParametersCount);
-        }
-
-        /// <summary>
-        /// Gets the arguments types.
-        /// </summary>
-        /// <value>
-        /// The arguments types.
-        /// </value>
-        public override ExpressionResultType[] ArgumentsTypes
-        {
-            get
-            {
-                var result = new ExpressionResultType[ParametersCount];
-                if (ParametersCount > 0)
-                {
-                    result[0] = ExpressionResultType.Number | ExpressionResultType.Vector;
-                    for (var i = 1; i < result.Length; i++)
-                        result[i] = ExpressionResultType.Number;
-                }
-
-                return result;
-            }
         }
 
         /// <summary>

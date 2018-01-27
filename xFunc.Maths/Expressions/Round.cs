@@ -78,10 +78,15 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            var arg = (double)Argument.Execute(parameters);
-            var digits = Digits != null ? (int)(double)Digits.Execute(parameters) : 0;
+            var argResult = Argument.Execute(parameters);
+            if (argResult is double arg)
+            {
+                var digits = Digits?.Execute(parameters);
 
-            return Math.Round(arg, digits, MidpointRounding.AwayFromZero);
+                return Math.Round(arg, (int)((digits as double?) ?? 0), MidpointRounding.AwayFromZero);
+            }
+
+            throw new ResultIsNotSupportedException(this, argResult);
         }
 
         /// <summary>
@@ -139,27 +144,6 @@ namespace xFunc.Maths.Expressions
         /// The expression that represents the number of fractional digits in the return value.
         /// </value>
         public IExpression Digits => ParametersCount == 2 ? m_arguments[1] : null;
-
-        /// <summary>
-        /// Gets the arguments types.
-        /// </summary>
-        /// <value>
-        /// The arguments types.
-        /// </value>
-        public override ExpressionResultType[] ArgumentsTypes
-        {
-            get
-            {
-                if (ParametersCount == 2)
-                    return new[]
-                    {
-                        ExpressionResultType.Number,
-                        ExpressionResultType.Number
-                    };
-
-                return new[] { ExpressionResultType.Number };
-            }
-        }
 
     }
 

@@ -36,23 +36,6 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         public And(IExpression left, IExpression right) : base(left, right) { }
 
         /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>
-        /// The result type of current expression.
-        /// </returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            if (m_left.ResultType == ExpressionResultType.Number || m_right.ResultType == ExpressionResultType.Number)
-                return ExpressionResultType.Number;
-
-            if (m_left.ResultType == ExpressionResultType.Boolean || m_right.ResultType == ExpressionResultType.Boolean)
-                return ExpressionResultType.Boolean;
-
-            return ExpressionResultType.Number | ExpressionResultType.Boolean;
-        }
-
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
@@ -76,10 +59,12 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
             var left = m_left.Execute(parameters);
             var right = m_right.Execute(parameters);
 
-            if (left is bool && right is bool)
-                return (bool)left & (bool)right;
+            if (left is bool leftBool && right is bool rightBool)
+                return leftBool & rightBool;
+            if (left is double leftDouble && right is double rightDouble)
+                return (double)((int)Math.Round(leftDouble, MidpointRounding.AwayFromZero) & (int)Math.Round(rightDouble, MidpointRounding.AwayFromZero));
 
-            return (double)((int)Math.Round((double)left, MidpointRounding.AwayFromZero) & (int)Math.Round((double)right, MidpointRounding.AwayFromZero));
+            throw new ResultIsNotSupportedException(this, left, right);
         }
 
         /// <summary>
@@ -102,52 +87,6 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         public override IExpression Clone()
         {
             return new And(m_left.Clone(), m_right.Clone());
-        }
-
-        /// <summary>
-        /// Gets the type of the left parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the left parameter.
-        /// </value>
-        public override ExpressionResultType LeftType
-        {
-            get
-            {
-                if (m_right != null)
-                {
-                    if (m_right.ResultType == ExpressionResultType.Number)
-                        return ExpressionResultType.Number;
-
-                    if (m_right.ResultType == ExpressionResultType.Boolean)
-                        return ExpressionResultType.Boolean;
-                }
-
-                return ExpressionResultType.Number | ExpressionResultType.Boolean;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the right parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the right parameter.
-        /// </value>
-        public override ExpressionResultType RightType
-        {
-            get
-            {
-                if (m_left != null)
-                {
-                    if (m_left.ResultType == ExpressionResultType.Number)
-                        return ExpressionResultType.Number;
-
-                    if (m_left.ResultType == ExpressionResultType.Boolean)
-                        return ExpressionResultType.Boolean;
-                }
-
-                return ExpressionResultType.Number | ExpressionResultType.Boolean;
-            }
         }
 
     }

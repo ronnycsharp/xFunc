@@ -72,11 +72,11 @@ namespace xFunc.Tests.Expressionss
         [Fact]
         public void ExecuteCrossTest()
         {
-            var vector1 = new Vector(new[] { new Number(1), new Number(2), new Number(3) });
-            var vector2 = new Vector(new[] { new Number(10), new Number(20), new Number(30) });
+            var vector1 = new Maths.Expressions.Matrices.Vector(new[] { new Number(1), new Number(2), new Number(3) });
+            var vector2 = new Maths.Expressions.Matrices.Vector(new[] { new Number(10), new Number(20), new Number(30) });
             var exp = new Mul(vector1, vector2);
 
-            var expected = new Vector(new[] { new Number(0), new Number(0), new Number(0) });
+            var expected = new Maths.Expressions.Matrices.Vector(new[] { new Number(0), new Number(0), new Number(0) });
 
             Assert.Equal(expected, exp.Execute());
         }
@@ -86,174 +86,11 @@ namespace xFunc.Tests.Expressionss
         {
             Assert.Throws<ArgumentException>(() =>
             {
-                var vector1 = new Vector(new[] { new Number(1), new Number(3) });
-                var vector2 = new Vector(new[] { new Number(10), new Number(20) });
+                var vector1 = new Maths.Expressions.Matrices.Vector(new[] { new Number(1), new Number(3) });
+                var vector2 = new Maths.Expressions.Matrices.Vector(new[] { new Number(10), new Number(20) });
                 var exp = new Mul(vector1, vector2);
                 exp.Execute();
             });
-        }
-
-        [Fact]
-        public void ResultTypeTwoNumberTest()
-        {
-            var mul = new Mul(new Number(1), new Number(2));
-
-            Assert.Equal(ExpressionResultType.Number, mul.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeNumberVarTest()
-        {
-            var mul = new Mul(new Number(1), new Variable("x"));
-
-            Assert.Equal(ExpressionResultType.Number, mul.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeComplicatedTest()
-        {
-            var mul = new Mul(new Add(new Number(1), new Number(2)), new Variable("x"));
-
-            Assert.Equal(ExpressionResultType.Number, mul.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeTwoMatrixTest()
-        {
-            var mul = new Mul(new Matrix(new[] { new Vector(new[] { new Number(1) }) }),
-                              new Matrix(new[] { new Vector(new[] { new Number(2) }) }));
-
-            Assert.Equal(ExpressionResultType.Matrix, mul.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeNumberVectorTest()
-        {
-            var mul = new Mul(new Number(1), new Vector(new[] { new Number(1) }));
-
-            Assert.Equal(ExpressionResultType.Vector, mul.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeVectorNumberTest()
-        {
-            var mul = new Mul(new Vector(new[] { new Number(1) }), new Number(1));
-
-            Assert.Equal(ExpressionResultType.Vector, mul.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeNumberMatrixTest()
-        {
-            var mul = new Mul(new Number(1), new Matrix(new[] { new Vector(new[] { new Number(2) }) }));
-
-            Assert.Equal(ExpressionResultType.Matrix, mul.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeMatrixNumberTest()
-        {
-            var mul = new Mul(new Matrix(new[] { new Vector(new[] { new Number(2) }) }), new Number(1));
-
-            Assert.Equal(ExpressionResultType.Matrix, mul.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeVectorMatrixTest()
-        {
-            var mul = new Mul(new Vector(new[] { new Number(1) }),
-                              new Matrix(new[] { new Vector(new[] { new Number(2) }) }));
-
-            Assert.Equal(ExpressionResultType.Matrix, mul.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeMatrixVectorTest()
-        {
-            var mul = new Mul(new Matrix(new[] { new Vector(new[] { new Number(2) }) }),
-                              new Vector(new[] { new Number(1) }));
-
-            Assert.Equal(ExpressionResultType.Matrix, mul.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeComplexNumberComplexNumberTest()
-        {
-            var exp = new Mul(new ComplexNumber(2, 5), new ComplexNumber(3, 2));
-
-            Assert.Equal(ExpressionResultType.ComplexNumber, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeComplexNumberNumberTest()
-        {
-            var exp = new Mul(new ComplexNumber(2, 5), new Number(2));
-
-            Assert.Equal(ExpressionResultType.ComplexNumber, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeNumberComplexNumberTest()
-        {
-            var exp = new Mul(new Number(2), new ComplexNumber(3, 2));
-
-            Assert.Equal(ExpressionResultType.ComplexNumber, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeNumberAllTest()
-        {
-            var exp = new Mul(new Number(1), new UserFunction("f", 1));
-
-            Assert.Equal(ExpressionResultType.Number, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeComplexNumberAllTest()
-        {
-            var exp = new Mul(new ComplexNumber(3, 2), new UserFunction("f", 1));
-
-            Assert.Equal(ExpressionResultType.ComplexNumber, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeVectorAllTest()
-        {
-            var exp = new Mul(new Vector(1), new UserFunction("f", 1));
-
-            Assert.Equal(ExpressionResultType.Vector, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeMatrixAllTest()
-        {
-            var exp = new Mul(new Matrix(1, 1), new UserFunction("f", 1));
-
-            Assert.Equal(ExpressionResultType.Matrix, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeNumberComplexTest()
-        {
-            var exp = new Mul(new Number(2), new Sqrt(new Number(-9)));
-
-            Assert.Equal(ExpressionResultType.ComplexNumber, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeTwoVarTest()
-        {
-            var exp = new Mul(new Variable("x"), new Variable("x"));
-
-            Assert.Equal(ExpressionResultType.Number, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeThreeVarTest()
-        {
-            var exp = new Mul(new Add(new Variable("x"), new Variable("x")), new Variable("x"));
-
-            Assert.Equal(ExpressionResultType.Number, exp.ResultType);
         }
 
         [Fact]

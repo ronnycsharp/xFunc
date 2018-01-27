@@ -15,8 +15,8 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text;
 using xFunc.Maths.Analyzers;
+using xFunc.Maths.Resources;
 
 namespace xFunc.Maths.Expressions.Matrices
 {
@@ -35,11 +35,12 @@ namespace xFunc.Maths.Expressions.Matrices
         /// </summary>
         /// <param name="args">The values of vector.</param>
         /// <exception cref="System.ArgumentNullException"><paramref name="args"/> is null.</exception>
-        public Vector(IExpression[] args)
-            : base(args, args.Length)
+        public Vector(IExpression[] args) : base(args, args.Length)
         {
             if (args == null)
                 throw new ArgumentNullException(nameof(args));
+            if (args.Length == 0)
+                throw new ArgumentException(Resource.MatrixArgException, nameof(args));
         }
 
         /// <summary>
@@ -85,6 +86,9 @@ namespace xFunc.Maths.Expressions.Matrices
 
             for (var i = 0; i < this.ParametersCount; i++)
             {
+                if (m_arguments[i] == null)
+                    continue;
+
                 if (!(m_arguments[i] is Number))
                 {
                     var result = m_arguments[i].Execute(parameters);
@@ -182,35 +186,6 @@ namespace xFunc.Maths.Expressions.Matrices
         /// The maximum count of parameters.
         /// </value>
         public override int MaxParameters => -1;
-
-        /// <summary>
-        /// Gets the type of the result.
-        /// </summary>
-        /// <value>
-        /// The type of the result.
-        /// </value>
-        /// <remarks>
-        /// Usage of this property can affect performance. Don't use this property each time if you need to check result type of current expression. Just store/cache value only once and use it everywhere.
-        /// </remarks>
-        public override ExpressionResultType ResultType => ExpressionResultType.Vector;
-
-        /// <summary>
-        /// Gets the arguments types.
-        /// </summary>
-        /// <value>
-        /// The arguments types.
-        /// </value>
-        public override ExpressionResultType[] ArgumentsTypes
-        {
-            get
-            {
-                var results = new ExpressionResultType[m_arguments?.Length ?? 0];
-                for (var i = 0; i < results.Length; i++)
-                    results[i] = ExpressionResultType.Number;
-
-                return results;
-            }
-        }
 
     }
 

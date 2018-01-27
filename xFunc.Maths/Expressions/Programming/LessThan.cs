@@ -34,18 +34,7 @@ namespace xFunc.Maths.Expressions.Programming
         /// <param name="left">The left (first) operand.</param>
         /// <param name="right">The right (second) operand.</param>
         public LessThan(IExpression left, IExpression right) : base(left, right) { }
-
-        /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>
-        /// The result type of current expression.
-        /// </returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            return ExpressionResultType.Boolean;
-        }
-
+        
         /// <summary>
         /// Executes this expression.
         /// </summary>
@@ -56,10 +45,13 @@ namespace xFunc.Maths.Expressions.Programming
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            var leftValue = (double)m_left.Execute(parameters);
-            var rightValue = (double)m_right.Execute(parameters);
+            var left = m_left.Execute(parameters);
+            var right = m_right.Execute(parameters);
 
-            return leftValue < rightValue;
+            if (left is double leftDouble && right is double rightDouble)
+                return leftDouble < rightDouble;
+
+            throw new ResultIsNotSupportedException(this, left, right);
         }
 
         /// <summary>

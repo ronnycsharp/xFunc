@@ -17,6 +17,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using xFunc.Maths;
+using xFunc.Maths.Analyzers;
+using xFunc.Maths.Analyzers.TypeAnalyzers;
 using xFunc.Maths.Expressions;
 using xFunc.Maths.Expressions.Collections;
 using xFunc.Resources;
@@ -93,6 +95,14 @@ namespace xFunc.Views
                 catch (ParameterIsReadOnlyException mpiroe)
                 {
                     MessageBox.Show(this, mpiroe.Message, Resource.ErrorHeader, MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                catch (BinaryParameterTypeMismatchException bptme)
+                {
+                    MessageBox.Show(this, bptme.Message, Resource.ErrorHeader, MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                catch (DifferentParameterTypeMismatchException dptme)
+                {
+                    MessageBox.Show(this, dptme.Message, Resource.ErrorHeader, MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 catch (ParameterTypeMismatchException ptme)
                 {

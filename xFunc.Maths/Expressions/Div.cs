@@ -37,21 +37,6 @@ namespace xFunc.Maths.Expressions
         public Div(IExpression left, IExpression right) : base(left, right) { }
 
         /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>
-        /// The result type of current expression.
-        /// </returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            if ((m_left.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber) && m_left.ResultType != ExpressionResultType.All) ||
-                (m_right.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber) && m_right.ResultType != ExpressionResultType.All))
-                return ExpressionResultType.ComplexNumber;
-
-            return ExpressionResultType.Number;
-        }
-
-        /// <summary>
         /// Executes this expression.
         /// </summary>
         /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
@@ -61,20 +46,23 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            var resultType = this.ResultType;
-
             var leftResult = m_left.Execute(parameters);
             var rightResult = m_right.Execute(parameters);
 
-            if (resultType == ExpressionResultType.ComplexNumber)
+            if (leftResult is Complex || rightResult is Complex)
             {
-                var leftComplex = leftResult as Complex? ?? (double)leftResult;
-                var rightComplex = rightResult as Complex? ?? (double)rightResult;
+                var leftComplex = leftResult as Complex? ?? leftResult as double?;
+                var rightComplex = rightResult as Complex? ?? rightResult as double?;
+                if (leftComplex == null || rightComplex == null)
+                    throw new ResultIsNotSupportedException(this, leftResult, rightResult);
 
-                return Complex.Divide(leftComplex, rightComplex);
+                return Complex.Divide(leftComplex.Value, rightComplex.Value);
             }
 
-            return (double)leftResult / (double)rightResult;
+            if (leftResult is double leftNumber && rightResult is double rightNumber)
+                return leftNumber / rightNumber;
+
+            throw new ResultIsNotSupportedException(this, leftResult, rightResult);
         }
 
         /// <summary>
@@ -109,22 +97,6 @@ namespace xFunc.Maths.Expressions
         {
             return new Div(m_left.Clone(), m_right.Clone());
         }
-
-        /// <summary>
-        /// Gets the type of the left parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the left parameter.
-        /// </value>
-        public override ExpressionResultType LeftType => ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
-
-        /// <summary>
-        /// Gets the type of the right parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the right parameter.
-        /// </value>
-        public override ExpressionResultType RightType => ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
 
     }
 

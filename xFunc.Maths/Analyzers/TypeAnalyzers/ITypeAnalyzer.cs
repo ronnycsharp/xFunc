@@ -14,22 +14,14 @@
 // limitations under the License.
 using System;
 
-namespace xFunc.Maths.Expressions
+namespace xFunc.Maths.Analyzers.TypeAnalyzers
 {
-
     /// <summary>
-    /// The base interface for cached expression.
+    /// Type Analyzer checks the expression tree for argument type and result type. If result type is Undefined, then Type Analyzer cannot determine the right type and bypass current expression.
     /// </summary>
-    public interface IChangedExpession
+    /// <seealso cref="xFunc.Maths.Analyzers.IAnalyzer{ResultType}" />
+    public interface ITypeAnalyzer : IAnalyzer<ResultType>
     {
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is changed.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this instance is changed; otherwise, <c>false</c>.
-        /// </value>
-        bool IsChanged { get; set; }
 
     }
 

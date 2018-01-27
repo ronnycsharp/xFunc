@@ -27,7 +27,7 @@ namespace xFunc.Tests.Results
         {
             var result = new BooleanResult(true);
 
-            Assert.Equal(true, result.Result);
+            Assert.True(result.Result);
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace xFunc.Tests.Results
         {
             var result = new BooleanResult(true) as IResult;
 
-            Assert.Equal(true, result.Result);
+            Assert.True((bool)result.Result);
         }
 
         [Fact]

@@ -37,17 +37,6 @@ namespace xFunc.Maths.Expressions.ComplexNumbers
         public Reciprocal(IExpression argument) : base(argument) { }
 
         /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>
-        /// The result type of current expression.
-        /// </returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            return ExpressionResultType.ComplexNumber;
-        }
-
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
@@ -68,7 +57,11 @@ namespace xFunc.Maths.Expressions.ComplexNumbers
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            return Complex.Reciprocal((Complex)m_argument.Execute(parameters));
+            var result = m_argument.Execute(parameters);
+            if (result is Complex complex)
+                return Complex.Reciprocal(complex);
+
+            throw new ResultIsNotSupportedException(this, result);
         }
 
         /// <summary>
@@ -94,14 +87,6 @@ namespace xFunc.Maths.Expressions.ComplexNumbers
         {
             return new Reciprocal(m_argument.Clone());
         }
-
-        /// <summary>
-        /// Gets the type of the argument.
-        /// </summary>
-        /// <value>
-        /// The type of the argument.
-        /// </value>
-        public override ExpressionResultType ArgumentType => ExpressionResultType.ComplexNumber;
 
     }
 

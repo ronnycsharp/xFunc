@@ -18,20 +18,37 @@ using xFunc.Maths;
 using xFunc.Maths.Expressions;
 using xFunc.Maths.Expressions.ComplexNumbers;
 using xFunc.Maths.Expressions.Hyperbolic;
+using xFunc.Maths.Expressions.LogicalAndBitwise;
 using Xunit;
 
 namespace xFunc.Tests.Expressionss.Hyperbolic
 {
-    
+
     public class HyperbolicArtangentTest
     {
 
         [Fact]
-        public void ExecuteTest()
+        public void ExecuteRadianTest()
         {
-            var exp = new Artanh(new Number(1));
+            var exp = new Artanh(new Number(0.5));
 
-            Assert.Equal(MathExtensions.Atanh(1), exp.Execute());
+            Assert.Equal(MathExtensions.Atanh(0.5), exp.Execute(AngleMeasurement.Radian));
+        }
+
+        [Fact]
+        public void ExecuteDegreeTest()
+        {
+            var exp = new Artanh(new Number(0.5));
+
+            Assert.Equal(MathExtensions.Atanh(0.5) / Math.PI * 180, exp.Execute(AngleMeasurement.Degree));
+        }
+
+        [Fact]
+        public void ExecuteGradianTest()
+        {
+            var exp = new Artanh(new Number(0.5));
+
+            Assert.Equal(MathExtensions.Atanh(0.5) / Math.PI * 200, exp.Execute(AngleMeasurement.Gradian));
         }
 
         [Fact]
@@ -44,6 +61,14 @@ namespace xFunc.Tests.Expressionss.Hyperbolic
             Assert.Equal(ComplexExtensions.Atanh(complex), result);
             Assert.Equal(0.2290726829685388, result.Real, 15);
             Assert.Equal(1.4099210495965755, result.Imaginary, 15);
+        }
+
+        [Fact]
+        public void ExecuteTestException()
+        {
+            var exp = new Artanh(new Bool(false));
+
+            Assert.Throws<ResultIsNotSupportedException>(() => exp.Execute());
         }
 
         [Fact]

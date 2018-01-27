@@ -38,20 +38,6 @@ namespace xFunc.Maths.Expressions
         public Log(IExpression arg, IExpression @base) : base(@base, arg) { }
 
         /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>
-        /// The result type of current expression.
-        /// </returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            if (m_right.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber))
-                return ExpressionResultType.ComplexNumber;
-
-            return ExpressionResultType.Number;
-        }
-
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
@@ -72,15 +58,21 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            var resultType = this.ResultType;
+            var leftResult = m_left.Execute(parameters);
+            if (leftResult is double leftNumber)
+            {
+                var rightResult = m_right.Execute(parameters);
 
-            var leftResult = (double)m_left.Execute(parameters);
-            var rightResult = m_right.Execute(parameters);
+                if (rightResult is Complex complex)
+                    return Complex.Log(complex, leftNumber);
 
-            if (resultType == ExpressionResultType.ComplexNumber)
-                return Complex.Log(rightResult as Complex? ?? (double)rightResult, leftResult);
+                if (rightResult is double rightNumber)
+                    return Math.Log(rightNumber, leftNumber);
 
-            return Math.Log((double)rightResult, leftResult);
+                throw new ResultIsNotSupportedException(this, rightResult);
+            }
+
+            throw new ResultIsNotSupportedException(this, leftResult);
         }
 
         /// <summary>
@@ -104,14 +96,6 @@ namespace xFunc.Maths.Expressions
         {
             return new Log(m_right.Clone(), m_left.Clone());
         }
-
-        /// <summary>
-        /// Gets the type of the right parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the right parameter.
-        /// </value>
-        public override ExpressionResultType RightType => ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
 
     }
 

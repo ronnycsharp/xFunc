@@ -37,17 +37,6 @@ namespace xFunc.Maths.Expressions
         public Sqrt(IExpression expression) : base(expression) { }
 
         /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>
-        /// The result type of current expression.
-        /// </returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            return ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
-        }
-
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
@@ -73,11 +62,15 @@ namespace xFunc.Maths.Expressions
             if (result is Complex)
                 return Complex.Sqrt((Complex)result);
 
-            var doubleResult = (double)result;
-            if (doubleResult < 0)
-                return new Complex(0, Complex.Sqrt(doubleResult).Imaginary);
+            if (result is double number)
+            {
+                if (number < 0)
+                    return new Complex(0, Complex.Sqrt(number).Imaginary);
 
-            return Math.Sqrt(doubleResult);
+                return Math.Sqrt(number);
+            }
+
+            throw new ResultIsNotSupportedException(this, result);
         }
 
         /// <summary>
@@ -101,14 +94,6 @@ namespace xFunc.Maths.Expressions
         {
             return new Sqrt(m_argument.Clone());
         }
-
-        /// <summary>
-        /// Gets the type of the argument.
-        /// </summary>
-        /// <value>
-        /// The type of the argument.
-        /// </value>
-        public override ExpressionResultType ArgumentType => ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
 
     }
 

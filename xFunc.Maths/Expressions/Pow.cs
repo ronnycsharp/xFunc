@@ -37,20 +37,6 @@ namespace xFunc.Maths.Expressions
         public Pow(IExpression @base, IExpression exponent) : base(@base, exponent) { }
 
         /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>
-        /// The result type of current expression.
-        /// </returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            if (m_left.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber))
-                return ExpressionResultType.ComplexNumber;
-
-            return ExpressionResultType.Number;
-        }
-
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
@@ -71,15 +57,22 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            var resultType = this.ResultType;
-
             var leftResult = m_left.Execute(parameters);
             var rightResult = m_right.Execute(parameters);
 
-            if (resultType == ExpressionResultType.ComplexNumber)
-                return Complex.Pow(leftResult as Complex? ?? (double)leftResult, rightResult as Complex? ?? (double)rightResult);
+            if (leftResult is Complex leftComplex && (rightResult is Complex || rightResult is double))
+            {
+                var rightComplex = rightResult as Complex? ?? rightResult as double?;
+                if (rightComplex == null)
+                    throw new ResultIsNotSupportedException(this, leftResult, rightResult);
 
-            return MathExtensions.Pow((double)leftResult, (double)rightResult);
+                return Complex.Pow(leftComplex, rightComplex.Value);
+            }
+
+            if (leftResult is double leftNumber && rightResult is double rightNumber)
+                return MathExtensions.Pow(leftNumber, rightNumber);
+
+            throw new ResultIsNotSupportedException(this, leftResult, rightResult);
         }
 
         /// <summary>
@@ -102,40 +95,6 @@ namespace xFunc.Maths.Expressions
         public override IExpression Clone()
         {
             return new Pow(m_left.Clone(), m_right.Clone());
-        }
-
-        /// <summary>
-        /// Gets the type of the left parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the left parameter.
-        /// </value>
-        public override ExpressionResultType LeftType
-        {
-            get
-            {
-                if (m_right != null && m_right.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber))
-                    return ExpressionResultType.ComplexNumber;
-
-                return ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the right parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the right parameter.
-        /// </value>
-        public override ExpressionResultType RightType
-        {
-            get
-            {
-                if (m_left != null && m_left.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber))
-                    return ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
-
-                return ExpressionResultType.Number;
-            }
         }
 
     }

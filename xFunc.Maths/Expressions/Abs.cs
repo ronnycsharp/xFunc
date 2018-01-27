@@ -66,7 +66,10 @@ namespace xFunc.Maths.Expressions
             if (result is Vector)
                 return ((Vector)result).Abs(parameters);
 
-            return Math.Abs((double)result);
+            if (result is double number)
+                return Math.Abs(number);
+
+            throw new ResultIsNotSupportedException(this, result);
         }
 
         /// <summary>
@@ -90,14 +93,6 @@ namespace xFunc.Maths.Expressions
         {
             return new Abs(m_argument.Clone());
         }
-
-        /// <summary>
-        /// Gets the type of the argument.
-        /// </summary>
-        /// <value>
-        /// The type of the argument.
-        /// </value>
-        public override ExpressionResultType ArgumentType => ExpressionResultType.Number | ExpressionResultType.ComplexNumber | ExpressionResultType.Vector;
 
     }
 

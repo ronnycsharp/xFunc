@@ -14,7 +14,9 @@
 // limitations under the License.
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using xFunc.Maths.Analyzers;
+using xFunc.Maths.Resources;
 
 namespace xFunc.Maths.Expressions.Matrices
 {
@@ -33,17 +35,6 @@ namespace xFunc.Maths.Expressions.Matrices
         /// </summary>
         /// <param name="argument">A matrix.</param>
         public Inverse(IExpression argument) : base(argument) { }
-
-        /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>
-        /// The result type of current expression.
-        /// </returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            return ExpressionResultType.Matrix;
-        }
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -66,7 +57,18 @@ namespace xFunc.Maths.Expressions.Matrices
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            return ((Matrix)m_argument.Execute(parameters)).Inverse(parameters);
+            var result = m_argument.Execute(parameters);
+            if (result is Matrix matrix)
+            {
+                if (matrix.Arguments.Any(x => x == null))
+                    throw new ArgumentException(Resource.SequenceNullValuesError);
+                if (matrix.Arguments.OfType<Vector>().Any(x => x.Arguments.All(z => z == null)))
+                    throw new ArgumentException(Resource.SequenceNullValuesError);
+
+                return matrix.Inverse(parameters);
+            }
+
+            throw new ResultIsNotSupportedException(this, result);
         }
 
         /// <summary>
@@ -92,14 +94,6 @@ namespace xFunc.Maths.Expressions.Matrices
         {
             return new Inverse(this.m_argument.Clone());
         }
-
-        /// <summary>
-        /// Gets the type of the argument.
-        /// </summary>
-        /// <value>
-        /// The type of the argument.
-        /// </value>
-        public override ExpressionResultType ArgumentType => ExpressionResultType.Matrix;
 
     }
 

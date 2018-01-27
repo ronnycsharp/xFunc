@@ -5,6 +5,8 @@
 TestResults
 packages
 .idea/
+.vs/
+desktop.ini
 
 coverage
 coverage.xml

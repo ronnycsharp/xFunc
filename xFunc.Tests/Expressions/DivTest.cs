@@ -16,6 +16,7 @@ using System;
 using System.Numerics;
 using xFunc.Maths.Expressions;
 using xFunc.Maths.Expressions.ComplexNumbers;
+using xFunc.Maths.Expressions.LogicalAndBitwise;
 using Xunit;
 
 namespace xFunc.Tests.Expressionss
@@ -69,67 +70,27 @@ namespace xFunc.Tests.Expressionss
         }
 
         [Fact]
-        public void ResultTypeNumberNumberTest()
+        public void ExecuteBoolTest()
         {
-            var exp = new Div(new Number(1), new Number(2));
+            var exp = new Div(new Bool(false), new Bool(true));
 
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, exp.LeftType);
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, exp.RightType);
-            Assert.Equal(ExpressionResultType.Number, exp.ResultType);
+            Assert.Throws<ResultIsNotSupportedException>(() => exp.Execute());
         }
 
         [Fact]
-        public void ResultTypeComplexNumberComplexNumberTest()
+        public void ExecuteComplexNumberBoolTest()
         {
-            var exp = new Div(new ComplexNumber(3, 2), new ComplexNumber(2, 4));
+            var exp = new Div(new ComplexNumber(2, 4), new Bool(true));
 
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, exp.LeftType);
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, exp.RightType);
-            Assert.Equal(ExpressionResultType.ComplexNumber, exp.ResultType);
+            Assert.Throws<ResultIsNotSupportedException>(() => exp.Execute());
         }
 
         [Fact]
-        public void ResultTypeNumberComplexNumberTest()
+        public void ExecuteBoolComplexNumberTest()
         {
-            var exp = new Div(new Number(3), new ComplexNumber(2, 4));
+            var exp = new Div(new Bool(true), new ComplexNumber(2, 4));
 
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, exp.LeftType);
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, exp.RightType);
-            Assert.Equal(ExpressionResultType.ComplexNumber, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeComplexNumberNumberTest()
-        {
-            var exp = new Div(new ComplexNumber(3, 2), new Number(2));
-
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, exp.LeftType);
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, exp.RightType);
-            Assert.Equal(ExpressionResultType.ComplexNumber, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeNumberComplexTest()
-        {
-            var exp = new Div(new Sqrt(new Number(-16)), new Number(2));
-
-            Assert.Equal(ExpressionResultType.ComplexNumber, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeTwoVarTest()
-        {
-            var exp = new Div(new Variable("x"), new Variable("x"));
-
-            Assert.Equal(ExpressionResultType.Number, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeThreeVarTest()
-        {
-            var exp = new Div(new Add(new Variable("x"), new Variable("x")), new Variable("x"));
-
-            Assert.Equal(ExpressionResultType.Number, exp.ResultType);
+            Assert.Throws<ResultIsNotSupportedException>(() => exp.Execute());
         }
 
         [Fact]

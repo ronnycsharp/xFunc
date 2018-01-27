@@ -20,6 +20,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using xFunc.Maths;
+using xFunc.Maths.Analyzers;
+using xFunc.Maths.Analyzers.TypeAnalyzers;
 using xFunc.Maths.Expressions;
 using xFunc.Maths.Expressions.Collections;
 using xFunc.Presenters;
@@ -131,6 +133,22 @@ namespace xFunc.Views
                 catch (InvalidOperationException ioe)
                 {
                     Status = ioe.Message;
+                }
+                catch (ResultIsNotSupportedException rinse)
+                {
+                    Status = rinse.Message;
+                }
+                catch (BinaryParameterTypeMismatchException bptme)
+                {
+                    Status = bptme.Message;
+                }
+                catch (DifferentParameterTypeMismatchException dptme)
+                {
+                    Status = dptme.Message;
+                }
+                catch (ParameterTypeMismatchException ptme)
+                {
+                    Status = ptme.Message;
                 }
                 catch (NotSupportedException)
                 {

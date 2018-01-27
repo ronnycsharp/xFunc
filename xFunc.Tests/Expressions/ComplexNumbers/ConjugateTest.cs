@@ -25,7 +25,7 @@ namespace xFunc.Tests.Expressionss.ComplexNumbers
     {
 
         [Fact]
-        public void ExecuteTest1()
+        public void ExecuteComplexNumberTest()
         {
             var complex = new Complex(3.1, 2.5);
             var exp = new Conjugate(new ComplexNumber(complex));
@@ -34,9 +34,11 @@ namespace xFunc.Tests.Expressionss.ComplexNumbers
         }
 
         [Fact]
-        public void ImNumberTest()
+        public void ExecuteExeptionTest()
         {
-            Assert.Throws<ParameterTypeMismatchException>(() => new Conjugate(new Number(2)));
+            var exp = new Conjugate(new Number(2));
+
+            Assert.Throws<ResultIsNotSupportedException>(() => exp.Execute());
         }
 
         [Fact]

@@ -37,17 +37,6 @@ namespace xFunc.Maths.Expressions.ComplexNumbers
         public Phase(IExpression argument) : base(argument) { }
 
         /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>
-        /// The result type of current expression.
-        /// </returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            return ExpressionResultType.Number;
-        }
-
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
@@ -68,14 +57,20 @@ namespace xFunc.Maths.Expressions.ComplexNumbers
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            var angleMeasurement = parameters?.AngleMeasurement ?? AngleMeasurement.Degree;
+            var result = m_argument.Execute(parameters);
+            if (result is Complex complex)
+            {
+                var angleMeasurement = parameters?.AngleMeasurement ?? AngleMeasurement.Degree;
 
-            if (angleMeasurement == AngleMeasurement.Degree)
-                return ((Complex)m_argument.Execute(parameters)).Phase * 180 / Math.PI;
-            if (angleMeasurement == AngleMeasurement.Gradian)
-                return ((Complex)m_argument.Execute(parameters)).Phase * 200 / Math.PI;
+                if (angleMeasurement == AngleMeasurement.Degree)
+                    return complex.Phase * 180 / Math.PI;
+                if (angleMeasurement == AngleMeasurement.Gradian)
+                    return complex.Phase * 200 / Math.PI;
 
-            return ((Complex)m_argument.Execute(parameters)).Phase;
+                return complex.Phase;
+            }
+
+            throw new ResultIsNotSupportedException(this, result);
         }
 
         /// <summary>
@@ -99,14 +94,6 @@ namespace xFunc.Maths.Expressions.ComplexNumbers
         {
             return new Phase(m_argument.Clone());
         }
-
-        /// <summary>
-        /// Gets the count of parameters.
-        /// </summary>
-        /// <value>
-        /// The count of parameters.
-        /// </value>
-        public override ExpressionResultType ArgumentType => ExpressionResultType.ComplexNumber;
 
     }
 

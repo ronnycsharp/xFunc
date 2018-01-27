@@ -47,7 +47,7 @@ namespace xFunc.Tests
             var exp = new Sin(new Mul(new Number(2), new Variable("x")));
             bool expected = Helpers.HasVariable(exp, new Variable("x"));
 
-            Assert.Equal(expected, true);
+            Assert.True(expected);
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace xFunc.Tests
             var exp = new Sin(new Mul(new Number(2), new Number(3)));
             bool expected = Helpers.HasVariable(exp, new Variable("x"));
 
-            Assert.Equal(expected, false);
+            Assert.False(expected);
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace xFunc.Tests
             var exp = new GCD(new IExpression[] { new Variable("x"), new Number(2), new Number(4) }, 3);
             var expected = Helpers.HasVariable(exp, new Variable("x"));
 
-            Assert.Equal(expected, true);
+            Assert.True(expected);
         }
 
         [Fact]
@@ -74,7 +74,7 @@ namespace xFunc.Tests
             var exp = new GCD(new IExpression[] { new Variable("y"), new Number(2), new Number(4) }, 3);
             var expected = Helpers.HasVariable(exp, new Variable("x"));
 
-            Assert.Equal(expected, false);
+            Assert.False(expected);
         }
 
         [Fact]
@@ -173,22 +173,6 @@ namespace xFunc.Tests
             var expected = new Derivative(new Sin(new Variable("x")));
 
             Assert.Equal(expected, exp);
-        }
-
-        [Fact]
-        public void ParseDerivSecondParamIsNotVar()
-        {
-            var tokens = new List<IToken>
-            {
-                new FunctionToken(Functions.Derivative, 2),
-                new SymbolToken(Symbols.OpenBracket),
-                new VariableToken("x"),
-                new SymbolToken(Symbols.Comma),
-                new NumberToken(3),
-                new SymbolToken(Symbols.CloseBracket)
-            };
-
-            Assert.Throws<ArgumentException>(() => parser.Parse(tokens));
         }
 
         [Fact]
@@ -305,23 +289,6 @@ namespace xFunc.Tests
         }
 
         [Fact]
-        public void DefineParseFailTest()
-        {
-            var tokens = new List<IToken>
-            {
-                new NumberToken(2),
-                new OperationToken(Operations.Multiplication),
-                new SymbolToken(Symbols.OpenBracket),
-                new VariableToken("x"),
-                new OperationToken(Operations.Assign),
-                new NumberToken(1),
-                new SymbolToken(Symbols.CloseBracket)
-            };
-
-            Assert.Throws<ParameterTypeMismatchException>(() => parser.Parse(tokens));
-        }
-
-        [Fact]
         public void UndefParseTest()
         {
             var tokens = new List<IToken>
@@ -352,22 +319,6 @@ namespace xFunc.Tests
             };
 
             Assert.Throws<ParserException>(() => parser.Parse(tokens));
-        }
-
-        [Fact]
-        public void UndefineParseFailTest()
-        {
-            var tokens = new List<IToken>
-            {
-                new NumberToken(2),
-                new OperationToken(Operations.Multiplication),
-                new FunctionToken(Functions.Undefine, 1),
-                new SymbolToken(Symbols.OpenBracket),
-                new VariableToken("x"),
-                new SymbolToken(Symbols.CloseBracket)
-            };
-
-            Assert.Throws<ParameterTypeMismatchException>(() => parser.Parse(tokens));
         }
 
         [Fact]
@@ -539,7 +490,7 @@ namespace xFunc.Tests
             };
 
             var exp = parser.Parse(tokens);
-            var expected = new Vector(new[] { new Number(2), new Number(3), new Number(4) });
+            var expected = new Maths.Expressions.Matrices.Vector(new[] { new Number(2), new Number(3), new Number(4) });
 
             Assert.Equal(expected, exp);
         }
@@ -570,27 +521,11 @@ namespace xFunc.Tests
             var exp = parser.Parse(tokens);
             var expected = new Matrix(new[]
             {
-                new Vector(new [] { new Number(2), new Number(3) }),
-                new Vector(new [] { new Number(4), new Number(7) })
+                new Maths.Expressions.Matrices.Vector(new [] { new Number(2), new Number(3) }),
+                new Maths.Expressions.Matrices.Vector(new [] { new Number(4), new Number(7) })
             });
 
             Assert.Equal(expected, exp);
-        }
-
-        [Fact]
-        public void MatrixAndNotVectorTest()
-        {
-            var tokens = new List<IToken>
-            {
-                new FunctionToken(Functions.Matrix, 2),
-                new SymbolToken(Symbols.OpenBracket),
-                new NumberToken(2),
-                new SymbolToken(Symbols.Comma),
-                new NumberToken(3),
-                new SymbolToken(Symbols.CloseBracket)
-            };
-
-            Assert.Throws<ParameterTypeMismatchException>(() => parser.Parse(tokens));
         }
 
         [Fact]

@@ -37,35 +37,44 @@ namespace xFunc.Maths.Expressions.Hyperbolic
         protected HyperbolicExpression(IExpression argument) : base(argument) { }
 
         /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>
-        /// The result type of current expression.
-        /// </returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            return m_argument.ResultType;
-        }
-
-        /// <summary>
         /// Executes this expression.
         /// </summary>
-        /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
+        /// <param name="complex">The calculation result of argument.</param>
         /// <returns>
         /// A result of the execution.
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
-        protected abstract Complex ExecuteComplex(ExpressionParameters parameters);
+        protected abstract Complex ExecuteComplex(Complex complex);
 
         /// <summary>
-        /// Executes this expression.
+        /// Calculates this mathematical expression (using degree).
         /// </summary>
-        /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
+        /// <param name="degree">The calculation result of argument.</param>
         /// <returns>
-        /// A result of the execution.
+        /// A result of the calculation.
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
-        protected abstract double ExecuteNumber(ExpressionParameters parameters);
+        protected abstract double ExecuteDergee(double degree);
+
+        /// <summary>
+        /// Calculates this mathematical expression (using radian).
+        /// </summary>
+        /// <param name="radian">The calculation result of argument.</param>
+        /// <returns>
+        /// A result of the calculation.
+        /// </returns>
+        /// <seealso cref="ExpressionParameters" />
+        protected abstract double ExecuteRadian(double radian);
+
+        /// <summary>
+        /// Calculates this mathematical expression (using gradian).
+        /// </summary>
+        /// <param name="gradian">The calculation result of argument.</param>
+        /// <returns>
+        /// A result of the calculation.
+        /// </returns>
+        /// <seealso cref="ExpressionParameters" />
+        protected abstract double ExecuteGradian(double gradian);
 
         /// <summary>
         /// Executes this expression.
@@ -77,20 +86,22 @@ namespace xFunc.Maths.Expressions.Hyperbolic
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            var resultType = this.ResultType;
-            if (resultType == ExpressionResultType.ComplexNumber)
-                return ExecuteComplex(parameters);
+            var result = m_argument.Execute(parameters);
+            if (result is Complex complex)
+                return ExecuteComplex(complex);
 
-            return ExecuteNumber(parameters);
+            if (result is double number)
+            {
+                if (parameters == null || parameters.AngleMeasurement == AngleMeasurement.Degree)
+                    return ExecuteDergee(number);
+                if (parameters.AngleMeasurement == AngleMeasurement.Radian)
+                    return ExecuteRadian(number);
+                if (parameters.AngleMeasurement == AngleMeasurement.Gradian)
+                    return ExecuteGradian(number);
+            }
+
+            throw new ResultIsNotSupportedException(this, result);
         }
-
-        /// <summary>
-        /// Gets the type of the argument.
-        /// </summary>
-        /// <value>
-        /// The type of the argument.
-        /// </value>
-        public override ExpressionResultType ArgumentType => ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
 
     }
 

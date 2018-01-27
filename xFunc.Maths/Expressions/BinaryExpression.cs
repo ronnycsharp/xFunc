@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using xFunc.Maths.Analyzers;
 using xFunc.Maths.Analyzers.Formatters;
 
 namespace xFunc.Maths.Expressions
@@ -21,7 +22,7 @@ namespace xFunc.Maths.Expressions
     /// <summary>
     /// The base class for binary operations.
     /// </summary>
-    public abstract class BinaryExpression : CachedResultTypeExpression
+    public abstract class BinaryExpression : IExpression
     {
 
         /// <summary>
@@ -36,9 +37,7 @@ namespace xFunc.Maths.Expressions
         /// <summary>
         /// Initializes a new instance of the <see cref="BinaryExpression"/> class.
         /// </summary>
-        protected BinaryExpression()
-        {
-        }
+        protected BinaryExpression() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BinaryExpression"/> class.
@@ -105,7 +104,7 @@ namespace xFunc.Maths.Expressions
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
-        public override string ToString(IFormatter formatter)
+        public string ToString(IFormatter formatter)
         {
             return this.Analyze(formatter);
         }
@@ -122,24 +121,43 @@ namespace xFunc.Maths.Expressions
         }
 
         /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>The result type of current expression.</returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            return ExpressionResultType.Number;
-        }
-
-        /// <summary>
         /// Executes this expression. Don't use this method if your expression has variables or user-functions.
         /// </summary>
         /// <returns>
         /// A result of the execution.
         /// </returns>
-        public override object Execute()
+        public object Execute()
         {
             return Execute(null);
         }
+
+        /// <summary>
+        /// Executes this expression.
+        /// </summary>
+        /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
+        /// <returns>
+        /// A result of the execution.
+        /// </returns>
+        /// <seealso cref="ExpressionParameters" />
+        public abstract object Execute(ExpressionParameters parameters);
+
+        /// <summary>
+        /// Analyzes the current expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="analyzer">The analyzer.</param>
+        /// <returns>
+        /// The analysis result.
+        /// </returns>
+        public abstract TResult Analyze<TResult>(IAnalyzer<TResult> analyzer);
+
+        /// <summary>
+        /// Clones this instance of the <see cref="IExpression" />.
+        /// </summary>
+        /// <returns>
+        /// Returns the new instance of <see cref="IExpression" /> that is a clone of this instance.
+        /// </returns>
+        public abstract IExpression Clone();
 
         /// <summary>
         /// The left (first) operand.
@@ -154,23 +172,11 @@ namespace xFunc.Maths.Expressions
             {
                 if (value == null)
                     throw new ArgumentNullException(nameof(value));
-                if ((LeftType & value.ResultType) == ExpressionResultType.None)
-                    throw new ParameterTypeMismatchException(LeftType, value.ResultType);
 
                 m_left = value;
                 m_left.Parent = this;
-
-                IsChanged = true;
             }
         }
-
-        /// <summary>
-        /// Gets the type of the left parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the left parameter.
-        /// </value>
-        public virtual ExpressionResultType LeftType => ExpressionResultType.Number;
 
         /// <summary>
         /// The right (second) operand.
@@ -185,28 +191,16 @@ namespace xFunc.Maths.Expressions
             {
                 if (value == null)
                     throw new ArgumentNullException(nameof(value));
-                if ((RightType & value.ResultType) == ExpressionResultType.None)
-                    throw new ParameterTypeMismatchException(RightType, value.ResultType);
 
                 m_right = value;
                 m_right.Parent = this;
-
-                IsChanged = true;
             }
         }
 
         /// <summary>
-        /// Gets the type of the right parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the right parameter.
-        /// </value>
-        public virtual ExpressionResultType RightType => ExpressionResultType.Number;
-
-        /// <summary>
         /// Get or Set the parent expression.
         /// </summary>
-        public override IExpression Parent { get; set; }
+        public virtual IExpression Parent { get; set; }
 
         /// <summary>
         /// Gets the minimum count of parameters.
@@ -214,7 +208,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The minimum count of parameters.
         /// </value>
-        public override int MinParameters => 2;
+        public virtual int MinParameters => 2;
 
         /// <summary>
         /// Gets the maximum count of parameters. -1 - Infinity.
@@ -222,7 +216,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The maximum count of parameters.
         /// </value>
-        public override int MaxParameters => 2;
+        public virtual int MaxParameters => 2;
 
         /// <summary>
         /// Gets the count of parameters.
@@ -230,7 +224,7 @@ namespace xFunc.Maths.Expressions
         /// <value>
         /// The count of parameters.
         /// </value>
-        public override int ParametersCount => 2;
+        public virtual int ParametersCount => 2;
 
     }
 

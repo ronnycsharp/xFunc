@@ -37,20 +37,6 @@ namespace xFunc.Maths.Expressions
         public Ln(IExpression expression) : base(expression) { }
 
         /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>
-        /// The result type of current expression.
-        /// </returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            if (m_argument.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber))
-                return ExpressionResultType.ComplexNumber;
-
-            return ExpressionResultType.Number;
-        }
-
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
@@ -71,13 +57,14 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            var resultType = this.ResultType;
             var result = m_argument.Execute(parameters);
+            if (result is Complex complex)
+                return Complex.Log(complex);
 
-            if (resultType == ExpressionResultType.ComplexNumber)
-                return Complex.Log(result as Complex? ?? (double)result);
+            if (result is double number)
+                return Math.Log(number);
 
-            return Math.Log((double)result);
+            throw new ResultIsNotSupportedException(this, result);
         }
 
         /// <summary>
@@ -101,14 +88,6 @@ namespace xFunc.Maths.Expressions
         {
             return new Ln(m_argument.Clone());
         }
-
-        /// <summary>
-        /// Gets the type of the argument.
-        /// </summary>
-        /// <value>
-        /// The type of the argument.
-        /// </value>
-        public override ExpressionResultType ArgumentType => ExpressionResultType.Number | ExpressionResultType.ComplexNumber;
 
     }
 

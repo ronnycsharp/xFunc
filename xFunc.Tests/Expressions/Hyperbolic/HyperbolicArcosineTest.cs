@@ -18,6 +18,7 @@ using xFunc.Maths;
 using xFunc.Maths.Expressions;
 using xFunc.Maths.Expressions.ComplexNumbers;
 using xFunc.Maths.Expressions.Hyperbolic;
+using xFunc.Maths.Expressions.LogicalAndBitwise;
 using Xunit;
 
 namespace xFunc.Tests.Expressionss.Hyperbolic
@@ -27,11 +28,27 @@ namespace xFunc.Tests.Expressionss.Hyperbolic
     {
 
         [Fact]
-        public void ExecuteTest()
+        public void ExecuteRadianTest()
         {
-            var exp = new Arcosh(new Number(1));
+            var exp = new Arcosh(new Number(0.5));
 
-            Assert.Equal(MathExtensions.Acosh(1), exp.Execute());
+            Assert.Equal(MathExtensions.Acosh(0.5), exp.Execute(AngleMeasurement.Radian));
+        }
+
+        [Fact]
+        public void ExecuteDegreeTest()
+        {
+            var exp = new Arcosh(new Number(0.5));
+
+            Assert.Equal(MathExtensions.Acosh(0.5) / Math.PI * 180, exp.Execute(AngleMeasurement.Degree));
+        }
+
+        [Fact]
+        public void ExecuteGradianTest()
+        {
+            var exp = new Arcosh(new Number(0.5));
+
+            Assert.Equal(MathExtensions.Acosh(0.5) / Math.PI * 200, exp.Execute(AngleMeasurement.Gradian));
         }
 
         [Fact]
@@ -44,6 +61,14 @@ namespace xFunc.Tests.Expressionss.Hyperbolic
             Assert.Equal(ComplexExtensions.Acosh(complex), result);
             Assert.Equal(1.9686379257930964, result.Real, 15);
             Assert.Equal(0.606137822387294, result.Imaginary, 15);
+        }
+
+        [Fact]
+        public void ExecuteTestException()
+        {
+            var exp = new Arcosh(new Bool(false));
+
+            Assert.Throws<ResultIsNotSupportedException>(() => exp.Execute());
         }
 
         [Fact]

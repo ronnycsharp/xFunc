@@ -61,9 +61,11 @@ namespace xFunc.Tests.Expressionss.ComplexNumbers
         }
 
         [Fact]
-        public void PhaseNumberTest()
+        public void ExecuteExeptionTest()
         {
-            Assert.Throws<ParameterTypeMismatchException>(() => new Phase(new Number(2)));
+            var exp = new Phase(new Number(2));
+
+            Assert.Throws<ResultIsNotSupportedException>(() => exp.Execute());
         }
 
         [Fact]

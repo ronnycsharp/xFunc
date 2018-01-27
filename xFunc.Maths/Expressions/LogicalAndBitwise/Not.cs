@@ -36,17 +36,6 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         public Not(IExpression expression) : base(expression) { }
 
         /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>
-        /// The result type of current expression.
-        /// </returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            return ExpressionResultType.Boolean;
-        }
-
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
@@ -69,10 +58,12 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         {
             var arg = m_argument.Execute(parameters);
 
-            if (arg is bool)
-                return !(bool)arg;
+            if (arg is bool boolArg)
+                return !boolArg;
+            if (arg is double doubleArg)
+                return (double)(~(int)Math.Round(doubleArg, MidpointRounding.AwayFromZero));
 
-            return (double)(~(int)Math.Round((double)arg, MidpointRounding.AwayFromZero));
+            throw new ResultIsNotSupportedException(this, arg);
         }
 
         /// <summary>
@@ -96,14 +87,6 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         {
             return new Not(m_argument.Clone());
         }
-
-        /// <summary>
-        /// Gets the type of the argument.
-        /// </summary>
-        /// <value>
-        /// The type of the argument.
-        /// </value>
-        public override ExpressionResultType ArgumentType => ExpressionResultType.Number | ExpressionResultType.Boolean;
 
     }
 

@@ -56,6 +56,18 @@ namespace xFunc.Maths.Expressions.Statistical
             return base.GetHashCode(2417, 10463);
         }
 
+        private double[] ExecuteArray(IExpression[] expression, ExpressionParameters parameters)
+        {
+            return expression.Select(exp =>
+            {
+                var result = exp.Execute(parameters);
+                if (result is double doubleResult)
+                    return doubleResult;
+
+                throw new ResultIsNotSupportedException();
+            }).ToArray();
+        }
+
         /// <summary>
         /// Executes this expression.
         /// </summary>
@@ -76,8 +88,9 @@ namespace xFunc.Maths.Expressions.Statistical
                     data = vector.Arguments;
             }
 
-            var avg = data.Average(exp => (double)exp.Execute(parameters));
-            return data.Sum(exp => Math.Pow((double)exp.Execute(parameters) - avg, 2)) / (data.Length - 1);
+            var calculatedArray = ExecuteArray(data, parameters);
+            var avg = calculatedArray.Average();
+            return calculatedArray.Sum(x => Math.Pow(x - avg, 2)) / (calculatedArray.Length - 1);
         }
 
         /// <summary>
@@ -102,28 +115,6 @@ namespace xFunc.Maths.Expressions.Statistical
         public override IExpression Clone()
         {
             return new Var(CloneArguments(), ParametersCount);
-        }
-
-        /// <summary>
-        /// Gets the arguments types.
-        /// </summary>
-        /// <value>
-        /// The arguments types.
-        /// </value>
-        public override ExpressionResultType[] ArgumentsTypes
-        {
-            get
-            {
-                var result = new ExpressionResultType[ParametersCount];
-                if (ParametersCount > 0)
-                {
-                    result[0] = ExpressionResultType.Number | ExpressionResultType.Vector;
-                    for (var i = 1; i < result.Length; i++)
-                        result[i] = ExpressionResultType.Number;
-                }
-
-                return result;
-            }
         }
 
         /// <summary>

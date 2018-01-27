@@ -51,8 +51,6 @@ namespace xFunc.Presenters
             var tokens = lexer.Tokenize(strExp);
 
             expression = parser.Parse(tokens);
-            if (!expression.ResultType.HasFlagNI(ExpressionResultType.Boolean))
-                throw new NotSupportedException();
 
             expressions = Helpers.ConvertExpressionToCollection(expression);
             parameters = Helpers.GetParameters(tokens);
@@ -65,9 +63,11 @@ namespace xFunc.Presenters
 
                 var b = (bool)expression.Execute(parameters);
 
-                var row = new TruthTableRowViewModel(parametersCount, expressions.Count());
+                var row = new TruthTableRowViewModel(parametersCount, expressions.Count())
+                {
+                    Index = (int)Math.Pow(2, parametersCount) - i
+                };
 
-                row.Index = (int)Math.Pow(2, parametersCount) - i;
                 for (int j = 0; j < parametersCount; j++)
                     row.VarsValues[j] = (bool)parameters[parameters.ElementAt(j).Key];
 
@@ -81,37 +81,13 @@ namespace xFunc.Presenters
             }
         }
 
-        public IExpression Expression
-        {
-            get
-            {
-                return expression;
-            }
-        }
+        public IExpression Expression => expression;
 
-        public IEnumerable<IExpression> Expressions
-        {
-            get
-            {
-                return expressions;
-            }
-        }
+        public IEnumerable<IExpression> Expressions => expressions;
 
-        public ParameterCollection Parameters
-        {
-            get
-            {
-                return parameters;
-            }
-        }
+        public ParameterCollection Parameters => parameters;
 
-        public IEnumerable<TruthTableRowViewModel> Table
-        {
-            get
-            {
-                return table;
-            }
-        }
+        public IEnumerable<TruthTableRowViewModel> Table => table;
 
     }
 

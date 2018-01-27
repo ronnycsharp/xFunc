@@ -36,17 +36,6 @@ namespace xFunc.Maths.Expressions.Programming
         public Equal(IExpression left, IExpression right) : base(left, right) { }
 
         /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>
-        /// The result type of current expression.
-        /// </returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            return ExpressionResultType.Boolean;
-        }
-
-        /// <summary>
         /// Executes this expression.
         /// </summary>
         /// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
@@ -65,7 +54,7 @@ namespace xFunc.Maths.Expressions.Programming
             if (leftValueObject is bool && rightValueObject is bool)
                 return (bool)leftValueObject == (bool)rightValueObject;
 
-            throw new NotSupportedException();
+            throw new ResultIsNotSupportedException(this, leftValueObject, rightValueObject);
         }
 
         /// <summary>
@@ -90,50 +79,6 @@ namespace xFunc.Maths.Expressions.Programming
         public override IExpression Clone()
         {
             return new Equal(m_left.Clone(), m_right.Clone());
-        }
-
-        /// <summary>
-        /// Gets the type of the left parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the left parameter.
-        /// </value>
-        public override ExpressionResultType LeftType
-        {
-            get
-            {
-                if (m_right != null)
-                {
-                    if (m_right.ResultType.HasFlagNI(ExpressionResultType.Number))
-                        return ExpressionResultType.Number;
-
-                    return ExpressionResultType.Boolean;
-                }
-
-                return ExpressionResultType.Number | ExpressionResultType.Boolean;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the right parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the right parameter.
-        /// </value>
-        public override ExpressionResultType RightType
-        {
-            get
-            {
-                if (m_left != null)
-                {
-                    if (m_left.ResultType.HasFlagNI(ExpressionResultType.Number))
-                        return ExpressionResultType.Number;
-
-                    return ExpressionResultType.Boolean;
-                }
-
-                return ExpressionResultType.Number | ExpressionResultType.Boolean;
-            }
         }
 
     }

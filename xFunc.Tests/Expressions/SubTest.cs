@@ -72,11 +72,11 @@ namespace xFunc.Tests.Expressionss
         [Fact]
         public void SubTwoVectorsTest()
         {
-            var vector1 = new Vector(new[] { new Number(2), new Number(3) });
-            var vector2 = new Vector(new[] { new Number(7), new Number(1) });
+            var vector1 = new Maths.Expressions.Matrices.Vector(new[] { new Number(2), new Number(3) });
+            var vector2 = new Maths.Expressions.Matrices.Vector(new[] { new Number(7), new Number(1) });
             var sub = new Sub(vector1, vector2);
 
-            var expected = new Vector(new[] { new Number(-5), new Number(2) });
+            var expected = new Maths.Expressions.Matrices.Vector(new[] { new Number(-5), new Number(2) });
             var result = sub.Execute();
 
             Assert.Equal(expected, result);
@@ -87,20 +87,20 @@ namespace xFunc.Tests.Expressionss
         {
             var matrix1 = new Matrix(new[]
             {
-                new Vector(new[] { new Number(6), new Number(3) }),
-                new Vector(new[] { new Number(2), new Number(1) })
+                new Maths.Expressions.Matrices.Vector(new[] { new Number(6), new Number(3) }),
+                new Maths.Expressions.Matrices.Vector(new[] { new Number(2), new Number(1) })
             });
             var matrix2 = new Matrix(new[]
             {
-                new Vector(new[] { new Number(9), new Number(2) }),
-                new Vector(new[] { new Number(4), new Number(3) })
+                new Maths.Expressions.Matrices.Vector(new[] { new Number(9), new Number(2) }),
+                new Maths.Expressions.Matrices.Vector(new[] { new Number(4), new Number(3) })
             });
             var sub = new Sub(matrix1, matrix2);
 
             var expected = new Matrix(new[]
             {
-                new Vector(new[] { new Number(-3), new Number(1) }),
-                new Vector(new[] { new Number(-2), new Number(-2) })
+                new Maths.Expressions.Matrices.Vector(new[] { new Number(-3), new Number(1) }),
+                new Maths.Expressions.Matrices.Vector(new[] { new Number(-2), new Number(-2) })
             });
             var result = sub.Execute();
 
@@ -110,183 +110,17 @@ namespace xFunc.Tests.Expressionss
         [Fact]
         public void Sub4MatricesTest()
         {
-            var vector1 = new Vector(new IExpression[] { new Number(1), new Number(2) });
-            var vector2 = new Vector(new IExpression[] { new Number(1), new Number(2) });
-            var vector3 = new Vector(new IExpression[] { new Number(1), new Number(2) });
-            var vector4 = new Vector(new IExpression[] { new Number(1), new Number(2) });
+            var vector1 = new Maths.Expressions.Matrices.Vector(new IExpression[] { new Number(1), new Number(2) });
+            var vector2 = new Maths.Expressions.Matrices.Vector(new IExpression[] { new Number(1), new Number(2) });
+            var vector3 = new Maths.Expressions.Matrices.Vector(new IExpression[] { new Number(1), new Number(2) });
+            var vector4 = new Maths.Expressions.Matrices.Vector(new IExpression[] { new Number(1), new Number(2) });
             var sub1 = new Sub(vector1, vector2);
             var sub2 = new Sub(vector3, vector4);
             var sub3 = new Sub(sub1, sub2);
 
-            var expected = new Vector(new IExpression[] { new Number(0), new Number(0) });
+            var expected = new Maths.Expressions.Matrices.Vector(new IExpression[] { new Number(0), new Number(0) });
 
             Assert.Equal(expected, sub3.Execute());
-        }
-
-        [Fact]
-        public void ResultTypeTwoNumberTest()
-        {
-            var sub = new Sub(new Number(1), new Number(2));
-
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, sub.LeftType);
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, sub.RightType);
-            Assert.Equal(ExpressionResultType.Number, sub.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeNumberVarTest()
-        {
-            var sub = new Sub(new Number(1), new Variable("x"));
-
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, sub.LeftType);
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, sub.RightType);
-            Assert.Equal(ExpressionResultType.Number, sub.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeComplicatedTest()
-        {
-            var sub = new Sub(new Mul(new Number(1), new Number(2)), new Variable("x"));
-
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, sub.LeftType);
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, sub.RightType);
-            Assert.Equal(ExpressionResultType.Number, sub.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeTwoVectorTest()
-        {
-            var sub = new Sub(new Vector(new[] { new Number(1) }),
-                              new Vector(new[] { new Number(2) }));
-
-            Assert.Equal(ExpressionResultType.Vector, sub.LeftType);
-            Assert.Equal(ExpressionResultType.Vector, sub.RightType);
-            Assert.Equal(ExpressionResultType.Vector, sub.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeTwoMatrixTest()
-        {
-            var sub = new Sub(new Matrix(new[] { new Vector(new[] { new Number(1) }) }),
-                              new Matrix(new[] { new Vector(new[] { new Number(2) }) }));
-
-            Assert.Equal(ExpressionResultType.Matrix, sub.LeftType);
-            Assert.Equal(ExpressionResultType.Matrix, sub.RightType);
-            Assert.Equal(ExpressionResultType.Matrix, sub.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeNumberVectorTest()
-        {
-            Assert.Throws<ParameterTypeMismatchException>(() => new Sub(new Number(1), new Vector(new[] { new Number(1) })));
-        }
-
-        [Fact]
-        public void ResultTypeVectorNumberTest()
-        {
-            Assert.Throws<ParameterTypeMismatchException>(() => new Sub(new Vector(new[] { new Number(1) }), new Number(1)));
-        }
-
-        [Fact]
-        public void ResultTypeNumberMatrixTest()
-        {
-            Assert.Throws<ParameterTypeMismatchException>(() => new Sub(new Number(1), new Matrix(new[] { new Vector(new[] { new Number(2) }) })));
-        }
-
-        [Fact]
-        public void ResultTypeMatrixNumberTest()
-        {
-            Assert.Throws<ParameterTypeMismatchException>(() => new Sub(new Matrix(new[] { new Vector(new[] { new Number(2) }) }), new Number(1)));
-        }
-
-        [Fact]
-        public void ResultTypeVectorMatrixTest()
-        {
-            Assert.Throws<ParameterTypeMismatchException>(() => new Sub(new Vector(new[] { new Number(1) }),
-                                                                        new Matrix(new[] { new Vector(new[] { new Number(2) }) })));
-        }
-
-        [Fact]
-        public void ResultTypeMatrixVectorTest()
-        {
-            Assert.Throws<ParameterTypeMismatchException>(() => new Sub(new Matrix(new[] { new Vector(new[] { new Number(2) }) }),
-                                                                        new Vector(new[] { new Number(1) })));
-        }
-
-        [Fact]
-        public void ResultTypeNumberComplexNumberTest()
-        {
-            var sub = new Sub(new Number(1), new ComplexNumber(2, 1));
-
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, sub.LeftType);
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, sub.RightType);
-            Assert.Equal(ExpressionResultType.ComplexNumber, sub.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeComplexNumberNumberTest()
-        {
-            var sub = new Sub(new ComplexNumber(1, 3), new Number(2));
-
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, sub.LeftType);
-            Assert.Equal(ExpressionResultType.Number | ExpressionResultType.ComplexNumber, sub.RightType);
-            Assert.Equal(ExpressionResultType.ComplexNumber, sub.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeNumberAllTest()
-        {
-            var exp = new Sub(new Number(1), new UserFunction("f", 1));
-
-            Assert.Equal(ExpressionResultType.Number, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeComplexNumberAllTest()
-        {
-            var exp = new Sub(new ComplexNumber(3, 2), new UserFunction("f", 1));
-
-            Assert.Equal(ExpressionResultType.ComplexNumber, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeVectorAllTest()
-        {
-            var exp = new Sub(new Vector(1), new UserFunction("f", 1));
-
-            Assert.Equal(ExpressionResultType.Vector, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeMatrixAllTest()
-        {
-            var exp = new Sub(new Matrix(1, 1), new UserFunction("f", 1));
-
-            Assert.Equal(ExpressionResultType.Matrix, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeNumberComplexTest()
-        {
-            var exp = new Sub(new Number(2), new Sqrt(new Number(-9)));
-
-            Assert.Equal(ExpressionResultType.ComplexNumber, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeTwoVarTest()
-        {
-            var exp = new Sub(new Variable("x"), new Variable("x"));
-
-            Assert.Equal(ExpressionResultType.Number, exp.ResultType);
-        }
-
-        [Fact]
-        public void ResultTypeThreeVarTest()
-        {
-            var exp = new Sub(new Add(new Variable("x"), new Variable("x")), new Variable("x"));
-
-            Assert.Equal(ExpressionResultType.Number, exp.ResultType);
         }
 
         [Fact]

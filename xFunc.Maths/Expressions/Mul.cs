@@ -38,30 +38,6 @@ namespace xFunc.Maths.Expressions
         public Mul(IExpression left, IExpression right) : base(left, right) { }
 
         /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>
-        /// The result type of current expression.
-        /// </returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            if ((m_left.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber) && m_left.ResultType != ExpressionResultType.All) ||
-                (m_right.ResultType.HasFlagNI(ExpressionResultType.ComplexNumber) && m_right.ResultType != ExpressionResultType.All))
-                return ExpressionResultType.ComplexNumber;
-
-            if (m_left.ResultType.HasFlagNI(ExpressionResultType.Number) && m_right.ResultType.HasFlagNI(ExpressionResultType.Number))
-                return ExpressionResultType.Number;
-
-            if (m_left.ResultType == ExpressionResultType.Matrix || m_right.ResultType == ExpressionResultType.Matrix)
-                return ExpressionResultType.Matrix;
-
-            if (m_right.ResultType == ExpressionResultType.Vector || m_left.ResultType == ExpressionResultType.Vector)
-                return ExpressionResultType.Vector;
-            
-            return ExpressionResultType.Number | ExpressionResultType.ComplexNumber | ExpressionResultType.Vector | ExpressionResultType.Matrix;
-        }
-
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
@@ -83,53 +59,54 @@ namespace xFunc.Maths.Expressions
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            var resultType = this.ResultType;
-            if (resultType == ExpressionResultType.Matrix || resultType == ExpressionResultType.Vector)
-            {
-                var temp = m_left.Execute(parameters);
-                var leftExpResult = temp as IExpression ?? new Number((double)temp);
-
-                temp = m_right.Execute(parameters);
-                var rightExpResult = temp as IExpression ?? new Number((double)temp);
-
-                if (leftExpResult is Vector && rightExpResult is Vector)
-                    return ((Vector)leftExpResult).Cross((Vector)rightExpResult, parameters);
-
-                if (leftExpResult is Vector)
-                {
-                    if (rightExpResult is Matrix)
-                        return ((Vector)leftExpResult).Mul((Matrix)rightExpResult, parameters);
-
-                    return ((Vector)leftExpResult).Mul(rightExpResult, parameters);
-                }
-                if (rightExpResult is Vector)
-                {
-                    if (leftExpResult is Matrix)
-                        return ((Matrix)leftExpResult).Mul((Vector)rightExpResult, parameters);
-
-                    return ((Vector)rightExpResult).Mul(leftExpResult, parameters);
-                }
-
-                if (leftExpResult is Matrix && rightExpResult is Matrix)
-                    return ((Matrix)leftExpResult).Mul((Matrix)rightExpResult, parameters);
-                if (leftExpResult is Matrix)
-                    return ((Matrix)leftExpResult).Mul(rightExpResult, parameters);
-                if (rightExpResult is Matrix)
-                    return ((Matrix)rightExpResult).Mul(leftExpResult, parameters);
-            }
-
             var leftResult = m_left.Execute(parameters);
             var rightResult = m_right.Execute(parameters);
 
-            if (resultType == ExpressionResultType.ComplexNumber)
-            {
-                var leftComplex = leftResult as Complex? ?? (double)leftResult;
-                var rightComplex = rightResult as Complex? ?? (double)rightResult;
+            if (leftResult is double leftNumber && rightResult is double rightNumber)
+                return leftNumber * rightNumber;
 
-                return Complex.Multiply(leftComplex, rightComplex);
+            if (leftResult is Complex || rightResult is Complex)
+            {
+                var leftComplex = leftResult as Complex? ?? leftResult as double?;
+                var rightComplex = rightResult as Complex? ?? rightResult as double?;
+                if (leftComplex == null || rightComplex == null)
+                    throw new ResultIsNotSupportedException(this, leftResult, rightResult);
+
+                return Complex.Multiply(leftComplex.Value, rightComplex.Value);
             }
 
-            return (double)leftResult * (double)rightResult;
+            if (leftResult is Matrix || rightResult is Matrix || leftResult is Vector || rightResult is Vector)
+            {
+                var leftExpResult = leftResult as IExpression ?? new Number((double)leftResult);
+                var rightExpResult = rightResult as IExpression ?? new Number((double)rightResult);
+
+                if (leftExpResult is Vector leftVector1 && rightExpResult is Vector rightVector1)
+                    return leftVector1.Cross(rightVector1, parameters);
+
+                if (leftExpResult is Vector leftVector2)
+                {
+                    if (rightExpResult is Matrix rightMaxtir1)
+                        return leftVector2.Mul(rightMaxtir1, parameters);
+
+                    return leftVector2.Mul(rightExpResult, parameters);
+                }
+                if (rightExpResult is Vector rightVector2)
+                {
+                    if (leftExpResult is Matrix leftMatrix1)
+                        return rightVector2.Mul(leftMatrix1, parameters);
+
+                    return rightVector2.Mul(leftExpResult, parameters);
+                }
+
+                if (leftExpResult is Matrix leftMatrix2 && rightExpResult is Matrix rightMatrix2)
+                    return leftMatrix2.Mul(rightMatrix2, parameters);
+                if (leftExpResult is Matrix leftMatrix3)
+                    return leftMatrix3.Mul(rightExpResult, parameters);
+                if (rightExpResult is Matrix rightMatrix3)
+                    return rightMatrix3.Mul(leftExpResult, parameters);
+            }
+
+            throw new ResultIsNotSupportedException(this, leftResult, rightResult);
         }
 
         /// <summary>
@@ -152,40 +129,6 @@ namespace xFunc.Maths.Expressions
         public override IExpression Clone()
         {
             return new Mul(m_left.Clone(), m_right.Clone());
-        }
-
-        /// <summary>
-        /// Gets the type of the left parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the left parameter.
-        /// </value>
-        public override ExpressionResultType LeftType
-        {
-            get
-            {
-                if (m_right != null && m_right.ResultType == ExpressionResultType.Vector)
-                    return ExpressionResultType.Number | ExpressionResultType.Vector | ExpressionResultType.Matrix;
-
-                return ExpressionResultType.Number | ExpressionResultType.ComplexNumber | ExpressionResultType.Vector | ExpressionResultType.Matrix;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the right parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the right parameter.
-        /// </value>
-        public override ExpressionResultType RightType
-        {
-            get
-            {
-                if (m_left != null && m_left.ResultType == ExpressionResultType.Vector)
-                    return ExpressionResultType.Number | ExpressionResultType.Vector | ExpressionResultType.Matrix;
-
-                return ExpressionResultType.Number | ExpressionResultType.ComplexNumber | ExpressionResultType.Vector | ExpressionResultType.Matrix;
-            }
         }
 
     }

@@ -37,17 +37,6 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         public NAnd(IExpression left, IExpression right) : base(left, right) { }
 
         /// <summary>
-        /// Gets the result type.
-        /// </summary>
-        /// <returns>
-        /// The result type of current expression.
-        /// </returns>
-        protected override ExpressionResultType GetResultType()
-        {
-            return ExpressionResultType.Boolean;
-        }
-
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
@@ -68,7 +57,13 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters)
         {
-            return !((bool)m_left.Execute(parameters) & (bool)m_right.Execute(parameters));
+            var left = m_left.Execute(parameters);
+            var right = m_right.Execute(parameters);
+
+            if (left is bool leftBool && right is bool rightBool)
+                return !(leftBool & rightBool);
+
+            throw new ResultIsNotSupportedException(this, left, right);
         }
 
         /// <summary>
@@ -92,22 +87,6 @@ namespace xFunc.Maths.Expressions.LogicalAndBitwise
         {
             return new NAnd(m_left.Clone(), m_right.Clone());
         }
-
-        /// <summary>
-        /// Gets the type of the left parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the left parameter.
-        /// </value>
-        public override ExpressionResultType LeftType => ExpressionResultType.Boolean;
-
-        /// <summary>
-        /// Gets the type of the right parameter.
-        /// </summary>
-        /// <value>
-        /// The type of the right parameter.
-        /// </value>
-        public override ExpressionResultType RightType => ExpressionResultType.Boolean;
 
     }
 
