@@ -71,10 +71,11 @@ namespace xFunc.Maths
         public void Resolve(object obj)
         {
             var type = obj.GetType();
-
-            foreach (var prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            foreach (var prop in type.GetTypeInfo().DeclaredProperties) {
                 if (prop.CanWrite && container.ContainsKey(prop.PropertyType))
                     prop.SetValue(obj, container[prop.PropertyType], null);
+            }
+
         }
 
         /// <summary>

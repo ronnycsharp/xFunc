@@ -57,9 +57,16 @@
     <DocumentationFile>bin\Release\portable\xFunc.Maths.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Analyzers\TypeAnalyzers\BinaryParameterTypeMismatchException.cs" />
+    <Compile Include="Analyzers\TypeAnalyzers\DifferentParameterTypeMismatchException.cs" />
+    <Compile Include="Analyzers\TypeAnalyzers\ITypeAnalyzer.cs" />
+    <Compile Include="Analyzers\TypeAnalyzers\ParameterTypeMismatchException.cs" />
+    <Compile Include="Analyzers\TypeAnalyzers\ResultType.cs" />
+    <Compile Include="Analyzers\TypeAnalyzers\TypeAnalyzer.cs" />
     <Compile Include="Builder.cs" />
     <Compile Include="DefaultDependencyResolver.cs" />
     <Compile Include="ComplexExtensions.cs" />
+    <Compile Include="Expressions\ResultIsNotSupportedException.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="IExpressionFactory.cs" />
@@ -73,16 +80,6 @@
     <Compile Include="Lexer.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Processor.cs" />
-    <Compile Include="Resources\Resource.ru.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resource.ru.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\Resource.uk.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resource.uk.resx</DependentUpon>
-    </Compile>
     <Compile Include="Results\ComplexNumberResult.cs" />
     <Compile Include="NumeralSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -120,7 +117,6 @@
     <Compile Include="Expressions\Add.cs" />
     <Compile Include="Expressions\AngleMeasurement.cs" />
     <Compile Include="Expressions\BinaryExpression.cs" />
-    <Compile Include="Expressions\CachedResultTypeExpression.cs" />
     <Compile Include="Expressions\Ceil.cs" />
     <Compile Include="Expressions\Define.cs" />
     <Compile Include="Expressions\DefiniteIntegral.cs" />
@@ -131,11 +127,9 @@
     <Compile Include="Expressions\Div.cs" />
     <Compile Include="Expressions\Exp.cs" />
     <Compile Include="Expressions\ExpressionParameters.cs" />
-    <Compile Include="Expressions\ExpressionResultType.cs" />
     <Compile Include="Expressions\Fact.cs" />
     <Compile Include="Expressions\Floor.cs" />
     <Compile Include="Expressions\GCD.cs" />
-    <Compile Include="Expressions\IChangedExpession.cs" />
     <Compile Include="Expressions\IExpression.cs" />
     <Compile Include="Expressions\LCM.cs" />
     <Compile Include="Expressions\Lb.cs" />
@@ -145,9 +139,7 @@
     <Compile Include="Expressions\Mod.cs" />
     <Compile Include="Expressions\Mul.cs" />
     <Compile Include="Expressions\Number.cs" />
-    <Compile Include="Expressions\ParameterTypeMismatchException.cs" />
     <Compile Include="Expressions\Pow.cs" />
-    <Compile Include="Expressions\ReverseFunctionAttribute.cs" />
     <Compile Include="Expressions\Root.cs" />
     <Compile Include="Expressions\Round.cs" />
     <Compile Include="Expressions\RoundUnary.cs" />
@@ -244,17 +236,9 @@
     <Compile Include="Expressions\Fract.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Resource.uk.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource.uk.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Resource.ru.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource.ru.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

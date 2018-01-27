@@ -44,7 +44,7 @@ namespace xFunc.Maths.Expressions.Collections
         /// </summary>
         /// <param name="info">The info.</param>
         /// <param name="context">The context.</param>
-        protected FunctionCollection(SerializationInfo info, StreamingContext context) : base(info, context) { }
+        protected FunctionCollection(SerializationInfo info, StreamingContext context) : base() { }
 
         /// <summary>
         /// Gets or sets the <see cref="IExpression"/> with the specified key.
