@@ -56,6 +56,7 @@
     <Compile Include="Expressions\ComplexNumbers\Phase.cs" />
     <Compile Include="Expressions\ComplexNumbers\Re.cs" />
     <Compile Include="Expressions\ComplexNumbers\Reciprocal.cs" />
+    <Compile Include="Expressions\Condition.cs" />
     <Compile Include="Expressions\DelegateExpression.cs" />
     <Compile Include="Expressions\DifferentParametersExpression.cs" />
     <Compile Include="Expressions\ExpressionParameters.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Expressions\Matrices\Vector.cs" />
     <Compile Include="Expressions\Del.cs" />
     <Compile Include="Expressions\Mod.cs" />
+    <Compile Include="Expressions\MultiCondition.cs" />
     <Compile Include="Expressions\ParameterTypeMismatchException.cs" />
     <Compile Include="Expressions\Statistical\Count.cs" />
     <Compile Include="Expressions\Statistical\Product.cs" />

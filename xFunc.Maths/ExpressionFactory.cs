@@ -312,6 +312,10 @@ namespace xFunc.Maths
                     exp = new Stdev(); break;
                 case Functions.Stdevp:
                     exp = new Stdevp(); break;
+                case Functions.Condition:
+                    exp = new Condition(); break;
+                case Functions.MultiCondition:
+                    exp = new MultiCondition(); break;
                 default:
                     exp = null; break;
             }

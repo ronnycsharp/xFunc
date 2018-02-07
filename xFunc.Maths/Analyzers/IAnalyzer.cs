@@ -215,6 +215,10 @@ namespace xFunc.Maths.Analyzers
         /// <returns>The result of analysis.</returns>
         TResult Analyze(DelegateExpression exp);
 
+        TResult Analyze(Condition exp);
+
+        TResult Analyze(MultiCondition exp);
+
         #endregion Standard
 
         #region Matrix
