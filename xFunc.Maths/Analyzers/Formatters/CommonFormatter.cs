@@ -353,6 +353,14 @@ namespace xFunc.Maths.Analyzers.Formatters
             return ToString(exp, "{0} - {1}");
         }
 
+        public string Analyze(Condition exp) {
+            return ToString(exp, "condition({0},{1})");
+        }
+
+        public string Analyze(MultiCondition exp) {
+            return ToString(exp, "multicondition({0})");
+        }
+
         /// <summary>
         /// Analyzes the specified expression.
         /// </summary>

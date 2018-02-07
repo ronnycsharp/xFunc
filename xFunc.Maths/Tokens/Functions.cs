@@ -339,7 +339,11 @@ namespace xFunc.Maths.Tokens
         /// <summary>
         /// The STDEVP function
         /// </summary>
-        Stdevp
+        Stdevp,
+
+        Condition,
+
+        MultiCondition,
 
     }
 

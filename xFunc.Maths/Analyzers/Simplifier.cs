@@ -71,6 +71,15 @@ namespace xFunc.Maths.Analyzers {
 
         #region Standard
 
+        public IExpression Analyze(Condition exp) {
+            exp.Arguments[0] = exp.Arguments[0].Analyze(this);
+            return exp;
+        }
+
+        public IExpression Analyze(MultiCondition exp) {
+            return AnalyzeDiffParams(exp);
+        }
+
         /// <summary>
         /// Analyzes the specified expression.
         /// </summary>

@@ -321,6 +321,10 @@ namespace xFunc.Maths
 				case Functions.Fract: {
 					exp = new Fract (); break;
 				}
+                case Functions.Condition:
+                    exp = new Condition(); break;
+                case Functions.MultiCondition:
+                    exp = new MultiCondition(); break;
                 default:
                     exp = null; break;
             }

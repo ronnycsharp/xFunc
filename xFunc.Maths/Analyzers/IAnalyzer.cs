@@ -239,6 +239,10 @@ namespace xFunc.Maths.Analyzers
 		/// <param name="exp">Exp.</param>
 		TResult Analyze (Fract exp);
 
+        TResult Analyze(Condition exp);
+
+        TResult Analyze(MultiCondition exp);
+
         #endregion Standard
 
         #region Matrix

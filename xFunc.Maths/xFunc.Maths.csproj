@@ -63,6 +63,7 @@
     <Compile Include="Expressions\ComplexNumbers\Re.cs" />
     <Compile Include="Expressions\ComplexNumbers\Reciprocal.cs" />
     <Compile Include="Expressions\DefiniteIntegral.cs" />
+    <Compile Include="Expressions\Condition.cs" />
     <Compile Include="Expressions\DelegateExpression.cs" />
     <Compile Include="Expressions\DifferentParametersExpression.cs" />
     <Compile Include="Expressions\ExpressionParameters.cs" />
@@ -97,6 +98,8 @@
     <Compile Include="Expressions\NDerivative.cs" />
     <Compile Include="Expressions\ResultIsNotSupportedException.cs" />
     <Compile Include="Expressions\RoundUnary.cs" />
+    <Compile Include="Expressions\MultiCondition.cs" />
+    <Compile Include="Expressions\ParameterTypeMismatchException.cs" />
     <Compile Include="Expressions\Statistical\Count.cs" />
     <Compile Include="Expressions\Statistical\Product.cs" />
     <Compile Include="Expressions\Programming\AddAssign.cs" />

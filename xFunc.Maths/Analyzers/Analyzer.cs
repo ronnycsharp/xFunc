@@ -434,8 +434,15 @@ namespace xFunc.Maths.Analyzers
         /// The result of analysis.
         /// </returns>
         /// <exception cref="System.NotSupportedException">Always.</exception>
-        public virtual TResult Analyze(DelegateExpression exp)
-        {
+        public virtual TResult Analyze(DelegateExpression exp){
+            throw new NotSupportedException();
+        }
+
+        public virtual TResult Analyze(Condition exp) {
+            throw new NotSupportedException();
+        }
+
+        public virtual TResult Analyze(MultiCondition exp) {
             throw new NotSupportedException();
         }
 

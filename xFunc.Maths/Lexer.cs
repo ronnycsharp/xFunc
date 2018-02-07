@@ -178,15 +178,15 @@ namespace xFunc.Maths
             {
                 tokens.Add(new OperationToken(Operations.ConditionalOr));
             }
-            else if (match == "==")
+            else if (match == "==" || match == "≡" /* workarround to prevent single = sign */)
             {
                 tokens.Add(new OperationToken(Operations.Equal));
             }
-            else if (match == "!=")
+            else if (match == "!=" || match == "≠")
             {
                 tokens.Add(new OperationToken(Operations.NotEqual));
             }
-            else if (match == "<=")
+            else if (match == "<=" || match == "≤")
             {
                 tokens.Add(new OperationToken(Operations.LessOrEqual));
             }
@@ -194,7 +194,7 @@ namespace xFunc.Maths
             {
                 tokens.Add(new OperationToken(Operations.LessThan));
             }
-            else if (match == ">=")
+            else if (match == ">=" || match == "≥")
             {
                 tokens.Add(new OperationToken(Operations.GreaterOrEqual));
             }
@@ -616,6 +616,10 @@ namespace xFunc.Maths
 				tokens.Add (new FunctionToken (Functions.NDerivative));
 			} else if (match == "fract") {
 				tokens.Add (new FunctionToken (Functions.Fract));
+            } else if (match == "condition") {
+                tokens.Add(new FunctionToken(Functions.Condition));
+            } else if (match == "multicondition") {
+                tokens.Add(new FunctionToken(Functions.MultiCondition));
 			} else {
                 tokens.Add(new UserFunctionToken(match));
             }
