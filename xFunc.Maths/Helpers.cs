@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2017 Dmitry Kischenko
+﻿// Copyright 2012-2018 Dmitry Kischenko & Ronny Weidemann
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace xFunc.Maths
     /// </summary>
     public static class Helpers
     {
-
         /// <summary>
         /// Checks that <paramref name="expression"/> has  the <paramref name="arg"/> variable.
         /// </summary>
@@ -158,7 +157,8 @@ namespace xFunc.Maths
 			return angle * (180.0 / Math.PI);
 		}
 
-
+        public static bool AlmostEqual(double a, double b, double epsilon) {
+            return Math.Abs(a - b) < epsilon;
+        }
     }
-
 }
