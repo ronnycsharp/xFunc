@@ -318,13 +318,14 @@ namespace xFunc.Maths
 					exp = new DefiniteIntegral (); break;
 				case Functions.NDerivative:
 					exp = new NDerivative (); break;
-				case Functions.Fract: {
+				case Functions.Fract:
 					exp = new Fract (); break;
-				}
                 case Functions.Condition:
                     exp = new Condition(); break;
                 case Functions.MultiCondition:
                     exp = new MultiCondition(); break;
+                case Functions.Solve:
+                    exp = new Solve(); break;
                 default:
                     exp = null; break;
             }

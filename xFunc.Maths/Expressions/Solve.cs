@@ -16,6 +16,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using xFunc.Maths.Analyzers;
+using xFunc.Maths.Expressions.Programming;
 
 namespace xFunc.Maths.Expressions {
     /// <summary>
@@ -59,11 +60,15 @@ namespace xFunc.Maths.Expressions {
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
         public override object Execute(ExpressionParameters parameters) {
+            if (!(this.Argument is Equal))
+                throw new InvalidOperationException();
 
-            throw new NotImplementedException();
+            var equal = (Equal)this.Argument;
 
+            var solver = new EquationSolver(
+                equal, this.Variable.ToString(), parameters.AngleMeasurement);
 
-           // throw new ResultIsNotSupportedException(this, argResult);
+            return solver.Solve();
         }
 
         /// <summary>
@@ -102,7 +107,7 @@ namespace xFunc.Maths.Expressions {
         /// <value>
         /// The maximum count of parameters.
         /// </value>
-        public override int MaxParameters => 2;
+        public override int MaxParameters => 4;
 
         /// <summary>
         /// The expression that represents a double-precision floating-point number to be rounded.
