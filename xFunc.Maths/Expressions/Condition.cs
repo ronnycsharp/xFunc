@@ -31,6 +31,7 @@ namespace xFunc.Maths.Expressions {
 
         public override int MaxParameters => -1;
 
+        /*
         public override ExpressionResultType[] ArgumentsTypes {
             get {
                 var result = new ExpressionResultType[ParametersCount];
@@ -41,7 +42,7 @@ namespace xFunc.Maths.Expressions {
                 }
                 return result;
             }
-        }
+        }*/
 
         #endregion
 

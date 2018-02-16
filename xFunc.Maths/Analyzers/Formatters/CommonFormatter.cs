@@ -354,11 +354,11 @@ namespace xFunc.Maths.Analyzers.Formatters
         }
 
         public string Analyze(Condition exp) {
-            return ToString(exp, "condition({0},{1})");
+            return ToString(exp, "condition");
         }
 
         public string Analyze(MultiCondition exp) {
-            return ToString(exp, "multicondition({0})");
+            return ToString(exp, "multicondition");
         }
 
         /// <summary>

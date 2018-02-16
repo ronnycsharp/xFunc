@@ -66,6 +66,8 @@
     <Compile Include="Builder.cs" />
     <Compile Include="DefaultDependencyResolver.cs" />
     <Compile Include="ComplexExtensions.cs" />
+    <Compile Include="Expressions\Condition.cs" />
+    <Compile Include="Expressions\MultiCondition.cs" />
     <Compile Include="Expressions\ResultIsNotSupportedException.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="IDependencyResolver.cs" />

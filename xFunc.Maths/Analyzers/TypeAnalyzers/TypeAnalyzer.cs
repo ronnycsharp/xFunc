@@ -2026,6 +2026,14 @@ namespace xFunc.Maths.Analyzers.TypeAnalyzers
             throw new ParameterTypeMismatchException();
         }
 
+        public ResultType Analyze(Condition exp) {
+            return exp.Analyze(this);
+        }
+
+        public ResultType Analyze(MultiCondition exp) {
+            return exp.Analyze(this);
+        }
+
         #endregion Programming
 
     }

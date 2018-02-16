@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using xFunc.Maths.Analyzers;
+using xFunc.Maths.Analyzers.Formatters;
+
 namespace xFunc.Maths.Expressions {
     public class MultiCondition : DifferentParametersExpression {
 
@@ -22,10 +24,17 @@ namespace xFunc.Maths.Expressions {
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public override int MinParameters => 1;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public override int MaxParameters => -1;
 
+        /*
         public override ExpressionResultType[] ArgumentsTypes {
             get {
                 var result = new ExpressionResultType[ParametersCount];
@@ -34,7 +43,7 @@ namespace xFunc.Maths.Expressions {
                 }
                 return result;
             }
-        }
+        }*/
 
         #endregion
 
@@ -53,6 +62,10 @@ namespace xFunc.Maths.Expressions {
                 }
             }
             return Double.NaN;
+        }
+
+        public override string ToString() {
+            return this.ToString(new CommonFormatter());
         }
     }
 }
