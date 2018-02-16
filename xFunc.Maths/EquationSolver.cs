@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using xFunc.Maths.Expressions;
 using xFunc.Maths.Expressions.Collections;
+using xFunc.Maths.Expressions.Programming;
 
 namespace xFunc.Maths {
     internal class EquationSolver {
@@ -33,6 +34,29 @@ namespace xFunc.Maths {
             this.Parameters = parameters;
         }
 
+        public EquationSolver(
+            IExpression equation,
+            string variable = "x",
+            AngleMeasurement measurement = AngleMeasurement.Radian) {
+
+            if (!(equation is Equal eq))
+                throw new ArgumentException();
+
+            this.Measurement = measurement;
+            this.Equation = equation.ToString();
+
+            this.LeftExpression = eq.Left;
+            this.RightExpression = eq.Right;
+
+            var parameters = new ExpressionParameters(measurement);
+            var paramX = new Parameter(variable, 0);
+
+            parameters.Variables.Add(paramX);
+
+            this.Variable = paramX;
+            this.Parameters = parameters;
+        }
+
         #region Properties
 
         public string Equation { get; private set; }
@@ -49,13 +73,24 @@ namespace xFunc.Maths {
 
         #endregion
 
-        public Vector2[] Solve(
+        public double[] Solve(
+            double from = -10,
+            double to = 10,
+            double delta = 0.00001,
+            int decimalPlaces = 4) {
+            return this.Intersect(
+                    from, to, delta, decimalPlaces)
+                .Select(i => i.X)
+                .ToArray();
+        }
+
+        public Point[] Intersect(
             double from         = -10, 
             double to           = 10, 
             double delta        = 0.00001,
             int decimalPlaces   = 4) {
 
-            var results     = new List<Vector2>();
+            var results     = new List<Point>();
             var lastSign    = -2;
             var step        = .1;
 
@@ -75,7 +110,7 @@ namespace xFunc.Maths {
                 if (lastSign != sign) {
                     if (step <= delta) {
                         results.Add(
-                            new Vector2(
+                            new Point(
                                 Math.Round(x, decimalPlaces), 
                                 Math.Round(y2, decimalPlaces)));
                         lastSign = sign;
@@ -90,7 +125,6 @@ namespace xFunc.Maths {
                 .Distinct()
                 .OrderBy(d => d.X )
                 .ToArray();
-
         }
     }
 }

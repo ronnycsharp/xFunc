@@ -64,7 +64,6 @@ namespace xFunc.Maths.Expressions {
                 throw new InvalidOperationException();
 
             var equal = (Equal)this.Argument;
-
             var solver = new EquationSolver(
                 equal, this.Variable.ToString(), parameters.AngleMeasurement);
 
@@ -79,7 +78,7 @@ namespace xFunc.Maths.Expressions {
         /// <returns>
         /// The analysis result.
         /// </returns>
-        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)  {
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer) {
             return analyzer.Analyze(this);
         }
 

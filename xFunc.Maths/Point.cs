@@ -1,6 +1,6 @@
 ﻿namespace xFunc.Maths {
-    internal struct Vector2 {
-        public Vector2(double x, double y) {
+    internal struct Point {
+        public Point(double x, double y) {
             this.X = x;
             this.Y = y;
         }
@@ -9,7 +9,7 @@
         public double Y;
 
         public override bool Equals(object obj) {
-            var v = (Vector2)obj;
+            var v = (Point)obj;
             return v.X == this.X && v.Y == this.Y;
         }
 

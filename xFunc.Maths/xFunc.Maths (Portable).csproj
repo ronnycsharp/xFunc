@@ -239,7 +239,7 @@
     <Compile Include="ExcludeFromCodeCoverageAttribute.cs" />
     <Compile Include="Expressions\NDerivative.cs" />
     <Compile Include="Expressions\Fract.cs" />
-    <Compile Include="Vector2.cs" />
+    <Compile Include="Point.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Resource.resx">
