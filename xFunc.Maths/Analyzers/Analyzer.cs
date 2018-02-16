@@ -438,14 +438,6 @@ namespace xFunc.Maths.Analyzers
             throw new NotSupportedException();
         }
 
-        public virtual TResult Analyze(Condition exp) {
-            throw new NotSupportedException();
-        }
-
-        public virtual TResult Analyze(MultiCondition exp) {
-            throw new NotSupportedException();
-        }
-
 		/// <summary>
 		/// Analyzes the specified expression.
 		/// </summary>
@@ -470,13 +462,53 @@ namespace xFunc.Maths.Analyzers
 			throw new NotSupportedException ();
 		}
 
-		/// <summary>
-		/// Analyzes the specified expression
-		/// </summary>
-		/// <param name="exp">Exp.</param>
-		public virtual TResult Analyze (Fract exp) {
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public virtual TResult Analyze (Fract exp) {
 			throw new NotSupportedException ();
 		}
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public virtual TResult Analyze(Condition exp) {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public virtual TResult Analyze(MultiCondition exp) {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public virtual TResult Analyze(Solve exp) {
+            throw new NotSupportedException();
+        }
 
         #endregion Standard
 

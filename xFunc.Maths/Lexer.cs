@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2017 Dmitry Kischenko
+﻿// Copyright 2012-2018 Dmitry Kischenko & Ronny Weidemann
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
 // express or implied. 
 // See the License for the specific language governing permissions and 
 // limitations under the License.
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -23,13 +24,11 @@ using xFunc.Maths.Tokens;
 
 namespace xFunc.Maths
 {
-
     /// <summary>
     /// The lexer for mathematical expressions.
     /// </summary>
     public class Lexer : ILexer
     {
-
         private Regex regexSymbols;
         private Regex regexOperations;
         private Regex regexFunctions;
@@ -606,21 +605,38 @@ namespace xFunc.Maths
             {
                 tokens.Add(new FunctionToken(Functions.Stdev));
             }
-            else if (lowerMatch == "stdevp") {
+            else if (lowerMatch == "stdevp") 
+                {
                 tokens.Add(new FunctionToken(Functions.Stdevp));
-            } else if (match == "integral") {
+            } 
+            else if (match == "integral") 
+            {
 				tokens.Add (new FunctionToken (Functions.DefiniteIntegral));
-			} else if (match == "roundunary") {
+			} 
+            else if (match == "roundunary") 
+            {
 				tokens.Add (new FunctionToken (Functions.RoundUnary));
-			} else if (match == "nderivative") {
+			} else if (match == "nderivative") 
+            {
 				tokens.Add (new FunctionToken (Functions.NDerivative));
-			} else if (match == "fract") {
+			} else if (match == "fract") 
+            {
 				tokens.Add (new FunctionToken (Functions.Fract));
-            } else if (match == "condition") {
+            } 
+            else if (match == "condition") 
+            {
                 tokens.Add(new FunctionToken(Functions.Condition));
-            } else if (match == "multicondition") {
+            } 
+            else if (match == "multicondition") 
+            {
                 tokens.Add(new FunctionToken(Functions.MultiCondition));
-			} else {
+            } 
+            else if (match == "solve") 
+            {
+                tokens.Add(new FunctionToken(Functions.Solve));
+            } 
+            else 
+            {
                 tokens.Add(new UserFunctionToken(match));
             }
         }

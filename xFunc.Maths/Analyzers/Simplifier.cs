@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2017 Dmitry Kischenko
+﻿// Copyright 2012-2018 Dmitry Kischenko & Ronny Weidemann
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
 // express or implied. 
 // See the License for the specific language governing permissions and 
 // limitations under the License.
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using xFunc.Maths.Expressions;
@@ -24,7 +25,6 @@ using xFunc.Maths.Expressions.Statistical;
 using xFunc.Maths.Expressions.Trigonometric;
 
 namespace xFunc.Maths.Analyzers {
-
     /// <summary>
     /// The simplifier of expressions.
     /// </summary>
@@ -70,15 +70,6 @@ namespace xFunc.Maths.Analyzers {
         }
 
         #region Standard
-
-        public IExpression Analyze(Condition exp) {
-            exp.Arguments[0] = exp.Arguments[0].Analyze(this);
-            return exp;
-        }
-
-        public IExpression Analyze(MultiCondition exp) {
-            return AnalyzeDiffParams(exp);
-        }
 
         /// <summary>
         /// Analyzes the specified expression.
@@ -872,6 +863,43 @@ namespace xFunc.Maths.Analyzers {
         [ExcludeFromCodeCoverage]
         public virtual IExpression Analyze(DelegateExpression exp) {
             return exp;
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        [ExcludeFromCodeCoverage]
+        public IExpression Analyze(Condition exp) {
+            exp.Arguments[0] = exp.Arguments[0].Analyze(this);
+            return exp;
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        [ExcludeFromCodeCoverage]
+        public IExpression Analyze(MultiCondition exp) {
+            return AnalyzeDiffParams(exp);
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        [ExcludeFromCodeCoverage]
+        public IExpression Analyze(Solve exp) {
+            return AnalyzeDiffParams(exp);
         }
 
         #endregion Standard

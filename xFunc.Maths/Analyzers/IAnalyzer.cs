@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2017 Dmitry Kischenko
+﻿// Copyright 2012-2018 Dmitry Kischenko & Ronny Weidemann
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -22,16 +22,13 @@ using xFunc.Maths.Expressions.Programming;
 using xFunc.Maths.Expressions.Statistical;
 using xFunc.Maths.Expressions.Trigonometric;
 
-namespace xFunc.Maths.Analyzers
-{
+namespace xFunc.Maths.Analyzers {
 
     /// <summary>
     /// The interface for analyzers.
     /// </summary>
     /// <typeparam name="TResult">The type of the result of analysis.</typeparam>
-    public interface IAnalyzer<TResult>
-    {
-
+    public interface IAnalyzer<TResult> {
         #region Standard
 
         /// <summary>
@@ -215,33 +212,47 @@ namespace xFunc.Maths.Analyzers
         /// <returns>The result of analysis.</returns>
         TResult Analyze(DelegateExpression exp);
 
-		/// <summary>
-		/// Analyze the specified expression
-		/// </summary>
-		/// <param name="exp">Exp.</param>
-		TResult Analyze (DefiniteIntegral exp);
+        /// <summary>
+        /// Analyze the specified expression
+        /// </summary>
+        /// <param name="exp">Exp.</param>
+        TResult Analyze(DefiniteIntegral exp);
 
-		/// <summary>
-		/// Analyze the specified expression
-		/// </summary>
-		/// <param name="exp">Exp.</param>
-		TResult Analyze (RoundUnary exp);
+        /// <summary>
+        /// Analyze the specified expression
+        /// </summary>
+        /// <param name="exp">Exp.</param>
+        TResult Analyze(RoundUnary exp);
 
-		/// <summary>
-		/// Analyze the specified expression
-		/// </summary>
-		/// <param name="exp">Exp.</param>
-		TResult Analyze (NDerivative exp);
+        /// <summary>
+        /// Analyze the specified expression
+        /// </summary>
+        /// <param name="exp">Exp.</param>
+        TResult Analyze(NDerivative exp);
 
-		/// <summary>
-		/// Analyze the specified expression
-		/// </summary>
-		/// <param name="exp">Exp.</param>
-		TResult Analyze (Fract exp);
+        /// <summary>
+        /// Analyze the specified expression
+        /// </summary>
+        /// <param name="exp">Exp.</param>
+        TResult Analyze(Fract exp);
 
+        /// <summary>
+        /// Analyze the specified expression
+        /// </summary>
+        /// <param name="exp">Exp.</param>
         TResult Analyze(Condition exp);
 
+        /// <summary>
+        /// Analyze the specified expression
+        /// </summary>
+        /// <param name="exp">Exp.</param>
         TResult Analyze(MultiCondition exp);
+
+        /// <summary>
+        /// Analyze the specified expression
+        /// </summary>
+        /// <param name="exp">Exp.</param>
+        TResult Analyze(Solve exp);
 
         #endregion Standard
 

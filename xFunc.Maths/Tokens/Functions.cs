@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2017 Dmitry Kischenko
+﻿// Copyright 2012-2018 Dmitry Kischenko & Ronny Weidemann
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -12,17 +12,14 @@
 // express or implied. 
 // See the License for the specific language governing permissions and 
 // limitations under the License.
+
 using System;
 
-namespace xFunc.Maths.Tokens
-{
-
+namespace xFunc.Maths.Tokens {
     /// <summary>
     /// Specifies functions.
     /// </summary>
-    public enum Functions
-    {
-
+    public enum Functions {
         /// <summary>
         /// The Add function
         /// </summary>
@@ -341,10 +338,20 @@ namespace xFunc.Maths.Tokens
         /// </summary>
         Stdevp,
 
+        /// <summary>
+        /// The condition function, like the If-Statement but with AND-Combined parameters.
+        /// </summary>
         Condition,
 
+        /// <summary>
+        /// The MultiCondition/piecewise-defined function
+        /// </summary>
         MultiCondition,
 
+        /// <summary>
+        /// The Solve function
+        /// </summary>
+        Solve,
     }
 
 }

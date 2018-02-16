@@ -353,14 +353,6 @@ namespace xFunc.Maths.Analyzers.Formatters
             return ToString(exp, "{0} - {1}");
         }
 
-        public string Analyze(Condition exp) {
-            return ToString(exp, "condition");
-        }
-
-        public string Analyze(MultiCondition exp) {
-            return ToString(exp, "multicondition");
-        }
-
         /// <summary>
         /// Analyzes the specified expression.
         /// </summary>
@@ -435,11 +427,21 @@ namespace xFunc.Maths.Analyzers.Formatters
             return "{Delegate Expression}";
         }
 
-		public string Analyze (DefiniteIntegral exp) {
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public string Analyze (DefiniteIntegral exp) {
 			return exp.ToString ();
 		}
 
-		public string Analyze (RoundUnary exp){
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public string Analyze (RoundUnary exp){
 			return ToString (exp, "roundunary({0})");
 		}
 
@@ -452,16 +454,43 @@ namespace xFunc.Maths.Analyzers.Formatters
 			return ToString (exp, "fract({0})");
 		}
 
-		#endregion Standard
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>       
+        public string Analyze(Condition exp) {
+            return ToString(exp, "condition");
+        }
 
-		#region Matrix
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public string Analyze(MultiCondition exp) {
+            return ToString(exp, "multicondition");
+        }
 
-		/// <summary>
-		/// Analyzes the specified expression.
-		/// </summary>
-		/// <param name="exp">The expression.</param>
-		/// <returns>The result of analysis.</returns>
-		public string Analyze(Vector exp)
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public string Analyze(Solve exp) {
+            return ToString(exp, "solve");
+        }
+
+        #endregion Standard
+
+        #region Matrix
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public string Analyze(Vector exp)
         {
             var sb = new StringBuilder();
 

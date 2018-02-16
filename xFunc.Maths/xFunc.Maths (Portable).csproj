@@ -70,6 +70,7 @@
     <Compile Include="Expressions\Condition.cs" />
     <Compile Include="Expressions\MultiCondition.cs" />
     <Compile Include="Expressions\ResultIsNotSupportedException.cs" />
+    <Compile Include="Expressions\Solve.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="IExpressionFactory.cs" />
