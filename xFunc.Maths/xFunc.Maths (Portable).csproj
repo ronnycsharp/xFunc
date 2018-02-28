@@ -83,6 +83,7 @@
     <Compile Include="MathExtensions.cs" />
     <Compile Include="Lexer.cs" />
     <Compile Include="Parser.cs" />
+    <Compile Include="Point.cs" />
     <Compile Include="Processor.cs" />
     <Compile Include="Results\ComplexNumberResult.cs" />
     <Compile Include="NumeralSystem.cs" />
@@ -239,7 +240,6 @@
     <Compile Include="ExcludeFromCodeCoverageAttribute.cs" />
     <Compile Include="Expressions\NDerivative.cs" />
     <Compile Include="Expressions\Fract.cs" />
-    <Compile Include="Point.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Resource.resx">

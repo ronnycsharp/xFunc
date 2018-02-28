@@ -1,5 +1,5 @@
 ﻿namespace xFunc.Maths {
-    internal struct Point {
+    public struct Point {
         public Point(double x, double y) {
             this.X = x;
             this.Y = y;
@@ -14,7 +14,7 @@
         }
 
         public override int GetHashCode() {
-            return ("Vector2(x:" + this.X + " y:" + this.Y + ")").GetHashCode();
+            return ("Point(x:" + this.X + " y:" + this.Y + ")").GetHashCode();
         }
 
         public override string ToString() {

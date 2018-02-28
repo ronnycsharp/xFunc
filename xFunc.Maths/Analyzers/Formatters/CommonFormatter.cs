@@ -1153,9 +1153,9 @@ namespace xFunc.Maths.Analyzers.Formatters
         public string Analyze(Equal exp)
         {
             if (exp.Parent is BinaryExpression && !(exp.Parent is While))
-                return ToString(exp, "({0} == {1})");
+                return ToString(exp, "({0} ≡ {1})");
 
-            return ToString(exp, "{0} == {1}");
+            return ToString(exp, "{0} ≡ {1}");
         }
 
         /// <summary>

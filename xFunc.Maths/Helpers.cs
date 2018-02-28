@@ -160,5 +160,13 @@ namespace xFunc.Maths
         public static bool AlmostEqual(double a, double b, double epsilon) {
             return Math.Abs(a - b) < epsilon;
         }
+
+        public static float Distance(float value1, float value2) {
+            return Math.Abs(value1 - value2);
+        }
+
+        public static double Distance(double value1, double value2) {
+            return Math.Abs(value1 - value2);
+        }
     }
 }

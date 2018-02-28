@@ -14,6 +14,7 @@
 // limitations under the License.
 
 using System;
+using System.Linq;
 using System.Diagnostics.CodeAnalysis;
 using xFunc.Maths.Analyzers;
 using xFunc.Maths.Expressions.Programming;
@@ -67,7 +68,10 @@ namespace xFunc.Maths.Expressions {
             var solver = new EquationSolver(
                 equal, this.Variable.ToString(), parameters.AngleMeasurement);
 
-            return solver.Solve();
+            return solver
+                .Solve(-10, 10)
+                .Select(p => p.X)
+                .ToArray();
         }
 
         /// <summary>
