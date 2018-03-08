@@ -773,6 +773,22 @@ namespace xFunc.Maths.Analyzers.TypeAnalyzers {
             return exp.Analyze(this);
         }
 
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public virtual ResultType Analyze(Sign exp) {
+            var result = exp.Argument.Analyze(this);
+            if (result == ResultType.Undefined)
+                return ResultType.Undefined;
+
+            if (result == ResultType.Number)
+                return ResultType.Number;
+
+            throw new ParameterTypeMismatchException(ResultType.Number, result);
+        }
+
         #endregion Standard
 
         #region Matrix

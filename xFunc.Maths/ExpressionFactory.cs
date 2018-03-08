@@ -326,6 +326,9 @@ namespace xFunc.Maths
                     exp = new MultiCondition(); break;
                 case Functions.Solve:
                     exp = new Solve(); break;
+                case Functions.Sign:
+                    exp = new Sign();
+                    break;
                 default:
                     exp = null; break;
             }

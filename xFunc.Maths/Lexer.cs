@@ -177,7 +177,7 @@ namespace xFunc.Maths
             {
                 tokens.Add(new OperationToken(Operations.ConditionalOr));
             }
-            else if (match == "==" || match == "≡" /* workarround to prevent single = sign */)
+            else if (match == "==" || match == "≡" /* workarround to prevent a single equal sign */)
             {
                 tokens.Add(new OperationToken(Operations.Equal));
             }
@@ -291,7 +291,7 @@ namespace xFunc.Maths
             {
                 tokens.Add(new OperationToken(Operations.Or));
             }
-            else if (match == "xor")
+            else if (match == "xor" || match == "⊕" || match == "⊻")
             {
                 tokens.Add(new OperationToken(Operations.XOr));
             }
@@ -303,11 +303,11 @@ namespace xFunc.Maths
             {
                 tokens.Add(new OperationToken(Operations.Equality));
             }
-            else if (match == "nor")
+            else if (match == "nor" || match == "⊽")
             {
                 tokens.Add(new OperationToken(Operations.NOr));
             }
-            else if (match == "nand")
+            else if (match == "nand" || match == "⊼")
             {
                 tokens.Add(new OperationToken(Operations.NAnd));
             }
@@ -631,11 +631,11 @@ namespace xFunc.Maths
             {
                 tokens.Add(new FunctionToken(Functions.MultiCondition));
             } 
-            else if (match == "solve") 
-            {
+            else if (match == "solve") {
                 tokens.Add(new FunctionToken(Functions.Solve));
-            } 
-            else 
+            } else if (match == "sign") {
+                tokens.Add(new FunctionToken(Functions.Sign));
+            } else 
             {
                 tokens.Add(new UserFunctionToken(match));
             }

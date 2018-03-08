@@ -477,6 +477,15 @@ namespace xFunc.Maths.Analyzers.Formatters
         /// </summary>
         /// <param name="exp">The expression.</param>
         /// <returns>The result of analysis.</returns>
+        public string Analyze(Sign exp) {
+            return ToString(exp, "sign({0})");
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
         public string Analyze(Solve exp) {
             return ToString(exp, "solve");
         }

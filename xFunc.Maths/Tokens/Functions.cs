@@ -352,6 +352,11 @@ namespace xFunc.Maths.Tokens {
         /// The Solve function
         /// </summary>
         Solve,
+
+        /// <summary>
+        /// The Sign function
+        /// </summary>
+        Sign,
     }
 
 }

@@ -99,6 +99,7 @@
     <Compile Include="Results\StringResult.cs" />
     <Compile Include="Results\BooleanResult.cs" />
     <Compile Include="RootFinder.cs" />
+    <Compile Include="Expressions\Sign.cs" />
     <Compile Include="Tokens\BooleanToken.cs" />
     <Compile Include="Tokens\ComplexNumberToken.cs" />
     <Compile Include="Tokens\Functions.cs" />

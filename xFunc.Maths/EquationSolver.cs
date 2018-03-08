@@ -102,8 +102,7 @@ namespace xFunc.Maths {
         }
 
         public Point[] SolveWithNewtonRaphson(
-            double from, double to, 
-            int decimalPlaces = 5) {
+            double from, double to, int decimalPlaces = 5) {
 
             // transform equation to the left side, because the newton-raphson-method
             // is searching for zero-points.

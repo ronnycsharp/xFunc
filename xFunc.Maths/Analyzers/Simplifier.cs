@@ -902,6 +902,18 @@ namespace xFunc.Maths.Analyzers {
             return AnalyzeDiffParams(exp);
         }
 
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        [ExcludeFromCodeCoverage]
+        public virtual IExpression Analyze(Sign exp) {
+            return AnalyzeUnary(exp);
+        }
+
         #endregion Standard
 
         #region Matrix

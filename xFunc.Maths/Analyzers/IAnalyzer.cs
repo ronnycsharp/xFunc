@@ -254,6 +254,12 @@ namespace xFunc.Maths.Analyzers {
         /// <param name="exp">Exp.</param>
         TResult Analyze(Solve exp);
 
+        /// <summary>
+        /// Analyze the specified expression
+        /// </summary>
+        /// <param name="exp">Exp.</param>
+        TResult Analyze(Sign exp);
+
         #endregion Standard
 
         #region Matrix
