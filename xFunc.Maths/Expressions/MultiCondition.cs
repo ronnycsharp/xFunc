@@ -79,8 +79,9 @@ namespace xFunc.Maths.Expressions {
             return Double.NaN;
         }
 
+        /*
         public override string ToString() {
             return this.ToString(new CommonFormatter());
-        }
+        }*/
     }
 }

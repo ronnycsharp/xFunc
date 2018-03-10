@@ -69,7 +69,7 @@ namespace xFunc.Maths.Expressions {
                 equal, this.Variable.ToString(), parameters.AngleMeasurement);
 
             return solver
-                .Solve(-50, 50)
+                .Solve(-100, 100)
                 .Select(p => p.X)
                 .ToArray();
         }

@@ -149,6 +149,15 @@ namespace xFunc.Maths
             }
         }
 
+        public static bool IsChildOf<T>(IExpression exp) where T : IExpression {
+            if ( exp.Parent is T ) {
+                return true;
+            } else {
+                return exp.Parent != null 
+                    && IsChildOf<T>(exp.Parent);
+            }
+        }
+
 		public static double DegToRad (double angle) {
 			return Math.PI * angle / 180.0;
 		}

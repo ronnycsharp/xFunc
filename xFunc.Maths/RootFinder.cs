@@ -12,7 +12,7 @@ namespace xFunc.Maths {
         public RootFinder(string function, string variable = "x", AngleMeasurement measurement = AngleMeasurement.Radian) {
             processor = new Processor();
             expression = processor.Parse(function);
-            derivation = processor.Differentiate(expression);
+            derivation = processor.Differentiate(expression, new Variable(variable));
             parameters = new ExpressionParameters(measurement);
             paramX = new Parameter(variable, 0);
             parameters.Variables.Add(paramX);

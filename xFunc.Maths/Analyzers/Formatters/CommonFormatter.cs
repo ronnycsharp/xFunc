@@ -45,8 +45,7 @@ namespace xFunc.Maths.Analyzers.Formatters
             return string.Format(format, exp.Argument.Analyze(this));
         }
 
-        private string ToString(BinaryExpression exp, string format)
-        {
+        private string ToString(BinaryExpression exp, string format) {
             return string.Format(format, exp.Left.Analyze(this), exp.Right.Analyze(this));
         }
 
@@ -366,6 +365,9 @@ namespace xFunc.Maths.Analyzers.Formatters
             if (sub != null && ReferenceEquals(sub.Right, exp))
                 return ToString(exp, "(-{0})");
 
+            if ( Helpers.IsChildOf<Condition>(exp)) {
+                return ToString(exp, "(-{0})");
+            }
             return ToString(exp, "-{0}");
         }
 
@@ -460,7 +462,13 @@ namespace xFunc.Maths.Analyzers.Formatters
         /// <param name="exp">The expression.</param>
         /// <returns>The result of analysis.</returns>       
         public string Analyze(Condition exp) {
-            return ToString(exp, "condition");
+            return "condition(" 
+                + exp.Expression.ToString() 
+                + ", " 
+                + exp.ConditionLogic.ToString() 
+                + ")";
+
+            //return ToString(exp, "condition");
         }
 
         /// <summary>
