@@ -329,7 +329,16 @@ namespace xFunc.Maths
                 case Functions.Sign:
                     exp = new Sign();
                     break;
-                default:
+                case Functions.Rand:
+                    exp = new Rand ();
+                    break;
+                case Functions.NCr:
+                    exp = new nCr ();
+                    break;
+                case Functions.NPr:
+                    exp = new nPr ();
+                    break;
+            default:
                     exp = null; break;
             }
 
