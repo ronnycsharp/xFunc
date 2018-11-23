@@ -635,8 +635,14 @@ namespace xFunc.Maths
                 tokens.Add(new FunctionToken(Functions.Solve));
             } else if (match == "sign") {
                 tokens.Add(new FunctionToken(Functions.Sign));
-            } else 
-            {
+
+            } else if (match == "rand") {
+                tokens.Add (new FunctionToken (Functions.Rand));
+            } else if (match == "nPr") {
+                tokens.Add (new FunctionToken (Functions.NPr));
+            } else if (match == "nCr") {
+                tokens.Add (new FunctionToken (Functions.NCr));
+            } else {
                 tokens.Add(new UserFunctionToken(match));
             }
         }

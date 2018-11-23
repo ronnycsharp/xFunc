@@ -357,6 +357,21 @@ namespace xFunc.Maths.Tokens {
         /// The Sign function
         /// </summary>
         Sign,
+
+        /// <summary>
+        /// The Rand function
+        /// </summary>
+        Rand,
+
+        /// <summary>
+        /// The nPr-permutation function
+        /// </summary>
+        NPr,
+
+        /// <summary>
+        /// The nCr-combination function
+        /// </summary>
+        NCr,
     }
 
 }
