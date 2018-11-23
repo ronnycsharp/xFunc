@@ -1,4 +1,5 @@
 ﻿// Copyright 2012-2017 Dmitry Kischenko
+// Copyright 2013-2018 Ronny Weidemann
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -16,34 +17,20 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using xFunc.Maths.Analyzers;
 
-namespace xFunc.Maths.Expressions
-{
-
+namespace xFunc.Maths.Expressions.Statistical {
     /// <summary>
-    /// Represents the Modulo operator.
+    /// Represent the nPr function.
     /// </summary>
     /// <seealso cref="xFunc.Maths.Expressions.BinaryExpression" />
-    public class Mod : BinaryExpression {
+    public class nPr : BinaryExpression {
+
         [ExcludeFromCodeCoverage]
-        internal Mod() { }
+        internal nPr () { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Mod"/> class.
+        /// Initializes a new instance of the <see cref="nCr"/> class.
         /// </summary>
-        /// <param name="left">The left (first) operand.</param>
-        /// <param name="right">The right (second) operand.</param>
-        public Mod(IExpression left, IExpression right) : base(left, right) { }
-
-        /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-        /// </returns>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode(32909, 52541);
-        }
+        public nPr (IExpression n, IExpression r) : base (n, r) { }
 
         /// <summary>
         /// Executes this expression.
@@ -53,15 +40,10 @@ namespace xFunc.Maths.Expressions
         /// A result of the execution.
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
-        public override object Execute(ExpressionParameters parameters)
-        {
-            var leftResult = m_left.Execute(parameters);
-            var rightResult = m_right.Execute(parameters);
-
-            if (leftResult is double leftNumber && rightResult is double rightNumber)
-                return leftNumber % rightNumber;
-
-            throw new ResultIsNotSupportedException(this, leftResult, rightResult);
+        public override object Execute (ExpressionParameters parameters) {
+            var n = (int) this.Left.Execute (parameters);
+            var r = (int) this.Right.Execute (parameters);
+            return (double)PermutationsAndCombinations.nPr (n, r);
         }
 
         /// <summary>
@@ -77,15 +59,13 @@ namespace xFunc.Maths.Expressions
         }
 
         /// <summary>
-        /// Creates the clone of this instance.
+        /// Clones this instance of the <see cref="IExpression" />.
         /// </summary>
         /// <returns>
-        /// Returns the new instance of <see cref="BinaryExpression" /> that is a clone of this instance.
+        /// Returns the new instance of <see cref="IExpression" /> that is a clone of this instance.
         /// </returns>
         public override IExpression Clone() {
-            return new Mod(m_left.Clone(), m_right.Clone());
+            return new nPr (this.Left.Clone (), this.Right.Clone ());
         }
-
     }
-
 }

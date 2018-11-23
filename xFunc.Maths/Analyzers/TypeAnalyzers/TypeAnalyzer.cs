@@ -789,6 +789,15 @@ namespace xFunc.Maths.Analyzers.TypeAnalyzers {
             throw new ParameterTypeMismatchException(ResultType.Number, result);
         }
 
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public virtual ResultType Analyze (Rand exp) {
+            return ResultType.Number;
+        }
+
         #endregion Standard
 
         #region Matrix
@@ -1290,6 +1299,24 @@ namespace xFunc.Maths.Analyzers.TypeAnalyzers {
         /// <returns>The result of analysis.</returns>
         public virtual ResultType Analyze(Varp exp) {
             return CheckStatistical(exp);
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public virtual ResultType Analyze (nPr exp) {
+            return ResultType.Number;
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public virtual ResultType Analyze (nCr exp) {
+            return ResultType.Number;
         }
 
         #endregion Statistical

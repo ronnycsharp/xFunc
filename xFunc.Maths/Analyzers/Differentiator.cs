@@ -489,6 +489,39 @@ namespace xFunc.Maths.Analyzers
             return exp.Clone();
         }
 
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        public override IExpression Analyze (nPr exp) {
+            return new Number (0);
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        public override IExpression Analyze (nCr exp) {
+            return new Number (0);
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        public override IExpression Analyze (Rand exp) {
+            return new Number (0);
+        }
+
         #endregion Standard
 
         #region Trigonometric

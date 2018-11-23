@@ -498,6 +498,15 @@ namespace xFunc.Maths.Analyzers.Formatters
             return ToString(exp, "solve");
         }
 
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public string Analyze (Rand exp) {
+            return "rand()";
+        }
+
         #endregion Standard
 
         #region Matrix
@@ -998,6 +1007,26 @@ namespace xFunc.Maths.Analyzers.Formatters
         public string Analyze(Varp exp)
         {
             return ToString(exp, "varp");
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public string Analyze (nPr exp)
+        {
+            return ToString (exp, "nPr");
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public string Analyze (nCr exp)
+        {
+            return ToString (exp, "nCr");
         }
 
         #endregion Statistical

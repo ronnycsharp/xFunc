@@ -260,6 +260,12 @@ namespace xFunc.Maths.Analyzers {
         /// <param name="exp">Exp.</param>
         TResult Analyze(Sign exp);
 
+        /// <summary>
+        /// Analyze the specified expression
+        /// </summary>
+        /// <param name="exp">Exp.</param>
+        TResult Analyze (Rand exp);
+
         #endregion Standard
 
         #region Matrix
@@ -554,7 +560,18 @@ namespace xFunc.Maths.Analyzers {
         /// <param name="exp">The expression.</param>
         /// <returns>The result of analysis.</returns>
         TResult Analyze(Varp exp);
-
+        /// <summary>
+        /// Analyzes the specified exppression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        TResult Analyze (nPr exp);
+        /// <summary>
+        /// Analyzes the specified exppression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        TResult Analyze (nCr exp);
         #endregion Statistical
 
         #region Logical and Bitwise

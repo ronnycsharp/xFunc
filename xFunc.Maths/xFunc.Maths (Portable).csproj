@@ -36,7 +36,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ReleaseVersion>4.4</ReleaseVersion>
+    <ReleaseVersion>5.1</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -241,6 +241,10 @@
     <Compile Include="ExcludeFromCodeCoverageAttribute.cs" />
     <Compile Include="Expressions\NDerivative.cs" />
     <Compile Include="Expressions\Fract.cs" />
+    <Compile Include="Expressions\Statistical\nCr.cs" />
+    <Compile Include="PermutationsAndCombinations.cs" />
+    <Compile Include="Expressions\Statistical\nPr.cs" />
+    <Compile Include="Expressions\Rand.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Resource.resx">

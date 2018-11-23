@@ -32,9 +32,7 @@ namespace xFunc.Maths.Analyzers
     /// <typeparam name="TResult">The type of the result.</typeparam>
     /// <seealso cref="xFunc.Maths.Analyzers.IAnalyzer{TResult}" />
     [ExcludeFromCodeCoverage]
-    public abstract class Analyzer<TResult> : IAnalyzer<TResult>
-    {
-
+    public abstract class Analyzer<TResult> : IAnalyzer<TResult> {
         #region Standard
 
         /// <summary>
@@ -520,6 +518,18 @@ namespace xFunc.Maths.Analyzers
         /// <exception cref="System.NotSupportedException">Always.</exception>
         public virtual TResult Analyze(Sign exp) {
             throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public virtual TResult Analyze (Rand exp){
+            throw new NotSupportedException ();
         }
 
         #endregion Standard
@@ -1125,6 +1135,32 @@ namespace xFunc.Maths.Analyzers
         public virtual TResult Analyze(Varp exp)
         {
             throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Analyzes the specified exppression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public virtual TResult Analyze (nPr exp)
+        {
+            throw new NotSupportedException ();
+        }
+
+        /// <summary>
+        /// Analyzes the specified exppression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public virtual TResult Analyze (nCr exp)
+        {
+            throw new NotSupportedException ();
         }
 
         #endregion Statistical

@@ -914,6 +914,18 @@ namespace xFunc.Maths.Analyzers {
             return AnalyzeUnary(exp);
         }
 
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        [ExcludeFromCodeCoverage]
+        public virtual IExpression Analyze (Rand exp) {
+            return exp.Analyze (this);
+        }
+
         #endregion Standard
 
         #region Matrix
@@ -1472,6 +1484,31 @@ namespace xFunc.Maths.Analyzers {
         [ExcludeFromCodeCoverage]
         public virtual IExpression Analyze(Varp exp) {
             return AnalyzeDiffParams(exp);
+        }
+
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        [ExcludeFromCodeCoverage]
+        public virtual IExpression Analyze (nPr exp) {
+            return AnalyzeBinary(exp);
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        [ExcludeFromCodeCoverage]
+        public virtual IExpression Analyze (nCr exp) {
+            return AnalyzeBinary (exp);
         }
 
         #endregion Statistical

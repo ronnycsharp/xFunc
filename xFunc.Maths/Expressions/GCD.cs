@@ -17,15 +17,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using xFunc.Maths.Analyzers;
 
-namespace xFunc.Maths.Expressions
-{
-
+namespace xFunc.Maths.Expressions {
     /// <summary>
     /// Represents a greatest common divisor.
     /// </summary>
-    public class GCD : DifferentParametersExpression
-    {
-
+    public class GCD : DifferentParametersExpression {
         [ExcludeFromCodeCoverage]
         internal GCD() : base(null, -1) { }
 
