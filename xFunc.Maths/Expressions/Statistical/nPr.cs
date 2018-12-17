@@ -41,8 +41,8 @@ namespace xFunc.Maths.Expressions.Statistical {
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
         public override object Execute (ExpressionParameters parameters) {
-            var n = (int) this.Left.Execute (parameters);
-            var r = (int) this.Right.Execute (parameters);
+            var n = (int)(double) this.Left.Execute (parameters);
+            var r = (int)(double) this.Right.Execute (parameters);
             return (double)PermutationsAndCombinations.nPr (n, r);
         }
 

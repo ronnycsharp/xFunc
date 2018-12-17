@@ -120,8 +120,26 @@ namespace xFunc.Maths {
             foreach (var x in values) {
                 this.Variable.Value = x;
 
-                var leftResult  = (double)this.LeftExpression.Execute(this.Parameters);
-                var rightResult = (double)this.RightExpression.Execute(this.Parameters);
+                var leftResult      = double.NaN;
+                var rightResult     = double.NaN;
+
+                var objLeftResult   = this.LeftExpression.Execute (this.Parameters);
+                var objRightResult  = this.RightExpression.Execute (this.Parameters);
+
+                if (objLeftResult is Double)
+                    leftResult = (double)objLeftResult;
+                else if (objLeftResult is System.Numerics.Complex cmp) {
+                    leftResult = cmp.Real;
+                }
+
+                if (objRightResult is Double)
+                    rightResult = (double)objRightResult;
+                else if (objRightResult is System.Numerics.Complex cmp) {
+                    rightResult = cmp.Real;
+                }
+
+                if (double.IsNaN (leftResult) || double.IsNaN (rightResult))
+                    continue;
 
                 // to be a valid result, 
                 // the computed left part of the equation 
