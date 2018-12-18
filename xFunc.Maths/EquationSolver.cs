@@ -129,13 +129,13 @@ namespace xFunc.Maths {
                 if (objLeftResult is Double)
                     leftResult = (double)objLeftResult;
                 else if (objLeftResult is System.Numerics.Complex cmp) {
-                    leftResult = cmp.Real;
+                    leftResult = double.NaN; //cmp.Real;
                 }
 
                 if (objRightResult is Double)
                     rightResult = (double)objRightResult;
                 else if (objRightResult is System.Numerics.Complex cmp) {
-                    rightResult = cmp.Real;
+                    rightResult = double.NaN; // cmp.Real;
                 }
 
                 if (double.IsNaN (leftResult) || double.IsNaN (rightResult))
