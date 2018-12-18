@@ -58,8 +58,8 @@ namespace xFunc.Maths
 			var options = /*RegexOptions.Compiled |*/ RegexOptions.IgnoreCase;
 
             regexSymbols = new Regex(@"\G(\(|\)|{|}|,)", options);
-            regexOperations = new Regex(@"\G([^a-zα-ω0-9(){},°\s]+|nand|nor|and|or|xor|not|eq|impl|mod)", options);
-            regexFunctions = new Regex(@"\G([a-zα-ω][0-9a-zα-ω]*)(\(|{)?", options);
+            regexOperations = new Regex(@"\G([^a-zα-ω0-9(){}µ,°\s]+|nand|nor|and|or|xor|not|eq|impl|mod)", options);
+            regexFunctions = new Regex(@"\G([a-zα-ωµ][0-9a-zα-ω]*)(\(|{)?", options);
 			regexConst = new Regex (@"\G(true|false)", options);
 
             regexNumberHex = new Regex(@"\G[+-]?0x[0-9a-f]+", options);
