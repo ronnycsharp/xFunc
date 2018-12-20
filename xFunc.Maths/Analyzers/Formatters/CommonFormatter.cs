@@ -1014,9 +1014,8 @@ namespace xFunc.Maths.Analyzers.Formatters
         /// </summary>
         /// <param name="exp">The expression.</param>
         /// <returns>The result of analysis.</returns>
-        public string Analyze (nPr exp)
-        {
-            return ToString (exp, "nPr");
+        public string Analyze (nPr exp) {
+            return ToString (exp, "nPr({0},{1})");
         }
 
         /// <summary>
@@ -1024,9 +1023,8 @@ namespace xFunc.Maths.Analyzers.Formatters
         /// </summary>
         /// <param name="exp">The expression.</param>
         /// <returns>The result of analysis.</returns>
-        public string Analyze (nCr exp)
-        {
-            return ToString (exp, "nCr");
+        public string Analyze (nCr exp) {
+            return ToString (exp, "nCr({0},{1})");
         }
 
         #endregion Statistical
