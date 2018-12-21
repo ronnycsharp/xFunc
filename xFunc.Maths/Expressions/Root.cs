@@ -14,17 +14,14 @@
 // limitations under the License.
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using xFunc.Maths.Analyzers;
 
-namespace xFunc.Maths.Expressions
-{
-
+namespace xFunc.Maths.Expressions {
     /// <summary>
     /// Represents the nth root operation.
     /// </summary>
-    public class Root : BinaryExpression
-    {
-
+    public class Root : BinaryExpression {
         [ExcludeFromCodeCoverage]
         internal Root() { }
 
@@ -54,15 +51,18 @@ namespace xFunc.Maths.Expressions
         /// A result of the execution.
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
-        public override object Execute(ExpressionParameters parameters)
-        {
-            var leftResult = m_left.Execute(parameters);
-            var rightResult = m_right.Execute(parameters);
+        public override object Execute(ExpressionParameters parameters) {
+            var leftResult = m_left.Execute (parameters);
+            var rightResult = m_right.Execute (parameters);
 
-            if (leftResult is double first && rightResult is double second)
-                return MathExtensions.Pow(first, 1 / second);
+            if (leftResult is double first && rightResult is double second) {
+                if (first < 0 && second % 2 == 0)
+                    return new Complex (0, Complex.Pow (first, 1 / second).Imaginary);
 
-            throw new ResultIsNotSupportedException(this, leftResult, rightResult);
+                return MathExtensions.Pow (first, 1 / second);
+            }
+
+            throw new ResultIsNotSupportedException (this, leftResult, rightResult);
         }
 
         /// <summary>
