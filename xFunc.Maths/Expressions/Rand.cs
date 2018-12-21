@@ -48,11 +48,15 @@ namespace xFunc.Maths.Expressions {
         }
 
         public override object Execute () {
-            return new Random ().NextDouble ();
+            lock (typeof (Rand)) {
+                return random.NextDouble ();
+            }
         }
 
         public override object Execute (ExpressionParameters parameters) {
             return Execute ();
         }
+
+        private Random random = new Random ();
     }
 }
