@@ -30,7 +30,7 @@ namespace xFunc.Maths.Expressions
         /// </summary>
         public static readonly Variable X = new Variable("x");
 
-        private readonly string name;
+        private string name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Variable"/> class.

@@ -795,22 +795,6 @@ namespace xFunc.Maths.Analyzers.TypeAnalyzers {
         /// </summary>
         /// <param name="exp">The expression.</param>
         /// <returns>The result of analysis.</returns>
-        public virtual ResultType Analyze(Sign exp) {
-            var result = exp.Argument.Analyze(this);
-            if (result == ResultType.Undefined)
-                return ResultType.Undefined;
-
-            if (result == ResultType.Number)
-                return ResultType.Number;
-
-            throw new ParameterTypeMismatchException(ResultType.Number, result);
-        }
-
-        /// <summary>
-        /// Analyzes the specified expression.
-        /// </summary>
-        /// <param name="exp">The expression.</param>
-        /// <returns>The result of analysis.</returns>
         public virtual ResultType Analyze (Rand exp) {
             return ResultType.Number;
         }
@@ -820,13 +804,20 @@ namespace xFunc.Maths.Analyzers.TypeAnalyzers {
         /// </summary>
         /// <param name="exp">The expression.</param>
         /// <returns>The result of analysis.</returns>
-        public virtual ResultType Analyze(Sign exp)
-        {
+        public virtual ResultType Analyze(Sign exp) {
             var result = exp.Argument.Analyze(this);
             if (result == ResultType.Undefined || result == ResultType.Number)
                 return ResultType.Number;
 
             throw new ParameterTypeMismatchException(ResultType.Number, result);
+        }
+
+        public virtual ResultType Analyze (Fract exp) {
+            var result = exp.Argument.Analyze (this);
+            if (result == ResultType.Undefined || result == ResultType.Number)
+                return ResultType.Number;
+
+            throw new ParameterTypeMismatchException (ResultType.Number, result);
         }
 
         #endregion Standard

@@ -22,14 +22,22 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
+    <ReleaseVersion>5.1</ReleaseVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
+    <Compile Remove="Lexer_BACKUP_36259.cs" />
+    <Compile Remove="NDerivative.cs" />
+    <Compile Remove="RoundUnary.cs" />
+    <Compile Remove="Lexer.cs" />
+    <Compile Remove="DefaultDependencyResolver.cs" />
+    <Compile Remove="ExcludeFromCodeCoverageAttribute.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="xFunc.Maths.nuspec" />
+    <None Remove="Helpers.cs.orig" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +47,7 @@
     <None Include="..\NOTICE" Link="NOTICE">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="ExcludeFromCodeCoverageAttribute.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,6 +65,9 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.uk.resx</DependentUpon>
+    </Compile>
+    <Compile Condition=" '$(EnableDefaultCompileItems)' == 'true' " Update="Resources\Resource.designer.cs">
+      <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 

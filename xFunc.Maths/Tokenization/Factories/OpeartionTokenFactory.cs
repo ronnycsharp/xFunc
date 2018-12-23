@@ -97,15 +97,15 @@ namespace xFunc.Maths.Tokenization.Factories
             {
                 result.Token = new OperationToken(Operations.ConditionalOr);
             }
-            else if (operation == "==")
+            else if (operation == "==" || operation == "≡" /* workarround to have a single char as equal sign */)
             {
                 result.Token = new OperationToken(Operations.Equal);
             }
-            else if (operation == "!=")
+            else if (operation == "!=" || operation == "≠")
             {
                 result.Token = new OperationToken(Operations.NotEqual);
             }
-            else if (operation == "<=")
+            else if (operation == "<=" || operation == "≤")
             {
                 result.Token = new OperationToken(Operations.LessOrEqual);
             }
@@ -113,7 +113,7 @@ namespace xFunc.Maths.Tokenization.Factories
             {
                 result.Token = new OperationToken(Operations.LessThan);
             }
-            else if (operation == ">=")
+            else if (operation == ">=" || operation == "≥")
             {
                 result.Token = new OperationToken(Operations.GreaterOrEqual);
             }
@@ -208,7 +208,7 @@ namespace xFunc.Maths.Tokenization.Factories
             {
                 result.Token = new OperationToken(Operations.Or);
             }
-            else if (operation == "xor")
+            else if (operation == "xor" || operation == "⊕" || operation == "⊻")
             {
                 result.Token = new OperationToken(Operations.XOr);
             }
@@ -220,11 +220,11 @@ namespace xFunc.Maths.Tokenization.Factories
             {
                 result.Token = new OperationToken(Operations.Equality);
             }
-            else if (operation == "nor")
+            else if (operation == "nor" || operation == "⊽")
             {
                 result.Token = new OperationToken(Operations.NOr);
             }
-            else if (operation == "nand")
+            else if (operation == "nand" || operation == "⊼")
             {
                 result.Token = new OperationToken(Operations.NAnd);
             }

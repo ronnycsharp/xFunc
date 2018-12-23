@@ -1,9 +1,0 @@
-﻿{
-  "dependencies": {
-    "shim": "2.0.1",
-    "System.Runtime.Serialization.Primitives": "4.3.0"
-  },
-  "frameworks": {
-    ".NETPortable,Version=v4.5,Profile=Profile111": {}
-  }
-}

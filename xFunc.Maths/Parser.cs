@@ -128,7 +128,7 @@ namespace xFunc.Maths {
 		/// </remarks>
 		/// <param name="expression">Expression.</param>
 		public IExpression Parse (string expression) {
-			return this.Parse (new Lexer ().Tokenize (expression));
+            return new Processor ().Parse (expression);
 		}
 
 		/// <summary>
@@ -252,20 +252,6 @@ namespace xFunc.Maths {
         /// The expression factory.
         /// </value>
         public IExpressionFactory ExpressionFactory { get; set; }
-
-		/// <summary>
-		/// gets the simplifier-object for simplifying an expression
-		/// </summary>
-		/// <remarks>
-		/// only for backward-compatibility
-		/// </remarks>
-		/// <value>The simplifier.</value>
-		public Simplifier Simplifier {
-			get { return simplifier; }
-		}
-
-		private Simplifier simplifier;
-
     }
 
 }
