@@ -13,8 +13,11 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using xFunc.Maths.Expressions;
 using xFunc.Maths.Expressions.Hyperbolic;
+using xFunc.Maths.Expressions.Statistical;
 using xFunc.Maths.Expressions.Trigonometric;
 
 namespace xFunc.Maths.Analyzers
@@ -113,6 +116,48 @@ namespace xFunc.Maths.Analyzers
             return diff;
         }
 
+        public override IExpression Analyze(NDerivative exp) {
+            return new NDerivative(
+                exp.Expression, 
+                new Number(
+                    ((Number)exp.Number).Value + 1),
+                exp.Variable);
+        }
+
+        public override IExpression Analyze(DefiniteIntegral exp) {
+            return new Number(0);
+        }
+
+        public override IExpression Analyze(Sign exp) {
+            return new Number(0);
+        }
+
+        public override IExpression Analyze(RoundUnary exp) {
+            return new Number(0);
+        }
+
+        public override IExpression Analyze(Sum exp) {
+            return new Sum(
+                exp.Body.Analyze(this),
+                exp.From, 
+                exp.To, 
+                exp.Increment, 
+                exp.Variable);
+        }
+
+        public override IExpression Analyze(MultiCondition exp) {
+            var conditions = new List<Condition>();
+            foreach ( var condition in exp.Arguments.OfType<Condition>()) {
+                conditions.Add(
+                    new Condition(
+                        new[]{
+                            condition.Expression.Analyze(this),
+                            condition.ConditionLogic
+                        }, 2));
+            }
+            return new MultiCondition(conditions.ToArray());
+        }
+
         /// <summary>
         /// Analyzes the specified expression.
         /// </summary>
@@ -152,6 +197,7 @@ namespace xFunc.Maths.Analyzers
             //if (first)
             return new Div(exp.Left.Clone().Analyze(this), exp.Right.Clone());
         }
+
 
         /// <summary>
         /// Analyzes the specified expression.
@@ -441,6 +487,39 @@ namespace xFunc.Maths.Analyzers
                 return new Number(1);
 
             return exp.Clone();
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        public override IExpression Analyze (nPr exp) {
+            return new Number (0);
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        public override IExpression Analyze (nCr exp) {
+            return new Number (0);
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        public override IExpression Analyze (Rand exp) {
+            return new Number (0);
         }
 
         #endregion Standard

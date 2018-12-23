@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2018 Dmitry Kischenko
+// Copyright 2012-2018 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -148,10 +148,15 @@ namespace xFunc.Maths.Expressions
             return new Variable(name);
         }
 
+		// The Name-Property must be writeable, because we need backward-compatibility
+
         /// <summary>
         /// A name of this variable.
         /// </summary>
-        public string Name => name;
+		public string Name { 
+			get { return name; } 
+			set { name = value; } 
+		}
 
         /// <summary>
         /// Get or Set the parent expression.

@@ -22,15 +22,11 @@ using System.Linq;
 using xFunc.Maths.Expressions.ComplexNumbers;
 using xFunc.Maths.Analyzers;
 
-namespace xFunc.Maths
-{
-
+namespace xFunc.Maths {
     /// <summary>
     /// The parser for mathematical expressions.
     /// </summary>
-    public class Parser : IParser
-    {
-
+    public class Parser : IParser {
         /// <summary>
         /// Initializes a new instance of the <see cref="Parser"/> class with default implementations of <see cref="IExpressionFactory"/>.
         /// </summary>
@@ -40,8 +36,7 @@ namespace xFunc.Maths
         /// Initializes a new instance of the <see cref="Parser" /> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
-        public Parser(IExpressionFactory factory)
-        {
+        public Parser(IExpressionFactory factory) {
             ExpressionFactory = factory;
         }
 
@@ -68,21 +63,25 @@ namespace xFunc.Maths
                 {
                     stack.Push(expression);
                 }
-                else if (expression is BinaryExpression binExp)
+                else if (expression is BinaryExpression)
                 {
+                    var binExp = expression as BinaryExpression;
                     binExp.Right = stack.Pop();
                     binExp.Left = stack.Pop();
 
                     stack.Push(binExp);
                 }
-                else if (expression is UnaryExpression unaryMathExp)
+                else if (expression is UnaryExpression)
                 {
+                    var unaryMathExp = expression as UnaryExpression;
                     unaryMathExp.Argument = stack.Pop();
 
                     stack.Push(unaryMathExp);
                 }
-                else if (expression is DifferentParametersExpression func)
+                else if (expression is DifferentParametersExpression)
                 {
+                    var func = expression as DifferentParametersExpression;
+
                     var arg = new IExpression[func.ParametersCount];
                     for (var i = func.ParametersCount - 1; i >= 0; i--)
                         arg[i] = stack.Pop();
@@ -91,18 +90,20 @@ namespace xFunc.Maths
 
                     stack.Push(func);
                 }
-                else if (expression is Define assign)
+                else if (expression is Define)
                 {
                     if (stack.Count < 2)
                         throw new ParserException(Resource.InvalidNumberOfVariables);
 
+                    var assign = expression as Define;
                     assign.Value = stack.Pop();
                     assign.Key = stack.Pop();
 
                     stack.Push(assign);
                 }
-                else if (expression is Undefine undef)
+                else if (expression is Undefine)
                 {
+                    var undef = expression as Undefine;
                     undef.Key = stack.Pop();
 
                     stack.Push(undef);
@@ -119,6 +120,45 @@ namespace xFunc.Maths
             return stack.Pop();
         }
 
+		/// <summary>
+		/// Parse the specified string-expression.
+		/// </summary>
+		/// <remarks>
+		/// backward-compatibility
+		/// </remarks>
+		/// <param name="expression">Expression.</param>
+		public IExpression Parse (string expression) {
+			return this.Parse (new Lexer ().Tokenize (expression));
+		}
+
+		/// <summary>
+		/// Checks the <paramref name="expression"/> parameter has <paramref name="arg"/>.
+		/// </summary>
+		/// <param name="expression">A expression that is checked.</param>
+		/// <param name="arg">A variable that can be contained in the expression.</param>
+		/// <remarks>
+		/// backward-compatibility
+		/// </remarks>
+		/// <returns>true if <paramref name="expression"/> has <paramref name="arg"/>; otherwise, false.</returns>
+		public static bool HasVar (IExpression expression, Variable arg) {
+			if (expression is BinaryExpression) {
+				var bin = expression as BinaryExpression;
+				if (HasVar (bin.Left, arg))
+					return true;
+
+				return HasVar (bin.Right, arg);
+			}
+			if (expression is UnaryExpression) {
+				var un = expression as UnaryExpression;
+				return HasVar (un.Argument, arg);
+			}
+			if (expression is DifferentParametersExpression) {
+				var paramExp = expression as DifferentParametersExpression;
+				return paramExp.Arguments.Any (e => HasVar (e, arg));
+			}
+			return expression is Variable && expression.Equals (arg);
+		}
+
         private IEnumerable<IExpression> ConvertTokensToExpressions(IEnumerable<IToken> tokens)
         {
             var preOutput = new List<IExpression>();
@@ -129,8 +169,10 @@ namespace xFunc.Maths
                 if (exp == null)
                     throw new ParserException(Resource.ErrorWhileParsingTree);
 
-                if (token is FunctionToken t)
+                if (token is FunctionToken)
                 {
+                    var t = token as FunctionToken;
+
                     if (t.CountOfParams < exp.MinParameters)
                         throw new ParserException(Resource.LessParams);
                     if (exp.MaxParameters != -1 && t.CountOfParams > exp.MaxParameters)
@@ -153,8 +195,9 @@ namespace xFunc.Maths
             foreach (var token in tokens)
             {
                 IToken stackToken;
-                if (token is SymbolToken t)
+                if (token is SymbolToken)
                 {
+                    var t = token as SymbolToken;
                     switch (t.Symbol)
                     {
                         case Symbols.OpenBracket:
@@ -209,6 +252,19 @@ namespace xFunc.Maths
         /// The expression factory.
         /// </value>
         public IExpressionFactory ExpressionFactory { get; set; }
+
+		/// <summary>
+		/// gets the simplifier-object for simplifying an expression
+		/// </summary>
+		/// <remarks>
+		/// only for backward-compatibility
+		/// </remarks>
+		/// <value>The simplifier.</value>
+		public Simplifier Simplifier {
+			get { return simplifier; }
+		}
+
+		private Simplifier simplifier;
 
     }
 

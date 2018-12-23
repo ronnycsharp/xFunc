@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -11,6 +11,9 @@
     <AssemblyName>xFunc.Maths</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ReleaseVersion>4.4</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,12 +61,15 @@
     <Compile Include="Expressions\ComplexNumbers\Phase.cs" />
     <Compile Include="Expressions\ComplexNumbers\Re.cs" />
     <Compile Include="Expressions\ComplexNumbers\Reciprocal.cs" />
+    <Compile Include="Expressions\DefiniteIntegral.cs" />
+    <Compile Include="Expressions\Condition.cs" />
     <Compile Include="Expressions\DelegateExpression.cs" />
     <Compile Include="Expressions\DifferentParametersExpression.cs" />
     <Compile Include="Expressions\ExpressionParameters.cs" />
     <Compile Include="Analyzers\TypeAnalyzers\ResultType.cs" />
     <Compile Include="Expressions\Fact.cs" />
     <Compile Include="Expressions\Floor.cs" />
+    <Compile Include="Expressions\Fract.cs" />
     <Compile Include="Expressions\GCD.cs" />
     <Compile Include="Expressions\Hyperbolic\HyperbolicExpression.cs" />
     <Compile Include="Expressions\LCM.cs" />
@@ -88,7 +94,11 @@
     <Compile Include="Expressions\Del.cs" />
     <Compile Include="Expressions\Mod.cs" />
     <Compile Include="Analyzers\TypeAnalyzers\ParameterTypeMismatchException.cs" />
+    <Compile Include="Expressions\NDerivative.cs" />
     <Compile Include="Expressions\ResultIsNotSupportedException.cs" />
+    <Compile Include="Expressions\RoundUnary.cs" />
+    <Compile Include="Expressions\MultiCondition.cs" />
+    <Compile Include="Expressions\ParameterTypeMismatchException.cs" />
     <Compile Include="Expressions\Statistical\Count.cs" />
     <Compile Include="Expressions\Statistical\Product.cs" />
     <Compile Include="Expressions\Programming\AddAssign.cs" />
@@ -184,24 +194,9 @@
     <Compile Include="MathExtensions.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Processor.cs" />
-    <Compile Include="Resources\Resource.ru.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resource.ru.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\Resource.uk.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resource.uk.resx</DependentUpon>
-    </Compile>
     <Compile Include="Results\ComplexNumberResult.cs" />
     <Compile Include="NumeralSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources\Resource.Designer.cs">
-      <DependentUpon>Resource.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Results\IResult.cs" />
     <Compile Include="Results\ExpressionResult.cs" />
     <Compile Include="Results\NumberResult.cs" />
@@ -251,6 +246,21 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource.ru.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Compile Include="Tokens\BooleanToken.cs" />
+    <Compile Include="Tokens\ComplexNumberToken.cs" />
+    <Compile Include="Tokens\Functions.cs" />
+    <Compile Include="Tokens\FunctionToken.cs" />
+    <Compile Include="Tokens\IToken.cs" />
+    <Compile Include="Tokens\NumberToken.cs" />
+    <Compile Include="Tokens\Operations.cs" />
+    <Compile Include="Tokens\OperationToken.cs" />
+    <Compile Include="Tokens\Symbols.cs" />
+    <Compile Include="Tokens\SymbolToken.cs" />
+    <Compile Include="Tokens\UserFunctionToken.cs" />
+    <Compile Include="Tokens\VariableToken.cs" />
+    <Compile Include="Resources\Resource.Designer.cs">
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\LICENSE">
@@ -261,6 +271,12 @@
       <Link>NOTICE</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Resource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

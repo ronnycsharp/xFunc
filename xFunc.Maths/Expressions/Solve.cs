@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2018 Dmitry Kischenko
+﻿// Copyright 2013-2018 Ronny Weidemann
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -12,51 +12,44 @@
 // express or implied. 
 // See the License for the specific language governing permissions and 
 // limitations under the License.
+
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using xFunc.Maths.Analyzers;
+using xFunc.Maths.Expressions.Programming;
 
 namespace xFunc.Maths.Expressions {
     /// <summary>
-    /// Represents a greatest common divisor.
+    /// Represents the "solve" function.
     /// </summary>
-    public class GCD : DifferentParametersExpression {
+    public class Solve : DifferentParametersExpression {
+
         [ExcludeFromCodeCoverage]
-        internal GCD() : base(null, -1) { }
+        internal Solve() : base(null, -1) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GCD"/> class.
+        /// Initializes a new instance of the <see cref="Solve"/> class.
+        /// </summary>
+        /// <param name="argument">The expression which should be solved.</param>
+        /// <param name="variable"></param>
+        public Solve(IExpression argument, IExpression variable) : this(new[] { argument, variable }, 2) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Solve"/> class.
         /// </summary>
         /// <param name="args">The arguments.</param>
         /// <param name="countOfParams">The count of parameters.</param>
-        /// <exception cref="System.ArgumentNullException"><paramref name="args"/> is null.</exception>
+        /// <exception cref="System.ArgumentNullException">args</exception>
         /// <exception cref="System.ArgumentException">The length of <paramref name="args"/> is not equal to <paramref name="countOfParams"/>.</exception>
-        public GCD(IExpression[] args, int countOfParams)
-            : base(args, countOfParams)
-        {
+        public Solve(IExpression[] args, int countOfParams)
+            : base(args, countOfParams) {
+
             if (args == null)
                 throw new ArgumentNullException(nameof(args));
+
             if (args.Length != countOfParams)
                 throw new ArgumentException();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GCD"/> class.
-        /// </summary>
-        /// <param name="first">The first operand.</param>
-        /// <param name="second">The second operand.</param>
-        public GCD(IExpression first, IExpression second) : base(new[] { first, second }, 2) { }
-
-        /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-        /// </returns>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode(2087, 1283);
         }
 
         /// <summary>
@@ -67,18 +60,18 @@ namespace xFunc.Maths.Expressions {
         /// A result of the execution.
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
-        public override object Execute(ExpressionParameters parameters)
-        {
-            var numbers = m_arguments.Select(item =>
-            {
-                var result = item.Execute(parameters);
-                if (result is double number)
-                    return number;
+        public override object Execute(ExpressionParameters parameters) {
+            if (!(this.Argument is Equal))
+                throw new InvalidOperationException();
 
-                throw new ResultIsNotSupportedException(this, result);
-            }).ToArray();
+            var equal = (Equal)this.Argument;
+            var solver = new EquationSolver(
+                equal, this.Variable.ToString(), parameters.AngleMeasurement);
 
-            return MathExtensions.GCD(numbers);
+            return solver
+                .Solve(-100, 100)
+                .Select(p => p.X)
+                .ToArray();
         }
 
         /// <summary>
@@ -89,18 +82,18 @@ namespace xFunc.Maths.Expressions {
         /// <returns>
         /// The analysis result.
         /// </returns>
-        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer)
-        {
+        public override TResult Analyze<TResult>(IAnalyzer<TResult> analyzer) {
             return analyzer.Analyze(this);
         }
 
         /// <summary>
-        /// Clones this instance of the <see cref="GCD"/>.
+        /// Clones this instance of the <see cref="IExpression" />.
         /// </summary>
-        /// <returns>Returns the new instance of <see cref="GCD"/> that is a clone of this instance.</returns>
-        public override IExpression Clone()
-        {
-            return new GCD(CloneArguments(), m_arguments.Length);
+        /// <returns>
+        /// Returns the new instance of <see cref="IExpression" /> that is a clone of this instance.
+        /// </returns>
+        public override IExpression Clone() {
+            return new Solve(CloneArguments(), ParametersCount);
         }
 
         /// <summary>
@@ -117,8 +110,20 @@ namespace xFunc.Maths.Expressions {
         /// <value>
         /// The maximum count of parameters.
         /// </value>
-        public override int MaxParameters => -1;
+        public override int MaxParameters => 4;
+
+        /// <summary>
+        /// The expression that represents a double-precision floating-point number to be rounded.
+        /// </summary>
+        /// <value>
+        /// The expression that represents a double-precision floating-point number to be rounded.
+        /// </value>
+        public IExpression Argument => m_arguments[0];
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public IExpression Variable => m_arguments[1];
 
     }
-
 }

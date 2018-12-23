@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2018 Dmitry Kischenko
+// Copyright 2012-2018 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -303,14 +303,38 @@ namespace xFunc.Maths
                     exp = new Stdev(); break;
                 case Functions.Stdevp:
                     exp = new Stdevp(); break;
+				case Functions.RoundUnary:
+					exp = new RoundUnary (); break;
+				case Functions.DefiniteIntegral:
+					exp = new DefiniteIntegral (); break;
+				case Functions.NDerivative:
+					exp = new NDerivative (); break;
+				case Functions.Fract:
+					exp = new Fract (); break;
+                case Functions.Condition:
+                    exp = new Condition(); break;
+                case Functions.MultiCondition:
+                    exp = new MultiCondition(); break;
+                case Functions.Solve:
+                    exp = new Solve(); break;
                 case Functions.Sign:
-                    exp = new Sign(); break;
-                default:
+                    exp = new Sign();
+                    break;
+                case Functions.Rand:
+                    exp = new Rand ();
+                    break;
+                case Functions.NCr:
+                    exp = new nCr ();
+                    break;
+                case Functions.NPr:
+                    exp = new nPr ();
+                    break;
+            default:
                     exp = null; break;
             }
 
-            if (exp is DifferentParametersExpression diff)
-                diff.ParametersCount = token.CountOfParams;
+            if (exp is DifferentParametersExpression)
+				((DifferentParametersExpression)exp).ParametersCount = token.CountOfParams;
 
             return exp;
         }
@@ -320,8 +344,7 @@ namespace xFunc.Maths
         /// </summary>
         /// <param name="token">The user-function token.</param>
         /// <returns>An expression.</returns>
-        protected virtual IExpression CreateUserFunction(UserFunctionToken token)
-        {
+        protected virtual IExpression CreateUserFunction(UserFunctionToken token) {
             return new UserFunction(token.FunctionName, token.CountOfParams);
         }
 

@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2018 Dmitry Kischenko
+﻿// Copyright 2012-2017 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,9 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Numerics;
 using xFunc.Maths.Analyzers;
+using xFunc.Maths.Expressions.Collections;
 using xFunc.Maths.Expressions.Matrices;
 
 namespace xFunc.Maths.Expressions.Statistical
@@ -48,6 +50,19 @@ namespace xFunc.Maths.Expressions.Statistical
                 throw new ArgumentException();
         }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Product"/> class.
+		/// </summary>
+		/// <param name="body">The function that is executed on each iteration.</param>
+		/// <param name="from">The initial value (including).</param>
+		/// <param name="to">The final value (including).</param>
+		/// <param name="inc">The increment.</param>
+		/// <param name="variable">The increment variable.</param>
+		public Product (IExpression body, IExpression from, IExpression to, IExpression inc, Variable variable)
+			: base (new [] { body, from, to, inc, variable }, 5)
+		{
+		}
+
         /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
@@ -59,18 +74,6 @@ namespace xFunc.Maths.Expressions.Statistical
             return base.GetHashCode(1607, 6917);
         }
 
-        private double _Execute(IExpression[] expressions, ExpressionParameters parameters)
-        {
-            return expressions.Aggregate(1.0, (acc, exp) =>
-            {
-                var result = exp.Execute(parameters);
-                if (result is double doubleResult)
-                    return acc * doubleResult;
-
-                throw new ResultIsNotSupportedException();
-            });
-        }
-
         /// <summary>
         /// Executes this expression.
         /// </summary>
@@ -79,19 +82,72 @@ namespace xFunc.Maths.Expressions.Statistical
         /// A result of the execution.
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
-        public override object Execute(ExpressionParameters parameters)
-        {
-            if (ParametersCount == 1)
-            {
-                var result = this.m_arguments[0].Execute(parameters);
-                if (result is Vector vector)
-                    return _Execute(vector.Arguments, parameters);
-
-                return result;
-            }
-
-            return _Execute(m_arguments, parameters);
+        public override object Execute(ExpressionParameters parameters) {
+			return this.Calculate (parameters);
         }
+
+		/// <summary>
+		/// Calculates this mathemarical expression.
+		/// </summary>
+		/// <param name="parameters">An object that contains all parameters and functions for expressions.</param>
+		/// <returns>
+		/// A result of the calculation.
+		/// </returns>
+		/// <seealso cref="ExpressionParameters" />
+		private object Calculate (ExpressionParameters parameters) {
+			var body = Body;
+			var from = (double)(From?.Execute (parameters) ?? 1.0);
+			var to = (double)To.Execute (parameters);
+			var inc = (double)(Increment?.Execute (parameters) ?? 1.0);
+
+			var localParams = new ParameterCollection (parameters.Variables.Collection);
+			var variable = Variable != null ? Variable.Name : GetVarName (localParams);
+
+			localParams.Add (variable, from);
+			var param = new ExpressionParameters (
+				parameters.AngleMeasurement, localParams, parameters.Functions);
+
+			var cmpResult = default (Complex?);
+			var isComplex = false;
+
+			for (; from <= to; from += inc) {
+				localParams [variable] = from;
+
+				var r = body.Execute (param);
+				if (r is Double) {
+					if (cmpResult == null)
+						cmpResult = (double)r;
+					else
+						cmpResult *= (double)r;
+				} else if (r is Complex) {
+					if (cmpResult == null)
+						cmpResult = (Complex)r;
+					else 
+						cmpResult *= (Complex)r;
+					
+					isComplex = true;
+				} else {
+					throw new NotSupportedException ();
+				}
+			}
+			if (isComplex) {
+				return cmpResult.Value;
+			} else {
+				return cmpResult.Value.Real;
+			}
+		}
+
+		private static string GetVarName (ParameterCollection parameters) {
+			const string variable = "n";
+			if (!parameters.ContainsKey (variable))
+				return variable;
+
+			for (int i = 1; ; i++) {
+				var localVar = variable + i;
+				if (!parameters.ContainsKey (localVar))
+					return localVar;
+			}
+		}
 
         /// <summary>
         /// Analyzes the current expression.
@@ -133,6 +189,67 @@ namespace xFunc.Maths.Expressions.Statistical
         /// </value>
         public override int MaxParameters => -1;
 
+
+
+		/// <summary>
+		/// Gets the function that is executed on each iteration.
+		/// </summary>
+		/// <value>
+		/// The function that is executed on each iteration.
+		/// </value>
+		public IExpression Body {
+			get {
+				return m_arguments [0];
+			}
+		}
+
+		/// <summary>
+		/// Gets ghe initial value (including).
+		/// </summary>
+		/// <value>
+		/// The initial value (including).
+		/// </value>
+		public IExpression From {
+			get {
+				return ParametersCount >= 3 ? m_arguments [1] : null;
+			}
+		}
+
+		/// <summary>
+		/// Gets the final value (including).
+		/// </summary>
+		/// <value>
+		/// The final value (including).
+		/// </value>
+		public IExpression To {
+			get {
+				return ParametersCount == 2 ? m_arguments [1] : m_arguments [2];
+			}
+		}
+
+		/// <summary>
+		/// Gets the increment.
+		/// </summary>
+		/// <value>
+		/// The increment.
+		/// </value>
+		public IExpression Increment {
+			get {
+				return ParametersCount >= 4 ? m_arguments [3] : null;
+			}
+		}
+
+		/// <summary>
+		/// Gets the increment variable.
+		/// </summary>
+		/// <value>
+		/// The increment variable.
+		/// </value>
+		public Variable Variable {
+			get {
+				return ParametersCount == 5 ? (Variable)m_arguments [4] : null;
+			}
+		}
     }
 
 }

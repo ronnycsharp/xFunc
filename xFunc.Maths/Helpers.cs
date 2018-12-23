@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2018 Dmitry Kischenko
+// Copyright 2012-2018 Dmitry Kischenko & Ronny Weidemann
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace xFunc.Maths
     /// </summary>
     public static class Helpers
     {
-
         /// <summary>
         /// Checks that <paramref name="expression"/> has  the <paramref name="arg"/> variable.
         /// </summary>
@@ -36,13 +35,16 @@ namespace xFunc.Maths
         /// <returns>true if <paramref name="expression"/> has <paramref name="arg"/>; otherwise, false.</returns>
         public static bool HasVariable(IExpression expression, Variable arg)
         {
-            if (expression is BinaryExpression bin)
+            var bin = expression as BinaryExpression;
+            if (bin != null)
                 return HasVariable(bin.Left, arg) || HasVariable(bin.Right, arg);
 
-            if (expression is UnaryExpression un)
+            var un = expression as UnaryExpression;
+            if (un != null)
                 return HasVariable(un.Argument, arg);
 
-            if (expression is DifferentParametersExpression paramExp)
+            var paramExp = expression as DifferentParametersExpression;
+            if (paramExp != null)
                 return paramExp.Arguments.Any(e => HasVariable(e, arg));
 
             return expression is Variable && expression.Equals(arg);
@@ -141,6 +143,33 @@ namespace xFunc.Maths
             }
         }
 
-    }
+        public static bool IsChildOf<T>(IExpression exp) where T : IExpression {
+            if ( exp.Parent is T ) {
+                return true;
+            } else {
+                return exp.Parent != null 
+                    && IsChildOf<T>(exp.Parent);
+            }
+        }
 
+		public static double DegToRad (double angle) {
+			return Math.PI * angle / 180.0;
+		}
+
+		public static double RadToDeg (double angle) {
+			return angle * (180.0 / Math.PI);
+		}
+
+        public static bool AlmostEqual(double a, double b, double epsilon) {
+            return Math.Abs(a - b) < epsilon;
+        }
+
+        public static float Distance(float value1, float value2) {
+            return Math.Abs(value1 - value2);
+        }
+
+        public static double Distance(double value1, double value2) {
+            return Math.Abs(value1 - value2);
+        }
+    }
 }

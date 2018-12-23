@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2018 Dmitry Kischenko
+// Copyright 2012-2018 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -125,6 +125,18 @@ namespace xFunc.Maths.Analyzers
         {
             throw new NotSupportedException();
         }
+
+		/// <summary>
+		/// Analyzes the specified expression.
+		/// </summary>
+		/// <param name="exp">The expression.</param>
+		/// <returns>
+		/// The result of analysis.
+		/// </returns>
+		/// <exception cref="System.NotSupportedException">Always.</exception>
+		public virtual TResult Analyze (NDerivative exp) {
+			throw new NotSupportedException ();
+		}
 
         /// <summary>
         /// Analyzes the specified expression.
@@ -433,8 +445,55 @@ namespace xFunc.Maths.Analyzers
         /// The result of analysis.
         /// </returns>
         /// <exception cref="System.NotSupportedException">Always.</exception>
-        public virtual TResult Analyze(DelegateExpression exp)
-        {
+        public virtual TResult Analyze(DelegateExpression exp){
+            throw new NotSupportedException();
+        }
+
+		/// <summary>
+		/// Analyzes the specified expression.
+		/// </summary>
+		/// <param name="exp">The expression.</param>
+		/// <returns>
+		/// The result of analysis.
+		/// </returns>
+		/// <exception cref="System.NotSupportedException">Always.</exception>
+		public virtual TResult Analyze (DefiniteIntegral exp) {
+			throw new NotSupportedException ();
+		}
+
+		/// <summary>
+		/// Analyzes the specified expression.
+		/// </summary>
+		/// <param name="exp">The expression.</param>
+		/// <returns>
+		/// The result of analysis.
+		/// </returns>
+		/// <exception cref="System.NotSupportedException">Always.</exception>
+		public virtual TResult Analyze (RoundUnary exp) {
+			throw new NotSupportedException ();
+		}
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public virtual TResult Analyze (Fract exp) {
+			throw new NotSupportedException ();
+		}
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public virtual TResult Analyze(Condition exp) {
             throw new NotSupportedException();
         }
 
@@ -442,10 +501,48 @@ namespace xFunc.Maths.Analyzers
         /// Analyzes the specified expression.
         /// </summary>
         /// <param name="exp">The expression.</param>
-        /// <returns>The result of analysis.</returns>
-        public virtual TResult Analyze(Sign exp)
-        {
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public virtual TResult Analyze(MultiCondition exp) {
             throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public virtual TResult Analyze(Solve exp) {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public virtual TResult Analyze(Sign exp) {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public virtual TResult Analyze (Rand exp){
+            throw new NotSupportedException ();
         }
 
         #endregion Standard
@@ -1051,6 +1148,32 @@ namespace xFunc.Maths.Analyzers
         public virtual TResult Analyze(Varp exp)
         {
             throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Analyzes the specified exppression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public virtual TResult Analyze (nPr exp)
+        {
+            throw new NotSupportedException ();
+        }
+
+        /// <summary>
+        /// Analyzes the specified exppression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException">Always.</exception>
+        public virtual TResult Analyze (nCr exp)
+        {
+            throw new NotSupportedException ();
         }
 
         #endregion Statistical

@@ -1,4 +1,4 @@
-﻿// Copyright 2012-2018 Dmitry Kischenko
+// Copyright 2012-2018 Dmitry Kischenko
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -45,8 +45,7 @@ namespace xFunc.Maths.Analyzers.Formatters
             return string.Format(format, exp.Argument.Analyze(this));
         }
 
-        private string ToString(BinaryExpression exp, string format)
-        {
+        private string ToString(BinaryExpression exp, string format) {
             return string.Format(format, exp.Left.Analyze(this), exp.Right.Analyze(this));
         }
 
@@ -141,6 +140,16 @@ namespace xFunc.Maths.Analyzers.Formatters
         {
             return ToString(exp, "deriv");
         }
+
+		/// <summary>
+		/// Analyzes the specified expression.
+		/// </summary>
+		/// <param name="exp">The expression.</param>
+		/// <returns>The result of analysis.</returns>
+		public string Analyze (NDerivative exp)
+		{
+			return ToString (exp, "nderivative");
+		}
 
         /// <summary>
         /// Analyzes the specified expression.
@@ -365,6 +374,9 @@ namespace xFunc.Maths.Analyzers.Formatters
             if (exp.Parent is Sub sub && ReferenceEquals(sub.Right, exp))
                 return ToString(exp, "(-{0})");
 
+            if ( Helpers.IsChildOf<Condition>(exp)) {
+                return ToString(exp, "(-{0})");
+            }
             return ToString(exp, "-{0}");
         }
 
@@ -431,9 +443,77 @@ namespace xFunc.Maths.Analyzers.Formatters
         /// </summary>
         /// <param name="exp">The expression.</param>
         /// <returns>The result of analysis.</returns>
-        public string Analyze(Sign exp)
-        {
+        public string Analyze (DefiniteIntegral exp) {
+			return exp.ToString ();
+		}
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public string Analyze (RoundUnary exp){
+			return ToString (exp, "roundunary({0})");
+		}
+
+		/// <summary>
+		/// Analyzes the specified expression.
+		/// </summary>
+		/// <param name="exp">The expression.</param>
+		/// <returns>The result of analysis.</returns>
+		public string Analyze (Fract exp) {
+			return ToString (exp, "fract({0})");
+		}
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>       
+        public string Analyze(Condition exp) {
+            return "condition(" 
+                + exp.Expression.ToString() 
+                + ", " 
+                + exp.ConditionLogic.ToString() 
+                + ")";
+
+            //return ToString(exp, "condition");
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public string Analyze(MultiCondition exp) {
+            return ToString(exp, "multicondition");
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public string Analyze(Sign exp) {
             return ToString(exp, "sign({0})");
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public string Analyze(Solve exp) {
+            return ToString(exp, "solve");
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public string Analyze (Rand exp) {
+            return "rand()";
         }
 
         #endregion Standard
@@ -938,6 +1018,24 @@ namespace xFunc.Maths.Analyzers.Formatters
             return ToString(exp, "varp");
         }
 
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public string Analyze (nPr exp) {
+            return ToString (exp, "nPr({0},{1})");
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>The result of analysis.</returns>
+        public string Analyze (nCr exp) {
+            return ToString (exp, "nCr({0},{1})");
+        }
+
         #endregion Statistical
 
         #region Logical and Bitwise
@@ -1108,9 +1206,9 @@ namespace xFunc.Maths.Analyzers.Formatters
         public string Analyze(Equal exp)
         {
             if (exp.Parent is BinaryExpression && !(exp.Parent is While))
-                return ToString(exp, "({0} == {1})");
+                return ToString(exp, "({0} ≡ {1})");
 
-            return ToString(exp, "{0} == {1}");
+            return ToString(exp, "{0} ≡ {1}");
         }
 
         /// <summary>
@@ -1251,8 +1349,8 @@ namespace xFunc.Maths.Analyzers.Formatters
             return ToString(exp, "while({0}, {1})");
         }
 
-        #endregion Programming
+		#endregion Programming
 
-    }
+	}
 
 }
