@@ -32,10 +32,15 @@ namespace xFunc.Maths
         /// <param name="number">A double-precision floating-point number to be raised to a power.</param>
         /// <param name="power">A double-precision floating-point number that specifies a power.</param>
         /// <returns>The <paramref name="number"/> raised to the <paramref name="power"/>.</returns>
-        public static object Pow(double number, double power)
-        {
-            if (number < 0)
-            {
+        public static object Pow(double number, double power) {
+            if (power == 0) // zero exponent rule
+                return 1.0;
+
+            if (power == 1)
+                return number;
+
+            var odd = (power % 2) != 0;
+            if (number < 0 && odd) {
                 if ((BitConverter.DoubleToInt64Bits(power) & 1) == 1)
                 {
                     return -Math.Pow(-number, power);
