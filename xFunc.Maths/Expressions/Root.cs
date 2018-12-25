@@ -55,20 +55,23 @@ namespace xFunc.Maths.Expressions
         /// A result of the execution.
         /// </returns>
         /// <seealso cref="ExpressionParameters" />
-        public override object Execute(ExpressionParameters parameters)
-        {
-            var leftResult = m_left.Execute(parameters);
-            var rightResult = m_right.Execute(parameters);
+        public override object Execute(ExpressionParameters parameters) {
+            var leftResult = m_left.Execute (parameters);   // radicant
+            var rightResult = m_right.Execute (parameters); // degree
 
-            if (leftResult is double first && rightResult is double second)
-            {
-                if (first < 0 && second % 2 == 0)
-                    return new Complex(0, Complex.Pow(first, 1 / second).Imaginary);
+            if (leftResult is Complex leftComplex && (rightResult is Complex || rightResult is double)) {
+                var rightComplex = rightResult as Complex? ?? rightResult as double?;
+                if (rightComplex == null)
+                    throw new ResultIsNotSupportedException (this, leftResult, rightResult);
 
-                return MathExtensions.Pow(first, 1 / second);
+                return Complex.Pow (
+                    leftComplex, Complex.Reciprocal (rightComplex.Value));
             }
 
-            throw new ResultIsNotSupportedException(this, leftResult, rightResult);
+            if (leftResult is double leftNumber && rightResult is double rightNumber)
+                return MathExtensions.Pow (leftNumber, 1.0 / rightNumber);
+
+            throw new ResultIsNotSupportedException (this, leftResult, rightResult);
         }
 
         /// <summary>
