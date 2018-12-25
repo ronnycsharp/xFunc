@@ -17,48 +17,30 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 
-namespace xFunc.Maths
-{
-
+namespace xFunc.Maths {
     /// <summary>
     /// Provides static methods for additional functions.
     /// </summary>
-    public static class MathExtensions
-    {
+    public static class MathExtensions {
+        public static bool IsInteger(double number) {
+            return number == Math.Truncate (number);
+        }
 
         /// <summary>
-        /// Returns a specified number raised to the specified power.
+        /// Returns a specified number or a complex number raised to the specified power.
         /// </summary>
         /// <param name="number">A double-precision floating-point number to be raised to a power.</param>
         /// <param name="power">A double-precision floating-point number that specifies a power.</param>
         /// <returns>The <paramref name="number"/> raised to the <paramref name="power"/>.</returns>
         public static object Pow(double number, double power) {
-            if (power == 0) // zero exponent rule
-                return 1.0;
-
-            if (power == 1)
-                return number;
-
-            var odd = (power % 2) != 0;
-            if (number < 0 && odd) {
-                if ((BitConverter.DoubleToInt64Bits(power) & 1) == 1)
-                {
-                    return -Math.Pow(-number, power);
-                }
-                else
-                {
-                    if (power > 0)
-                    {
-                        return new Complex(0, Math.Pow(-number, power));
-                    }
-                    else
-                    {
-                        return new Complex(0, -Math.Pow(-number, power));
-                    }
-                }
+            var res = Complex.Pow (new Complex (number, 0), power);
+            if (Helpers.AlmostEqual(res.Imaginary, 0, 0.000000001)) {
+                return res.Real;
             }
-
-            return Math.Pow(number, power);
+            if (Helpers.AlmostEqual (res.Real, 0, 0.000000001)) {
+                return new Complex (0, res.Imaginary);
+            }
+            return res;
         }
 
         /// <summary>

@@ -36,8 +36,7 @@ namespace xFunc.Tests.Expressions
         public void NegativeExecuteTest1()
         {
             var exp = new Pow(new Number(-8), new Number(1 / 3.0));
-
-            Assert.Equal(-2.0, exp.Execute());
+            Assert.Equal(Complex.Pow(new Complex(-8,0), 1.0/3.0), exp.Execute());
         }
 
         [Fact]
@@ -92,6 +91,37 @@ namespace xFunc.Tests.Expressions
             var exp = new Pow(new ComplexNumber(complex), new Number(10));
 
             Assert.Equal(Complex.Pow(complex, 10), exp.Execute());
+        }
+
+        [Fact]
+        public void ExecuteNegativeNumberWithPowerOfTwo () {
+            var exp = new Pow (new Number(-5), new Number (2));
+            Assert.Equal(25.0, exp.Execute ());
+        }
+
+        [Fact]
+        public void ExecuteNegativeNumberWithPowerOfOneThird () {
+            var exp         = new Pow (new Number(-5), new Number(1.0/3.0));
+            var re          = 0.85498797333834849467655443627193005493402755527152746219;
+            var im          = 1.4808826096823642385229974586352819796498623810460959180;
+
+            var expected    = new Complex (re, im);
+            var result      = (Complex) exp.Execute ();
+
+            Assert.Equal (expected.Real, result.Real, 5);
+            Assert.Equal (expected.Imaginary, result.Imaginary, 5);
+        }
+
+        [Fact]
+        public void ExecuteNegativeNumberWithPowerOfNegativeThree () {
+            var exp = new Pow (new Number (-5), new Number (-3.0));
+            Assert.Equal (-0.008, exp.Execute ());
+        }
+
+        [Fact]
+        public void ExecuteNegativeNumberWithNegativePower () {
+            var exp = new Pow (new Number (-5), new Number (-2));
+            Assert.Equal (0.04, exp.Execute ());
         }
 
         [Fact]
