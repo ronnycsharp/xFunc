@@ -179,6 +179,24 @@ namespace xFunc.Maths {
                         throw new ParserException(Resource.MoreParams);
                 }
 
+                if ( token is VariableToken var) {
+                    if (var.Variable.Length == 2 
+                            && (var.Variable.Contains("x") 
+                                    || var.Variable.Contains("y"))) {
+
+                        preOutput.Add (new Variable (var.Variable [0].ToString ()));
+                        preOutput.Add (new Variable (var.Variable [1].ToString ()));
+                        preOutput.Add (new Mul ());
+
+                        /*
+                        preOutput.Add (
+                            new Mul (
+                                new Variable (var.Variable[0].ToString()), 
+                                new Variable (var.Variable[1].ToString())));*/
+
+                        continue;
+                    }
+                }
                 preOutput.Add(exp);
             }
 

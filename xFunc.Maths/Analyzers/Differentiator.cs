@@ -14,10 +14,8 @@
 // limitations under the License.
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using xFunc.Maths.Expressions;
 using xFunc.Maths.Expressions.Hyperbolic;
-using xFunc.Maths.Expressions.Statistical;
 using xFunc.Maths.Expressions.Trigonometric;
 
 namespace xFunc.Maths.Analyzers
@@ -34,23 +32,25 @@ namespace xFunc.Maths.Analyzers
         /// <summary>
         /// Initializes a new instance of the <see cref="Differentiator"/> class.
         /// </summary>
-        public Differentiator() : this(new ExpressionParameters(), Variable.X) { }
+        public Differentiator () : this (new ExpressionParameters (), Variable.X) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Differentiator"/> class.
         /// </summary>
         /// <param name="variable">The variable.</param>
-        public Differentiator(Variable variable) : this(new ExpressionParameters(), variable) { }
+        public Differentiator (Variable variable) : this (new ExpressionParameters (), variable) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Differentiator"/> class.
         /// </summary>
         /// <param name="parameters">The parameters.</param>
         /// <param name="variable">The variable.</param>
-        public Differentiator(ExpressionParameters parameters, Variable variable)
+        public Differentiator (ExpressionParameters parameters, Variable variable)
         {
             Parameters = parameters;
             Variable = variable;
+
+            Steps = new List<DerivationStep> ();
         }
 
         #region Standard
@@ -62,15 +62,15 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Abs exp)
+        public override IExpression Analyze (Abs exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var div = new Div(exp.Argument.Clone(), exp.Clone());
-            var mul = new Mul(exp.Argument.Clone().Analyze(this), div);
+            var div = new Div (exp.Argument.Clone (), exp.Clone ());
+            var mul = new Mul (exp.Argument.Clone ().Analyze (this), div);
 
-            return mul;
+            return AddStep (exp, mul);
         }
 
         /// <summary>
@@ -80,21 +80,21 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Add exp)
+        public override IExpression Analyze (Add exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var first = Helpers.HasVariable(exp.Left, Variable);
-            var second = Helpers.HasVariable(exp.Right, Variable);
+            var first = Helpers.HasVariable (exp.Left, Variable);
+            var second = Helpers.HasVariable (exp.Right, Variable);
 
             if (first && second)
-                return new Add(exp.Left.Clone().Analyze(this), exp.Right.Clone().Analyze(this));
+                return AddStep (exp, new Add (exp.Left.Clone ().Analyze (this), exp.Right.Clone ().Analyze (this)));
             if (first)
-                return exp.Left.Clone().Analyze(this);
+                return AddStep (exp, exp.Left.Clone ().Analyze (this));
 
             // if (second)
-            return exp.Right.Clone().Analyze(this);
+            return AddStep (exp, exp.Right.Clone ().Analyze (this));
         }
 
         /// <summary>
@@ -104,58 +104,16 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Derivative exp)
+        public override IExpression Analyze (Derivative exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var diff = exp.Expression.Analyze(this);
+            var diff = exp.Expression.Analyze (this);
             if (exp.Parent is Derivative)
-                diff = diff.Analyze(this);
+                diff = diff.Analyze (this);
 
-            return diff;
-        }
-
-        public override IExpression Analyze(NDerivative exp) {
-            return new NDerivative(
-                exp.Expression, 
-                new Number(
-                    ((Number)exp.Number).Value + 1),
-                exp.Variable);
-        }
-
-        public override IExpression Analyze(DefiniteIntegral exp) {
-            return new Number(0);
-        }
-
-        public override IExpression Analyze(Sign exp) {
-            return new Number(0);
-        }
-
-        public override IExpression Analyze(RoundUnary exp) {
-            return new Number(0);
-        }
-
-        public override IExpression Analyze(Sum exp) {
-            return new Sum(
-                exp.Body.Analyze(this),
-                exp.From, 
-                exp.To, 
-                exp.Increment, 
-                exp.Variable);
-        }
-
-        public override IExpression Analyze(MultiCondition exp) {
-            var conditions = new List<Condition>();
-            foreach ( var condition in exp.Arguments.OfType<Condition>()) {
-                conditions.Add(
-                    new Condition(
-                        new[]{
-                            condition.Expression.Analyze(this),
-                            condition.ConditionLogic
-                        }, 2));
-            }
-            return new MultiCondition(conditions.ToArray());
+            return AddStep (exp, diff);
         }
 
         /// <summary>
@@ -165,53 +123,39 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Div exp)
+        public override IExpression Analyze (Div exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var first = Helpers.HasVariable(exp.Left, Variable);
-            var second = Helpers.HasVariable(exp.Right, Variable);
+            var first = Helpers.HasVariable (exp.Left, Variable);
+            var second = Helpers.HasVariable (exp.Right, Variable);
 
-            if (first && second)
-            {
-                var mul1 = new Mul(exp.Left.Clone().Analyze(this), exp.Right.Clone());
-                var mul2 = new Mul(exp.Left.Clone(), exp.Right.Clone().Analyze(this));
-                var sub = new Sub(mul1, mul2);
-                var inv = new Pow(exp.Right.Clone(), new Number(2));
-                var division = new Div(sub, inv);
+            if (first && second) {
+                var mul1 = new Mul (exp.Left.Clone ().Analyze (this), exp.Right.Clone ());
+                var mul2 = new Mul (exp.Left.Clone (), exp.Right.Clone ().Analyze (this));
+                var sub = new Sub (mul1, mul2);
+                var inv = new Pow (exp.Right.Clone (), new Number (2));
+                var division = new Div (sub, inv);
 
-                return division;
+                return AddStep (exp, division);
             }
 
-            if (second)
-            {
-                var mul2 = new Mul(exp.Left.Clone(), exp.Right.Clone().Analyze(this));
-                var unMinus = new UnaryMinus(mul2);
-                var inv = new Pow(exp.Right.Clone(), new Number(2));
-                var division = new Div(unMinus, inv);
+            if (second) {
+                var mul2 = new Mul (exp.Left.Clone (), exp.Right.Clone ().Analyze (this));
+                var unMinus = new UnaryMinus (mul2);
+                var inv = new Pow (exp.Right.Clone (), new Number (2));
+                var division = new Div (unMinus, inv);
 
-                return division;
+                return AddStep (exp, division);
             }
 
             //if (first)
-            return new Div(exp.Left.Clone().Analyze(this), exp.Right.Clone());
-        }
-
-
-        /// <summary>
-        /// Analyzes the specified expression.
-        /// </summary>
-        /// <param name="exp">The expression.</param>
-        /// <returns>
-        /// The result of analysis.
-        /// </returns>
-        public override IExpression Analyze(Exp exp)
-        {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
-
-            return new Mul(exp.Argument.Clone().Analyze(this), exp.Clone());
+            return AddStep (
+                exp,
+                new Div (
+                    exp.Left.Clone ().Analyze (this),
+                    exp.Right.Clone ()));
         }
 
         /// <summary>
@@ -221,16 +165,16 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Lb exp)
+        public override IExpression Analyze (Exp exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var ln = new Ln(new Number(2));
-            var mul = new Mul(exp.Argument.Clone(), ln);
-            var div = new Div(exp.Argument.Clone().Analyze(this), mul);
-
-            return div;
+            return AddStep (
+                exp,
+                new Mul (
+                    exp.Argument.Clone ().Analyze (this),
+                exp.Clone ()));
         }
 
         /// <summary>
@@ -240,16 +184,16 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Lg exp)
+        public override IExpression Analyze (Lb exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var ln = new Ln(new Number(10));
-            var mul1 = new Mul(exp.Argument.Clone(), ln);
-            var div = new Div(exp.Argument.Clone().Analyze(this), mul1);
+            var ln = new Ln (new Number (2));
+            var mul = new Mul (exp.Argument.Clone (), ln);
+            var div = new Div (exp.Argument.Clone ().Analyze (this), mul);
 
-            return div;
+            return AddStep (exp, div);
         }
 
         /// <summary>
@@ -259,12 +203,16 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Ln exp)
+        public override IExpression Analyze (Lg exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            return new Div(exp.Argument.Clone().Analyze(this), exp.Argument.Clone());
+            var ln = new Ln (new Number (10));
+            var mul1 = new Mul (exp.Argument.Clone (), ln);
+            var div = new Div (exp.Argument.Clone ().Analyze (this), mul1);
+
+            return AddStep (exp, div);
         }
 
         /// <summary>
@@ -274,26 +222,40 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Log exp)
+        public override IExpression Analyze (Ln exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            if (Helpers.HasVariable(exp.Left, Variable))
-            {
-                var ln1 = new Ln(exp.Right.Clone());
-                var ln2 = new Ln(exp.Left.Clone());
-                var div = new Div(ln1, ln2);
+            return AddStep (exp, new Div (exp.Argument.Clone ().Analyze (this), exp.Argument.Clone ()));
+        }
 
-                return Analyze(div);
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        public override IExpression Analyze (Log exp)
+        {
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
+
+            if (Helpers.HasVariable (exp.Left, Variable)) {
+                var ln1 = new Ln (exp.Right.Clone ());
+                var ln2 = new Ln (exp.Left.Clone ());
+                var div = new Div (ln1, ln2);
+
+                return AddStep (exp, Analyze (div));
             }
 
             // if (Helpers.HasVar(exp.Right, variable))
-            var ln = new Ln(exp.Left.Clone());
-            var mul = new Mul(exp.Right.Clone(), ln);
-            var div2 = new Div(exp.Right.Clone().Analyze(this), mul);
+            var ln = new Ln (exp.Left.Clone ());
+            var mul = new Mul (exp.Right.Clone (), ln);
+            var div2 = new Div (exp.Right.Clone ().Analyze (this), mul);
 
-            return div2;
+            return AddStep (exp, div2);
         }
 
         /// <summary>
@@ -303,28 +265,27 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Mul exp)
+        public override IExpression Analyze (Mul exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var first = Helpers.HasVariable(exp.Left, Variable);
-            var second = Helpers.HasVariable(exp.Right, Variable);
+            var first = Helpers.HasVariable (exp.Left, Variable);
+            var second = Helpers.HasVariable (exp.Right, Variable);
 
-            if (first && second)
-            {
-                var mul1 = new Mul(exp.Left.Clone().Analyze(this), exp.Right.Clone());
-                var mul2 = new Mul(exp.Left.Clone(), exp.Right.Clone().Analyze(this));
-                var add = new Add(mul1, mul2);
+            if (first && second) {
+                var mul1 = new Mul (exp.Left.Clone ().Analyze (this), exp.Right.Clone ());
+                var mul2 = new Mul (exp.Left.Clone (), exp.Right.Clone ().Analyze (this));
+                var add = new Add (mul1, mul2);
 
-                return add;
+                return AddStep (exp, add);
             }
 
             if (first)
-                return new Mul(exp.Left.Clone().Analyze(this), exp.Right.Clone());
+                return AddStep (exp, new Mul (exp.Left.Clone ().Analyze (this), exp.Right.Clone ()));
 
             // if (second)
-            return new Mul(exp.Left.Clone(), exp.Right.Clone().Analyze(this));
+            return AddStep (exp, new Mul (exp.Left.Clone (), exp.Right.Clone ().Analyze (this)));
         }
 
         /// <summary>
@@ -334,9 +295,9 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Number exp)
+        public override IExpression Analyze (Number exp)
         {
-            return new Number(0);
+            return AddStep (exp, new Number (0));
         }
 
         /// <summary>
@@ -346,27 +307,26 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Pow exp)
+        public override IExpression Analyze (Pow exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            if (Helpers.HasVariable(exp.Left, Variable))
-            {
-                var sub = new Sub(exp.Right.Clone(), new Number(1));
-                var inv = new Pow(exp.Left.Clone(), sub);
-                var mul1 = new Mul(exp.Right.Clone(), inv);
-                var mul2 = new Mul(exp.Left.Clone().Analyze(this), mul1);
+            if (Helpers.HasVariable (exp.Left, Variable)) {
+                var sub = new Sub (exp.Right.Clone (), new Number (1));
+                var inv = new Pow (exp.Left.Clone (), sub);
+                var mul1 = new Mul (exp.Right.Clone (), inv);
+                var mul2 = new Mul (exp.Left.Clone ().Analyze (this), mul1);
 
-                return mul2;
+                return AddStep (exp, mul2);
             }
 
             // if (Helpers.HasVar(exp.Right, variable))
-            var ln = new Ln(exp.Left.Clone());
-            var mul3 = new Mul(ln, exp.Clone());
-            var mul4 = new Mul(mul3, exp.Right.Clone().Analyze(this));
+            var ln = new Ln (exp.Left.Clone ());
+            var mul3 = new Mul (ln, exp.Clone ());
+            var mul4 = new Mul (mul3, exp.Right.Clone ().Analyze (this));
 
-            return mul4;
+            return AddStep (exp, mul4);
         }
 
         /// <summary>
@@ -376,15 +336,15 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Root exp)
+        public override IExpression Analyze (Root exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var div = new Div(new Number(1), exp.Right.Clone());
-            var pow = new Pow(exp.Left.Clone(), div);
+            var div = new Div (new Number (1), exp.Right.Clone ());
+            var pow = new Pow (exp.Left.Clone (), div);
 
-            return Analyze(pow);
+            return AddStep (exp, Analyze (pow));
         }
 
         /// <summary>
@@ -394,12 +354,12 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Simplify exp)
+        public override IExpression Analyze (Simplify exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            return exp.Argument.Analyze(this);
+            return AddStep (exp, exp.Argument.Analyze (this));
         }
 
         /// <summary>
@@ -409,15 +369,15 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Sqrt exp)
+        public override IExpression Analyze (Sqrt exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var mul = new Mul(new Number(2), exp.Clone());
-            var div = new Div(exp.Argument.Clone().Analyze(this), mul);
+            var mul = new Mul (new Number (2), exp.Clone ());
+            var div = new Div (exp.Argument.Clone ().Analyze (this), mul);
 
-            return div;
+            return AddStep (exp, div);
         }
 
         /// <summary>
@@ -427,21 +387,21 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Sub exp)
+        public override IExpression Analyze (Sub exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var first = Helpers.HasVariable(exp.Left, Variable);
-            var second = Helpers.HasVariable(exp.Right, Variable);
+            var first = Helpers.HasVariable (exp.Left, Variable);
+            var second = Helpers.HasVariable (exp.Right, Variable);
 
             if (first && second)
-                return new Sub(exp.Left.Clone().Analyze(this), exp.Right.Clone().Analyze(this));
+                return AddStep (exp, new Sub (exp.Left.Clone ().Analyze (this), exp.Right.Clone ().Analyze (this)));
             if (first)
-                return exp.Left.Clone().Analyze(this);
+                return AddStep (exp, exp.Left.Clone ().Analyze (this));
 
             // if (second)
-            return new UnaryMinus(exp.Right.Clone().Analyze(this));
+            return AddStep (exp, new UnaryMinus (exp.Right.Clone ().Analyze (this)));
         }
 
         /// <summary>
@@ -451,12 +411,12 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(UnaryMinus exp)
+        public override IExpression Analyze (UnaryMinus exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            return new UnaryMinus(exp.Argument.Clone().Analyze(this));
+            return AddStep (exp, new UnaryMinus (exp.Argument.Clone ().Analyze (this)));
         }
 
         /// <summary>
@@ -466,12 +426,12 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(UserFunction exp)
+        public override IExpression Analyze (UserFunction exp)
         {
             if (Parameters == null)
-                throw new ArgumentNullException(nameof(Parameters));
+                throw new ArgumentNullException (nameof (Parameters));
 
-            return Parameters.Functions[exp].Analyze(this);
+            return AddStep (exp, Parameters.Functions [exp].Analyze (this));
         }
 
         /// <summary>
@@ -481,45 +441,12 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Variable exp)
+        public override IExpression Analyze (Variable exp)
         {
-            if (exp.Equals(Variable))
-                return new Number(1);
+            if (exp.Equals (Variable))
+                return AddStep (exp, new Number (1));
 
-            return exp.Clone();
-        }
-
-        /// <summary>
-        /// Analyzes the specified expression.
-        /// </summary>
-        /// <param name="exp">The expression.</param>
-        /// <returns>
-        /// The result of analysis.
-        /// </returns>
-        public override IExpression Analyze (nPr exp) {
-            return new Number (0);
-        }
-
-        /// <summary>
-        /// Analyzes the specified expression.
-        /// </summary>
-        /// <param name="exp">The expression.</param>
-        /// <returns>
-        /// The result of analysis.
-        /// </returns>
-        public override IExpression Analyze (nCr exp) {
-            return new Number (0);
-        }
-
-        /// <summary>
-        /// Analyzes the specified expression.
-        /// </summary>
-        /// <param name="exp">The expression.</param>
-        /// <returns>
-        /// The result of analysis.
-        /// </returns>
-        public override IExpression Analyze (Rand exp) {
-            return new Number (0);
+            return AddStep (exp, exp.Clone ());
         }
 
         #endregion Standard
@@ -533,18 +460,18 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Arccos exp)
+        public override IExpression Analyze (Arccos exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var pow = new Pow(exp.Argument.Clone(), new Number(2));
-            var sub = new Sub(new Number(1), pow);
-            var sqrt = new Sqrt(sub);
-            var division = new Div(exp.Argument.Clone().Analyze(this), sqrt);
-            var unMinus = new UnaryMinus(division);
+            var pow = new Pow (exp.Argument.Clone (), new Number (2));
+            var sub = new Sub (new Number (1), pow);
+            var sqrt = new Sqrt (sub);
+            var division = new Div (exp.Argument.Clone ().Analyze (this), sqrt);
+            var unMinus = new UnaryMinus (division);
 
-            return unMinus;
+            return AddStep (exp, unMinus);
         }
 
         /// <summary>
@@ -554,17 +481,17 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Arccot exp)
+        public override IExpression Analyze (Arccot exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var involution = new Pow(exp.Argument.Clone(), new Number(2));
-            var add = new Add(new Number(1), involution);
-            var div = new Div(exp.Argument.Clone().Analyze(this), add);
-            var unMinus = new UnaryMinus(div);
+            var involution = new Pow (exp.Argument.Clone (), new Number (2));
+            var add = new Add (new Number (1), involution);
+            var div = new Div (exp.Argument.Clone ().Analyze (this), add);
+            var unMinus = new UnaryMinus (div);
 
-            return unMinus;
+            return AddStep (exp, unMinus);
         }
 
         /// <summary>
@@ -574,20 +501,20 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Arccsc exp)
+        public override IExpression Analyze (Arccsc exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var abs = new Abs(exp.Argument.Clone());
-            var sqr = new Pow(exp.Argument.Clone(), new Number(2));
-            var sub = new Sub(sqr, new Number(1));
-            var sqrt = new Sqrt(sub);
-            var mul = new Mul(abs, sqrt);
-            var div = new Div(exp.Argument.Clone().Analyze(this), mul);
-            var unary = new UnaryMinus(div);
+            var abs = new Abs (exp.Argument.Clone ());
+            var sqr = new Pow (exp.Argument.Clone (), new Number (2));
+            var sub = new Sub (sqr, new Number (1));
+            var sqrt = new Sqrt (sub);
+            var mul = new Mul (abs, sqrt);
+            var div = new Div (exp.Argument.Clone ().Analyze (this), mul);
+            var unary = new UnaryMinus (div);
 
-            return unary;
+            return AddStep (exp, unary);
         }
 
         /// <summary>
@@ -597,19 +524,19 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Arcsec exp)
+        public override IExpression Analyze (Arcsec exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var abs = new Abs(exp.Argument.Clone());
-            var sqr = new Pow(exp.Argument.Clone(), new Number(2));
-            var sub = new Sub(sqr, new Number(1));
-            var sqrt = new Sqrt(sub);
-            var mul = new Mul(abs, sqrt);
-            var div = new Div(exp.Argument.Clone().Analyze(this), mul);
+            var abs = new Abs (exp.Argument.Clone ());
+            var sqr = new Pow (exp.Argument.Clone (), new Number (2));
+            var sub = new Sub (sqr, new Number (1));
+            var sqrt = new Sqrt (sub);
+            var mul = new Mul (abs, sqrt);
+            var div = new Div (exp.Argument.Clone ().Analyze (this), mul);
 
-            return div;
+            return AddStep (exp, div);
         }
 
         /// <summary>
@@ -619,17 +546,17 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Arcsin exp)
+        public override IExpression Analyze (Arcsin exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var involution = new Pow(exp.Argument.Clone(), new Number(2));
-            var sub = new Sub(new Number(1), involution);
-            var sqrt = new Sqrt(sub);
-            var division = new Div(exp.Argument.Clone().Analyze(this), sqrt);
+            var involution = new Pow (exp.Argument.Clone (), new Number (2));
+            var sub = new Sub (new Number (1), involution);
+            var sqrt = new Sqrt (sub);
+            var division = new Div (exp.Argument.Clone ().Analyze (this), sqrt);
 
-            return division;
+            return AddStep (exp, division);
         }
 
         /// <summary>
@@ -639,16 +566,16 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Arctan exp)
+        public override IExpression Analyze (Arctan exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var involution = new Pow(exp.Argument.Clone(), new Number(2));
-            var add = new Add(new Number(1), involution);
-            var div = new Div(exp.Argument.Clone().Analyze(this), add);
+            var involution = new Pow (exp.Argument.Clone (), new Number (2));
+            var add = new Add (new Number (1), involution);
+            var div = new Div (exp.Argument.Clone ().Analyze (this), add);
 
-            return div;
+            return AddStep (exp, div);
         }
 
         /// <summary>
@@ -658,16 +585,16 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Cos exp)
+        public override IExpression Analyze (Cos exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var sine = new Sin(exp.Argument.Clone());
-            var multiplication = new Mul(sine, exp.Argument.Clone().Analyze(this));
-            var unMinus = new UnaryMinus(multiplication);
+            var sine = new Sin (exp.Argument.Clone ());
+            var multiplication = new Mul (sine, exp.Argument.Clone ().Analyze (this));
+            var unMinus = new UnaryMinus (multiplication);
 
-            return unMinus;
+            return AddStep (exp, unMinus);
         }
 
         /// <summary>
@@ -677,17 +604,17 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Cot exp)
+        public override IExpression Analyze (Cot exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var sine = new Sin(exp.Argument.Clone());
-            var involution = new Pow(sine, new Number(2));
-            var division = new Div(exp.Argument.Clone().Analyze(this), involution);
-            var unMinus = new UnaryMinus(division);
+            var sine = new Sin (exp.Argument.Clone ());
+            var involution = new Pow (sine, new Number (2));
+            var division = new Div (exp.Argument.Clone ().Analyze (this), involution);
+            var unMinus = new UnaryMinus (division);
 
-            return unMinus;
+            return AddStep (exp, unMinus);
         }
 
         /// <summary>
@@ -697,15 +624,15 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Csc exp)
+        public override IExpression Analyze (Csc exp)
         {
-            var unary = new UnaryMinus(exp.Argument.Clone().Analyze(this));
-            var cot = new Cot(exp.Argument.Clone());
-            var csc = new Csc(exp.Argument.Clone());
-            var mul1 = new Mul(cot, csc);
-            var mul2 = new Mul(unary, mul1);
+            var unary = new UnaryMinus (exp.Argument.Clone ().Analyze (this));
+            var cot = new Cot (exp.Argument.Clone ());
+            var csc = new Csc (exp.Argument.Clone ());
+            var mul1 = new Mul (cot, csc);
+            var mul2 = new Mul (unary, mul1);
 
-            return mul2;
+            return AddStep (exp, mul2);
         }
 
         /// <summary>
@@ -715,17 +642,17 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Sec exp)
+        public override IExpression Analyze (Sec exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var tan = new Tan(exp.Argument.Clone());
-            var sec = new Sec(exp.Argument.Clone());
-            var mul1 = new Mul(tan, sec);
-            var mul2 = new Mul(exp.Argument.Clone().Analyze(this), mul1);
+            var tan = new Tan (exp.Argument.Clone ());
+            var sec = new Sec (exp.Argument.Clone ());
+            var mul1 = new Mul (tan, sec);
+            var mul2 = new Mul (exp.Argument.Clone ().Analyze (this), mul1);
 
-            return mul2;
+            return AddStep (exp, mul2);
         }
 
         /// <summary>
@@ -735,15 +662,15 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Sin exp)
+        public override IExpression Analyze (Sin exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var cos = new Cos(exp.Argument.Clone());
-            var mul = new Mul(cos, exp.Argument.Clone().Analyze(this));
+            var cos = new Cos (exp.Argument.Clone ());
+            var mul = new Mul (cos, exp.Argument.Clone ().Analyze (this));
 
-            return mul;
+            return AddStep (exp, mul);
         }
 
         /// <summary>
@@ -753,16 +680,16 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Tan exp)
+        public override IExpression Analyze (Tan exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var cos = new Cos(exp.Argument.Clone());
-            var inv = new Pow(cos, new Number(2));
-            var div = new Div(exp.Argument.Clone().Analyze(this), inv);
+            var cos = new Cos (exp.Argument.Clone ());
+            var inv = new Pow (cos, new Number (2));
+            var div = new Div (exp.Argument.Clone ().Analyze (this), inv);
 
-            return div;
+            return AddStep (exp, div);
         }
 
         #endregion
@@ -776,17 +703,17 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Arcosh exp)
+        public override IExpression Analyze (Arcosh exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var sqr = new Pow(exp.Argument.Clone(), new Number(2));
-            var sub = new Sub(sqr, new Number(1));
-            var sqrt = new Sqrt(sub);
-            var div = new Div(exp.Argument.Clone().Analyze(this), sqrt);
+            var sqr = new Pow (exp.Argument.Clone (), new Number (2));
+            var sub = new Sub (sqr, new Number (1));
+            var sqrt = new Sqrt (sub);
+            var div = new Div (exp.Argument.Clone ().Analyze (this), sqrt);
 
-            return div;
+            return AddStep (exp, div);
         }
 
         /// <summary>
@@ -796,16 +723,16 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Arcoth exp)
+        public override IExpression Analyze (Arcoth exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var sqr = new Pow(exp.Argument.Clone(), new Number(2));
-            var sub = new Sub(new Number(1), sqr);
-            var div = new Div(exp.Argument.Clone().Analyze(this), sub);
+            var sqr = new Pow (exp.Argument.Clone (), new Number (2));
+            var sub = new Sub (new Number (1), sqr);
+            var div = new Div (exp.Argument.Clone ().Analyze (this), sub);
 
-            return div;
+            return AddStep (exp, div);
         }
 
         /// <summary>
@@ -815,20 +742,20 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Arcsch exp)
+        public override IExpression Analyze (Arcsch exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var inv = new Pow(exp.Argument.Clone(), new Number(2));
-            var add = new Add(new Number(1), inv);
-            var sqrt = new Sqrt(add);
-            var abs = new Abs(exp.Argument.Clone());
-            var mul = new Mul(abs, sqrt);
-            var div = new Div(exp.Argument.Clone().Analyze(this), mul);
-            var unMinus = new UnaryMinus(div);
+            var inv = new Pow (exp.Argument.Clone (), new Number (2));
+            var add = new Add (new Number (1), inv);
+            var sqrt = new Sqrt (add);
+            var abs = new Abs (exp.Argument.Clone ());
+            var mul = new Mul (abs, sqrt);
+            var div = new Div (exp.Argument.Clone ().Analyze (this), mul);
+            var unMinus = new UnaryMinus (div);
 
-            return unMinus;
+            return AddStep (exp, unMinus);
         }
 
         /// <summary>
@@ -838,16 +765,16 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Arsech exp)
+        public override IExpression Analyze (Arsech exp)
         {
-            var inv = new Pow(exp.Argument.Clone(), new Number(2));
-            var sub = new Sub(new Number(1), inv);
-            var sqrt = new Sqrt(sub);
-            var mul = new Mul(exp.Argument.Clone(), sqrt);
-            var div = new Div(exp.Argument.Clone().Analyze(this), mul);
-            var unMinus = new UnaryMinus(div);
+            var inv = new Pow (exp.Argument.Clone (), new Number (2));
+            var sub = new Sub (new Number (1), inv);
+            var sqrt = new Sqrt (sub);
+            var mul = new Mul (exp.Argument.Clone (), sqrt);
+            var div = new Div (exp.Argument.Clone ().Analyze (this), mul);
+            var unMinus = new UnaryMinus (div);
 
-            return unMinus;
+            return AddStep (exp, unMinus);
         }
 
         /// <summary>
@@ -857,17 +784,17 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Arsinh exp)
+        public override IExpression Analyze (Arsinh exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var sqr = new Pow(exp.Argument.Clone(), new Number(2));
-            var add = new Add(sqr, new Number(1));
-            var sqrt = new Sqrt(add);
-            var div = new Div(exp.Argument.Clone().Analyze(this), sqrt);
+            var sqr = new Pow (exp.Argument.Clone (), new Number (2));
+            var add = new Add (sqr, new Number (1));
+            var sqrt = new Sqrt (add);
+            var div = new Div (exp.Argument.Clone ().Analyze (this), sqrt);
 
-            return div;
+            return AddStep (exp, div);
         }
 
         /// <summary>
@@ -877,16 +804,16 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Artanh exp)
+        public override IExpression Analyze (Artanh exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var sqr = new Pow(exp.Argument.Clone(), new Number(2));
-            var sub = new Sub(new Number(1), sqr);
-            var div = new Div(exp.Argument.Clone().Analyze(this), sub);
+            var sqr = new Pow (exp.Argument.Clone (), new Number (2));
+            var sub = new Sub (new Number (1), sqr);
+            var div = new Div (exp.Argument.Clone ().Analyze (this), sub);
 
-            return div;
+            return AddStep (exp, div);
         }
 
         /// <summary>
@@ -896,15 +823,15 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Cosh exp)
+        public override IExpression Analyze (Cosh exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var sinh = new Sinh(exp.Argument.Clone());
-            var mul = new Mul(exp.Argument.Clone().Analyze(this), sinh);
+            var sinh = new Sinh (exp.Argument.Clone ());
+            var mul = new Mul (exp.Argument.Clone ().Analyze (this), sinh);
 
-            return mul;
+            return AddStep (exp, mul);
         }
 
         /// <summary>
@@ -914,17 +841,17 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Coth exp)
+        public override IExpression Analyze (Coth exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var sinh = new Sinh(exp.Argument.Clone());
-            var inv = new Pow(sinh, new Number(2));
-            var div = new Div(exp.Argument.Clone().Analyze(this), inv);
-            var unMinus = new UnaryMinus(div);
+            var sinh = new Sinh (exp.Argument.Clone ());
+            var inv = new Pow (sinh, new Number (2));
+            var div = new Div (exp.Argument.Clone ().Analyze (this), inv);
+            var unMinus = new UnaryMinus (div);
 
-            return unMinus;
+            return AddStep (exp, unMinus);
         }
 
         /// <summary>
@@ -934,17 +861,17 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Csch exp)
+        public override IExpression Analyze (Csch exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var coth = new Coth(exp.Argument.Clone());
-            var mul1 = new Mul(coth, exp.Clone());
-            var mul2 = new Mul(exp.Argument.Clone().Analyze(this), mul1);
-            var unMinus = new UnaryMinus(mul2);
+            var coth = new Coth (exp.Argument.Clone ());
+            var mul1 = new Mul (coth, exp.Clone ());
+            var mul2 = new Mul (exp.Argument.Clone ().Analyze (this), mul1);
+            var unMinus = new UnaryMinus (mul2);
 
-            return unMinus;
+            return AddStep (exp, unMinus);
         }
 
         /// <summary>
@@ -954,17 +881,17 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Sech exp)
+        public override IExpression Analyze (Sech exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var tanh = new Tanh(exp.Argument.Clone());
-            var mul1 = new Mul(tanh, exp.Clone());
-            var mul2 = new Mul(exp.Argument.Clone().Analyze(this), mul1);
-            var unMinus = new UnaryMinus(mul2);
+            var tanh = new Tanh (exp.Argument.Clone ());
+            var mul1 = new Mul (tanh, exp.Clone ());
+            var mul2 = new Mul (exp.Argument.Clone ().Analyze (this), mul1);
+            var unMinus = new UnaryMinus (mul2);
 
-            return unMinus;
+            return AddStep (exp, unMinus);
         }
 
         /// <summary>
@@ -974,15 +901,15 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Sinh exp)
+        public override IExpression Analyze (Sinh exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var cosh = new Cosh(exp.Argument.Clone());
-            var mul = new Mul(exp.Argument.Clone().Analyze(this), cosh);
+            var cosh = new Cosh (exp.Argument.Clone ());
+            var mul = new Mul (exp.Argument.Clone ().Analyze (this), cosh);
 
-            return mul;
+            return AddStep (exp, mul);
         }
 
         /// <summary>
@@ -992,16 +919,16 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Tanh exp)
+        public override IExpression Analyze (Tanh exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            if (!Helpers.HasVariable (exp, Variable))
+                return AddStep (exp, new Number (0));
 
-            var cosh = new Cosh(exp.Argument.Clone());
-            var inv = new Pow(cosh, new Number(2));
-            var div = new Div(exp.Argument.Clone().Analyze(this), inv);
+            var cosh = new Cosh (exp.Argument.Clone ());
+            var inv = new Pow (cosh, new Number (2));
+            var div = new Div (exp.Argument.Clone ().Analyze (this), inv);
 
-            return div;
+            return AddStep (exp, div);
         }
 
         #endregion Hyperbolic
@@ -1022,6 +949,51 @@ namespace xFunc.Maths.Analyzers
         /// </value>
         public ExpressionParameters Parameters { get; set; }
 
+        public IList<DerivationStep> Steps { get; set; }
+
+        IExpression AddStep (IExpression expression, IExpression derivedExpression, bool simplify = true) {
+            // Expression before derivation
+            var exp     = expression.Clone ();
+            exp.Parent  = null;
+
+            // Derived Expression
+            var derv    = derivedExpression.Clone ();
+            derv.Parent = null;
+
+            // Simplify expressions (like 1+3 -> 4 ...)
+            if (simplify) {
+                exp     = new Processor().Simplify(exp);
+                derv    = new Processor().Simplify(derv);
+            }
+
+            //if (!exp.Equals (derv)) {
+                this.Steps.Add (
+                    new DerivationStep {
+                        Expression = exp,
+                        DerivedExpression = derv,
+                    });
+
+
+            //}
+            return derivedExpression;
+        }
     }
 
+    public class DerivationStep
+    {
+        #region Properties
+
+        public string Name { get; set; }
+
+        public IExpression Expression { get; set; }
+
+        public IExpression DerivedExpression { get; set; }
+
+        #endregion
+
+        public override string ToString ()
+        {
+            return Expression.ToString () + "->" + DerivedExpression.ToString ();
+        }
+    }
 }
