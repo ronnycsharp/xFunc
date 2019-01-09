@@ -509,7 +509,9 @@ namespace xFunc.Maths.Analyzers {
             if (exp.Left is Number && exp.Right is Number)
                 return new Number((double)exp.Execute());
 
-            if (exp.Left is Variable && exp.Right is Variable)
+            if (exp.Left is Variable leftVar 
+                    && exp.Right is Variable rightVar 
+                    && leftVar.Name == rightVar.Name)
                 return new Pow(exp.Left, new Number(2));
 
             // 2 * (2 * x)
@@ -632,7 +634,15 @@ namespace xFunc.Maths.Analyzers {
             // x^1
             if (exp.Right.Equals(one))
                 return exp.Left;
+                
+            if ( exp.Left is Pow left 
+                    && left.Right is Number leftExponent    // exponent of the left pow-function
+                    && exp.Right is Number exponent ) {     // right exponent
 
+                // example: (x^2)^5 should be simplified to x^10
+                return new Pow (
+                    left.Left.Clone(), new Number (leftExponent*exponent));
+            }
             return exp;
         }
 
