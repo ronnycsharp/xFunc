@@ -92,17 +92,21 @@ namespace xFunc.Maths.Analyzers
             var first = Helpers.HasVariable (exp.Left, Variable);
             var second = Helpers.HasVariable (exp.Right, Variable);
 
-			if (first && second)
-				return step.SetDerivative (
-					new Add (
-						step.AddStep (exp.Left.Clone ()),
-						step.AddStep (exp.Right.Clone ())),
-					DerivationRule.Sum);
+			if (first && second) {
+				step.Intermediate = new Add (
+					exp.Left.Clone ().AsDerivative(this), 
+					exp.Right.Clone ().AsDerivative(this));
 
-			if (first)
-				return step.SetDerivative (exp.Left.Clone ().Analyze (this), DerivationRule.Sum);
-				
-            return step.SetDerivative(exp.Right.Clone ().Analyze (this), DerivationRule.Sum);
+				return step.Derivative;
+			}
+
+			if (first) {
+				step.Intermediate = exp.Left.Clone ().AsDerivative (this);
+				return step.Derivative;
+			}
+
+			step.Intermediate = exp.Right.Clone ().AsDerivative (this);
+			return step.Derivative;
         }
 
         /// <summary>
@@ -331,16 +335,17 @@ namespace xFunc.Maths.Analyzers
                 var mul1 = new Mul (exp.Right.Clone (), inv);
                 var mul2 = new Mul (exp.Left.Clone ().AsDerivative(this), mul1);
 
-				step.IntermediateStep = mul2;
-                return step.SetDerivative(mul2, DerivationRule.Power);
+				step.Intermediate = mul2;
+				return step.Derivative;
             }
 
             // if (Helpers.HasVar(exp.Right, variable))
             var ln = new Ln (exp.Left.Clone ());
             var mul3 = new Mul (ln, exp.Clone ());
-            var mul4 = new Mul (mul3, exp.Right.Clone ().Analyze (this));
+            var mul4 = new Mul (mul3, exp.Right.Clone ().AsDerivative (this));
 
-            return step.SetDerivative (mul4, DerivationRule.Other);
+			step.Intermediate = mul4;
+			return step.Derivative;
         }
 
         /// <summary>
@@ -994,6 +999,36 @@ namespace xFunc.Maths.Analyzers
 			return new Derivative (differentiator, simplifier, expression, variable);
 		}
 
+		public static IExpression AsAnalyzedExpression(this IExpression expression, Differentiator differentiator) {
+			return AsAnalyzedExpression (expression, differentiator, differentiator.Variable);
+		}
+
+		public static IExpression AsAnalyzedExpression(
+			this IExpression expression, Differentiator differentiator, Variable variable) {
+			if (expression is Derivative) {
+				// TODO Update Derivation Tree
+
+				return expression.Clone().Analyze (differentiator);
+			}
+			if (expression is UnaryExpression unary) {
+				var u = (UnaryExpression) unary.Clone ();
+				u.Argument = u.Argument.AsAnalyzedExpression (differentiator, variable);
+				return u;
+			} else if ( expression is BinaryExpression binary) {
+				var b = (BinaryExpression) binary.Clone ();
+				b.Left = b.Left.AsAnalyzedExpression (differentiator, variable);
+				b.Right = b.Right.AsAnalyzedExpression (differentiator, variable);
+				return b;
+			} else if (expression is DifferentParametersExpression different) {
+				var d = (DifferentParametersExpression) different.Clone ();
+				for ( int i = 0; i < d.Arguments.Length; i++ ) {
+					d.Arguments [i] = d.Arguments [i].AsAnalyzedExpression (differentiator, variable);
+				}
+				return d;
+			}
+			return expression;
+		}
+
 		private static Simplifier simplifier = new Simplifier ();
 	}
 
@@ -1015,6 +1050,25 @@ namespace xFunc.Maths.Analyzers
 		public IExpression Expression { get; set; }
 
         public IExpression Derivative { get; set; }
+
+		public IExpression Simplified { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the intermediate step
+		/// </summary>
+		/// <value>The expression of the intermediate step.</value>
+		public IExpression Intermediate { 
+			get { return intermediate; }
+			set {
+				if ( intermediate != value ) {
+					intermediate = value;
+					this.Derivative = intermediate?.AsAnalyzedExpression (this.Differentiator);
+					this.Simplified = this.Derivative?.Analyze (new Simplifier ());
+				}
+			}
+		}
+
+		private IExpression intermediate;
 
 		public List<DerivationStep> Substeps { get; private set; } = new List<DerivationStep> ();
 
