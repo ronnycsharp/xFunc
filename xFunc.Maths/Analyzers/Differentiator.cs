@@ -49,8 +49,6 @@ namespace xFunc.Maths.Analyzers
         {
             Parameters = parameters;
             Variable = variable;
-
-            Steps = new List<DerivationStep> ();
         }
 
         #region Standard
@@ -80,21 +78,31 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze (Add exp)
-        {
-            if (!Helpers.HasVariable (exp, Variable))
-                return AddStep (exp, new Number (0));
+        public override IExpression Analyze (Add exp) {
+			var step = new DerivationStep(this) {
+				Expression = exp,
+				Rule = DerivationRule.Sum
+			};
+
+			this.Steps[exp] = step;
+
+			if (!Helpers.HasVariable (exp, Variable))
+				return step.SetDerivative (new Number (0), DerivationRule.Constant);
 
             var first = Helpers.HasVariable (exp.Left, Variable);
             var second = Helpers.HasVariable (exp.Right, Variable);
 
-            if (first && second)
-                return AddStep (exp, new Add (exp.Left.Clone ().Analyze (this), exp.Right.Clone ().Analyze (this)));
-            if (first)
-                return AddStep (exp, exp.Left.Clone ().Analyze (this));
+			if (first && second)
+				return step.SetDerivative (
+					new Add (
+						step.AddStep (exp.Left.Clone ()),
+						step.AddStep (exp.Right.Clone ())),
+					DerivationRule.Sum);
 
-            // if (second)
-            return AddStep (exp, exp.Right.Clone ().Analyze (this));
+			if (first)
+				return step.SetDerivative (exp.Left.Clone ().Analyze (this), DerivationRule.Sum);
+				
+            return step.SetDerivative(exp.Right.Clone ().Analyze (this), DerivationRule.Sum);
         }
 
         /// <summary>
@@ -307,18 +315,24 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze (Pow exp)
-        {
-            if (!Helpers.HasVariable (exp, Variable))
-                return AddStep (exp, new Number (0));
+        public override IExpression Analyze (Pow exp) {
+			var step = new DerivationStep (this) {
+				Expression = exp,
+				Rule = DerivationRule.Power
+			};
+			this.Steps [exp] = step;
+
+			if (!Helpers.HasVariable (exp, Variable))
+                return step.SetDerivative(new Number (0), DerivationRule.Constant);
 
             if (Helpers.HasVariable (exp.Left, Variable)) {
                 var sub = new Sub (exp.Right.Clone (), new Number (1));
                 var inv = new Pow (exp.Left.Clone (), sub);
                 var mul1 = new Mul (exp.Right.Clone (), inv);
-                var mul2 = new Mul (exp.Left.Clone ().Analyze (this), mul1);
+                var mul2 = new Mul (exp.Left.Clone ().AsDerivative(this), mul1);
 
-                return AddStep (exp, mul2);
+				step.IntermediateStep = mul2;
+                return step.SetDerivative(mul2, DerivationRule.Power);
             }
 
             // if (Helpers.HasVar(exp.Right, variable))
@@ -326,7 +340,7 @@ namespace xFunc.Maths.Analyzers
             var mul3 = new Mul (ln, exp.Clone ());
             var mul4 = new Mul (mul3, exp.Right.Clone ().Analyze (this));
 
-            return AddStep (exp, mul4);
+            return step.SetDerivative (mul4, DerivationRule.Other);
         }
 
         /// <summary>
@@ -949,51 +963,104 @@ namespace xFunc.Maths.Analyzers
         /// </value>
         public ExpressionParameters Parameters { get; set; }
 
-        public IList<DerivationStep> Steps { get; set; }
-
-        IExpression AddStep (IExpression expression, IExpression derivedExpression, bool simplify = true) {
-            // Expression before derivation
-            var exp     = expression.Clone ();
-            exp.Parent  = null;
-
-            // Derived Expression
-            var derv    = derivedExpression.Clone ();
-            derv.Parent = null;
-
-            // Simplify expressions (like 1+3 -> 4 ...)
-            if (simplify) {
-                exp     = new Processor().Simplify(exp);
-                derv    = new Processor().Simplify(derv);
-            }
-
-            //if (!exp.Equals (derv)) {
-                this.Steps.Add (
-                    new DerivationStep {
-                        Expression = exp,
-                        DerivedExpression = derv,
-                    });
+		public Dictionary<IExpression, DerivationStep> Steps { get; set; } 
+			= new Dictionary<IExpression, DerivationStep> ();
 
 
-            //}
-            return derivedExpression;
+		IExpression AddStep(IExpression expression, IExpression derivative) {
+			return derivative;
+		}
+	}
+
+	public static class MathExtensions {
+		/// <summary>
+		/// Converts a function to a derivation function.
+		/// </summary>
+		/// <returns>The derivative.</returns>
+		/// <param name="expression">Expression.</param>
+		/// <param name="differentiator">Differentiator.</param>
+		public static Derivative AsDerivative(this IExpression expression, Differentiator differentiator) {
+			return new Derivative (differentiator, simplifier, expression);
+		}
+
+		/// <summary>
+		/// Converts a function to a derivation function.
+		/// </summary>
+		/// <returns>The derivative.</returns>
+		/// <param name="expression">Expression.</param>
+		/// <param name="differentiator">Differentiator.</param>
+		/// <param name="variable">Variable.</param>
+		public static Derivative AsDerivative (this IExpression expression, Differentiator differentiator, Variable variable) {
+			return new Derivative (differentiator, simplifier, expression, variable);
+		}
+
+		private static Simplifier simplifier = new Simplifier ();
+	}
+
+	public class DerivationStep {
+		public DerivationStep (Differentiator differentiator) {
+			this.Differentiator = differentiator;
+		}
+
+		#region Properties
+
+		public string Name { get; set; }
+
+		public Differentiator Differentiator { get; set; }
+
+		public DerivationStep Parent { get; set; }
+
+		public DerivationRule Rule { get; set; } = DerivationRule.Other;
+
+		public IExpression Expression { get; set; }
+
+        public IExpression Derivative { get; set; }
+
+		public List<DerivationStep> Substeps { get; private set; } = new List<DerivationStep> ();
+
+		#endregion
+
+		public IExpression SetDerivative(IExpression derivative, DerivationRule rule = DerivationRule.Other) {
+			this.Derivative = derivative;
+			this.Rule = rule;
+			return derivative;
+		}
+
+		public IExpression AddStep (
+			IExpression expression,
+			IExpression derivative, 
+			DerivationRule rule = DerivationRule.Other) {
+			this.Substeps.Add (
+				new DerivationStep (Differentiator) {
+					Parent = this,
+					Expression = expression,
+					Derivative = derivative,
+					Rule = rule
+				});
+			return derivative;
+		}
+
+		public IExpression AddStep(IExpression expression, DerivationRule rule = DerivationRule.Other) {
+			var derivative = expression.Analyze (this.Differentiator);
+			return AddStep(expression, derivative, rule);
+		}
+
+		public override string ToString () {
+            return Expression.ToString () + "->" + Derivative.ToString ();
         }
     }
 
-    public class DerivationStep
-    {
-        #region Properties
-
-        public string Name { get; set; }
-
-        public IExpression Expression { get; set; }
-
-        public IExpression DerivedExpression { get; set; }
-
-        #endregion
-
-        public override string ToString ()
-        {
-            return Expression.ToString () + "->" + DerivedExpression.ToString ();
-        }
-    }
+	public enum DerivationRule {
+		Constant,	// Ableitung einer Konstante -> 0
+		Variable,	// Ableitung einer Variable	 -> 1
+		Sum,		// Summenregel
+		Difference,	// Differenzregel
+		Product,	// Produktregel
+		Factor,		// Faktorregel
+		Quotient,	// Quotientenregel
+		Chain,		// Kettenregel
+		Power,		// Potenzregel
+		Reciprocal,	// Reziprogenregel
+		Other,
+	}
 }
