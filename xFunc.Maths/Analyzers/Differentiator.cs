@@ -1,4 +1,5 @@
-﻿// Copyright 2012-2018 Dmitry Kischenko
+﻿// Copyright 2012-2018 Dmitry Kischenko, 
+//           2013-2019 Ronny Weidemann
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); 
 // you may not use this file except in compliance with the License.
@@ -18,17 +19,13 @@ using xFunc.Maths.Expressions;
 using xFunc.Maths.Expressions.Hyperbolic;
 using xFunc.Maths.Expressions.Trigonometric;
 
-namespace xFunc.Maths.Analyzers
-{
-
-    /// <summary>
-    /// The differentiator of expressions.
-    /// </summary>
-    /// <seealso cref="xFunc.Maths.Analyzers.Analyzer{TResult}" />
-    /// <seealso cref="xFunc.Maths.Analyzers.IDifferentiator" />
-    public class Differentiator : Analyzer<IExpression>, IDifferentiator
-    {
-
+namespace xFunc.Maths.Analyzers {
+	/// <summary>
+	/// The differentiator of expressions.
+	/// </summary>
+	/// <seealso cref="xFunc.Maths.Analyzers.Analyzer{TResult}" />
+	/// <seealso cref="xFunc.Maths.Analyzers.IDifferentiator" />
+	public class Differentiator : Analyzer<IExpression>, IDifferentiator {
         /// <summary>
         /// Initializes a new instance of the <see cref="Differentiator"/> class.
         /// </summary>
@@ -45,11 +42,37 @@ namespace xFunc.Maths.Analyzers
         /// </summary>
         /// <param name="parameters">The parameters.</param>
         /// <param name="variable">The variable.</param>
-        public Differentiator (ExpressionParameters parameters, Variable variable)
-        {
+        public Differentiator (ExpressionParameters parameters, Variable variable) {
             Parameters = parameters;
             Variable = variable;
+
+            AnalyzedExpressions = new Dictionary<IExpression, IExpression> ();
+            DerivationRules = new Dictionary<IExpression, DerivationRule> ();
         }
+
+        #region Properties
+
+        public Dictionary<IExpression, IExpression> AnalyzedExpressions { get; private set; }
+
+        public Dictionary<IExpression, DerivationRule> DerivationRules { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the variable.
+        /// </summary>
+        /// <value>
+        /// The variable.
+        /// </value>
+        public Variable Variable { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parameters.
+        /// </summary>
+        /// <value>
+        /// The parameters.
+        /// </value>
+        public ExpressionParameters Parameters { get; set; }
+
+        #endregion
 
         #region Standard
 
@@ -71,6 +94,28 @@ namespace xFunc.Maths.Analyzers
             return AddStep (exp, mul);
         }
 
+        Number CheckForConstant (IExpression expression) {
+            if (!Helpers.HasVariable (expression, Variable)) {
+                this.DerivationRules [expression] = DerivationRule.Constant;
+
+                var zero = new Number (0);
+                this.AnalyzedExpressions [expression] = zero;
+                return zero;
+            }
+            return null;
+        }
+
+        DerivationStep GetParentStepFromExpression (IExpression expression) {
+            if ( parents.ContainsKey(expression)) {
+                return parents [expression];
+            }
+            return null;
+        }
+
+        private Dictionary<IExpression, DerivationStep> parents = new Dictionary<IExpression, DerivationStep> ();
+
+        public DerivationStep RootStep { get; set; }
+
         /// <summary>
         /// Analyzes the specified expression.
         /// </summary>
@@ -79,34 +124,49 @@ namespace xFunc.Maths.Analyzers
         /// The result of analysis.
         /// </returns>
         public override IExpression Analyze (Add exp) {
-			var step = new DerivationStep(this) {
-				Expression = exp,
-				Rule = DerivationRule.Sum
-			};
+            var parentStep = GetParentStepFromExpression (exp);
+            if ( parentStep == null ) {
+                parentStep = new DerivationStep(this) { 
+                        Expression = exp, 
+                        Rule = DerivationRule.Sum 
+                    };
 
-			this.Steps[exp] = step;
+                parents [exp] = parentStep;
+                this.RootStep = parentStep;
+            }
 
-			if (!Helpers.HasVariable (exp, Variable))
-				return step.SetDerivative (new Number (0), DerivationRule.Constant);
+            // check if the given expression is a constant
+            var zero = CheckForConstant (exp);
+            if (zero != null) {
+                return zero;
+            }
 
-            var first = Helpers.HasVariable (exp.Left, Variable);
-            var second = Helpers.HasVariable (exp.Right, Variable);
+            var first   = Helpers.HasVariable (exp.Left, Variable);
+            var second  = Helpers.HasVariable (exp.Right, Variable);
 
 			if (first && second) {
-				step.Intermediate = new Add (
-					exp.Left.Clone ().AsDerivative(this), 
-					exp.Right.Clone ().AsDerivative(this));
+                var add         = new Add ();
+                var derivLeft   = exp.Left.Clone ().AsDerivative (this);
+                var derivRight  = exp.Right.Clone ().AsDerivative (this);
 
-				return step.Derivative;
+                parentStep.AddStep (derivLeft);
+                parentStep.AddStep (derivRight);
+
+                add.Left    = derivLeft;
+                add.Right   = derivRight;
+
+                parentStep.Intermediate = add;
+                return add.AsAnalyzedExpression(this);
 			}
 
 			if (first) {
-				step.Intermediate = exp.Left.Clone ().AsDerivative (this);
-				return step.Derivative;
+                var derivLeft = exp.Left.Clone().AsDerivative (this);
+                parentStep.AddStep (derivLeft);
+                return derivLeft.AsAnalyzedExpression (this);
 			}
 
-			step.Intermediate = exp.Right.Clone ().AsDerivative (this);
-			return step.Derivative;
+            var deriv = exp.Right.Clone ().AsDerivative (this);
+            return deriv.AsAnalyzedExpression(this);
         }
 
         /// <summary>
@@ -119,13 +179,13 @@ namespace xFunc.Maths.Analyzers
         public override IExpression Analyze (Derivative exp)
         {
             if (!Helpers.HasVariable (exp, Variable))
-                return AddStep (exp, new Number (0));
+                return new Number (0);
 
             var diff = exp.Expression.Analyze (this);
             if (exp.Parent is Derivative)
                 diff = diff.Analyze (this);
 
-            return AddStep (exp, diff);
+            return diff;
         }
 
         /// <summary>
@@ -320,14 +380,22 @@ namespace xFunc.Maths.Analyzers
         /// The result of analysis.
         /// </returns>
         public override IExpression Analyze (Pow exp) {
-			var step = new DerivationStep (this) {
-				Expression = exp,
-				Rule = DerivationRule.Power
-			};
-			this.Steps [exp] = step;
+            var parentStep = GetParentStepFromExpression (exp);
+            if (parentStep == null) {
+                parentStep = new DerivationStep (this) {
+                    Expression = exp,
+                    Rule = DerivationRule.Power
+                };
+                parents [exp] = parentStep;
+                this.RootStep = parentStep;
+            }
 
-			if (!Helpers.HasVariable (exp, Variable))
-                return step.SetDerivative(new Number (0), DerivationRule.Constant);
+
+            // check if the given expression is a constant
+            var zero = CheckForConstant (exp);
+            if (zero != null) {
+                return zero;
+            }
 
             if (Helpers.HasVariable (exp.Left, Variable)) {
                 var sub = new Sub (exp.Right.Clone (), new Number (1));
@@ -335,8 +403,9 @@ namespace xFunc.Maths.Analyzers
                 var mul1 = new Mul (exp.Right.Clone (), inv);
                 var mul2 = new Mul (exp.Left.Clone ().AsDerivative(this), mul1);
 
-				step.Intermediate = mul2;
-				return step.Derivative;
+                var derivative = mul2;
+                parentStep.AddStep (derivative);
+                return derivative.AsAnalyzedExpression (this);
             }
 
             // if (Helpers.HasVar(exp.Right, variable))
@@ -344,8 +413,9 @@ namespace xFunc.Maths.Analyzers
             var mul3 = new Mul (ln, exp.Clone ());
             var mul4 = new Mul (mul3, exp.Right.Clone ().AsDerivative (this));
 
-			step.Intermediate = mul4;
-			return step.Derivative;
+            var deriv = mul4;
+            parentStep.AddStep (deriv);
+            return deriv.AsAnalyzedExpression (this);
         }
 
         /// <summary>
@@ -952,22 +1022,6 @@ namespace xFunc.Maths.Analyzers
 
         #endregion Hyperbolic
 
-        /// <summary>
-        /// Gets or sets the variable.
-        /// </summary>
-        /// <value>
-        /// The variable.
-        /// </value>
-        public Variable Variable { get; set; }
-
-        /// <summary>
-        /// Gets or sets the parameters.
-        /// </summary>
-        /// <value>
-        /// The parameters.
-        /// </value>
-        public ExpressionParameters Parameters { get; set; }
-
 		public Dictionary<IExpression, DerivationStep> Steps { get; set; } 
 			= new Dictionary<IExpression, DerivationStep> ();
 
@@ -975,7 +1029,7 @@ namespace xFunc.Maths.Analyzers
 		IExpression AddStep(IExpression expression, IExpression derivative) {
 			return derivative;
 		}
-	}
+    }
 
 	public static class MathExtensions {
 		/// <summary>
@@ -985,7 +1039,7 @@ namespace xFunc.Maths.Analyzers
 		/// <param name="expression">Expression.</param>
 		/// <param name="differentiator">Differentiator.</param>
 		public static Derivative AsDerivative(this IExpression expression, Differentiator differentiator) {
-			return new Derivative (differentiator, simplifier, expression);
+            return new Derivative (differentiator, simplifier, expression);
 		}
 
 		/// <summary>
@@ -996,7 +1050,7 @@ namespace xFunc.Maths.Analyzers
 		/// <param name="differentiator">Differentiator.</param>
 		/// <param name="variable">Variable.</param>
 		public static Derivative AsDerivative (this IExpression expression, Differentiator differentiator, Variable variable) {
-			return new Derivative (differentiator, simplifier, expression, variable);
+           return new Derivative (differentiator, simplifier, expression, variable);
 		}
 
 		public static IExpression AsAnalyzedExpression(this IExpression expression, Differentiator differentiator) {
@@ -1005,11 +1059,10 @@ namespace xFunc.Maths.Analyzers
 
 		public static IExpression AsAnalyzedExpression(
 			this IExpression expression, Differentiator differentiator, Variable variable) {
-			if (expression is Derivative) {
-				// TODO Update Derivation Tree
-
-				return expression.Clone().Analyze (differentiator);
+			if (expression is Derivative deriv) {
+                return deriv.Clone().Analyze (differentiator);
 			}
+
 			if (expression is UnaryExpression unary) {
 				var u = (UnaryExpression) unary.Clone ();
 				u.Argument = u.Argument.AsAnalyzedExpression (differentiator, variable);
@@ -1030,91 +1083,5 @@ namespace xFunc.Maths.Analyzers
 		}
 
 		private static Simplifier simplifier = new Simplifier ();
-	}
-
-	public class DerivationStep {
-		public DerivationStep (Differentiator differentiator) {
-			this.Differentiator = differentiator;
-		}
-
-		#region Properties
-
-		public string Name { get; set; }
-
-		public Differentiator Differentiator { get; set; }
-
-		public DerivationStep Parent { get; set; }
-
-		public DerivationRule Rule { get; set; } = DerivationRule.Other;
-
-		public IExpression Expression { get; set; }
-
-        public IExpression Derivative { get; set; }
-
-		public IExpression Simplified { get; private set; }
-
-		/// <summary>
-		/// Gets or sets the intermediate step
-		/// </summary>
-		/// <value>The expression of the intermediate step.</value>
-		public IExpression Intermediate { 
-			get { return intermediate; }
-			set {
-				if ( intermediate != value ) {
-					intermediate = value;
-					this.Derivative = intermediate?.AsAnalyzedExpression (this.Differentiator);
-					this.Simplified = this.Derivative?.Analyze (new Simplifier ());
-				}
-			}
-		}
-
-		private IExpression intermediate;
-
-		public List<DerivationStep> Substeps { get; private set; } = new List<DerivationStep> ();
-
-		#endregion
-
-		public IExpression SetDerivative(IExpression derivative, DerivationRule rule = DerivationRule.Other) {
-			this.Derivative = derivative;
-			this.Rule = rule;
-			return derivative;
-		}
-
-		public IExpression AddStep (
-			IExpression expression,
-			IExpression derivative, 
-			DerivationRule rule = DerivationRule.Other) {
-			this.Substeps.Add (
-				new DerivationStep (Differentiator) {
-					Parent = this,
-					Expression = expression,
-					Derivative = derivative,
-					Rule = rule
-				});
-			return derivative;
-		}
-
-		public IExpression AddStep(IExpression expression, DerivationRule rule = DerivationRule.Other) {
-			var derivative = expression.Analyze (this.Differentiator);
-			return AddStep(expression, derivative, rule);
-		}
-
-		public override string ToString () {
-            return Expression.ToString () + "->" + Derivative.ToString ();
-        }
-    }
-
-	public enum DerivationRule {
-		Constant,	// Ableitung einer Konstante -> 0
-		Variable,	// Ableitung einer Variable	 -> 1
-		Sum,		// Summenregel
-		Difference,	// Differenzregel
-		Product,	// Produktregel
-		Factor,		// Faktorregel
-		Quotient,	// Quotientenregel
-		Chain,		// Kettenregel
-		Power,		// Potenzregel
-		Reciprocal,	// Reziprogenregel
-		Other,
 	}
 }
