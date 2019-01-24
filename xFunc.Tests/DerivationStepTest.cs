@@ -17,11 +17,11 @@ namespace xFunc.Tests
 
 			var derivative 		= exp.Analyze (differentiator);
 
-			Assert.True (differentiator.Steps.Count > 0);
-			Assert.True (differentiator.Steps.Values.ToArray() [0].Expression is Pow);
-			Assert.True (differentiator.Steps.Values.ToArray() [1].Expression is Add);
+			Assert.True (differentiator.RootStep != null);
+			Assert.True (differentiator.RootStep.Expression is Pow pow);
+			Assert.Equal (proc.Parse("8x"), differentiator.RootStep.SimplifiedDerivative);
 
-			Assert.Equal (proc.Parse("8x"), differentiator.Steps.Values.ToArray () [0].Simplified);
+
 		}
 	}
 }

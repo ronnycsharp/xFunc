@@ -145,8 +145,7 @@ namespace xFunc.Maths.Analyzers
                 currentStep.Derivative      = new Add(
                                                 currentStep.AddStep(left), 
                                                 currentStep.AddStep(right));
-
-                currentStep.SimplifiedDerivative = currentStep.Derivative.Analyze(simplifier);
+                                                
                 return currentStep.SimplifiedDerivative;
             }
 
