@@ -27,6 +27,8 @@ namespace xFunc.Maths.Analyzers {
 
         public IExpression Derivative { get; set; }
 
+        public IExpression SimplifiedDerivative { get; set; }
+
         public IExpression Simplified { get; private set; }
 
         /// <summary>
@@ -38,8 +40,8 @@ namespace xFunc.Maths.Analyzers {
             set {
                 if (intermediate != value) {
                     intermediate = value;
-                    this.Derivative = intermediate?.AsAnalyzedExpression (this.Differentiator);
-                    this.Simplified = this.Derivative?.Analyze (this.Simplifier);
+                    //this.Derivative = intermediate?.AsAnalyzedExpression (this.Differentiator);
+                    //this.Simplified = this.Derivative?.Analyze (this.Simplifier);
                 }
             }
         }
@@ -57,21 +59,22 @@ namespace xFunc.Maths.Analyzers {
         public IExpression AddStep (
             IExpression expression,
             IExpression derivative,
-            DerivationRule rule = DerivationRule.Other)
-        {
-            this.Substeps.Add (
-                new DerivationStep (Differentiator) {
-                    Parent = this,
-                    Expression = expression,
-                    Derivative = derivative,
-                    Rule = rule
-                });
+            DerivationRule rule = DerivationRule.Other) {
+
             return derivative;
         }
 
         public IExpression AddStep (IExpression expression, DerivationRule rule = DerivationRule.Other) {
-            var derivative = expression.Analyze (this.Differentiator);
-            return AddStep (expression, derivative, rule);
+            var substep = new DerivationStep(this.Differentiator) { 
+                Parent = this,
+                Expression = expression,
+                Rule = rule,
+            };
+
+            this.Differentiator.SetParent(expression, substep);
+            substep.Derivative = expression.Analyze (this.Differentiator);
+            this.Substeps.Add(substep);
+            return substep.Derivative;
         }
 
         public override string ToString () {
