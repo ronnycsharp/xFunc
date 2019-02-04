@@ -2,12 +2,10 @@
 using xFunc.Maths.Analyzers;
 using xFunc.Maths.Expressions;
 using Xunit;
-using System.Linq;
-using System;
 
 namespace xFunc.Tests
 {
-	public class DerivationStepTest
+    public class DerivationStepTest
 	{
 		[Fact]
 		public void Testing_of_derivation_steps () {

@@ -24,7 +24,48 @@ namespace xFunc.Maths.Analyzers {
         /// Gets or sets the title.
         /// </summary>
         /// <value>The title.</value>
-        public string Title { get; set; }
+        public string Title {
+            get {
+                // TODO Language-Support
+
+                switch(this.Rule) {
+                case DerivationRule.Constant: {
+                        return "Ableitung einer Konstante";
+                    }
+                case DerivationRule.Chain: {
+                        return "Kettenregel anwenden";
+                    }
+                case DerivationRule.Variable: {
+                        return "Ableitung einer Variable";
+                    }
+                case DerivationRule.Factor: {
+                        return "Faktorregel anwenden";
+                    }
+                case DerivationRule.Power: {
+                        return "Potenzregel anwenden";
+                    }
+                case DerivationRule.Product: {
+                        return "Produktregel anwenden";
+                    }
+                case DerivationRule.Quotient: {
+                        return "Quotientenregel anwenden";
+                    }
+                case DerivationRule.Reciprocal: {
+                        return "Reziprogenregel anwenden";
+                    }
+                case DerivationRule.Sum: {
+                        return "Summenregel anwenden";
+                    }
+                case DerivationRule.Difference: {
+                        return "Differenzregel anwenden";
+                    }
+                case DerivationRule.Simplify: {
+                        return "Vereinfachung";
+                    }
+                }
+                return "Nebenrechnung";
+            }
+        }
 
         /// <summary>
         /// Gets or sets the differentiator.
@@ -54,7 +95,30 @@ namespace xFunc.Maths.Analyzers {
         /// Gets or sets the expression.
         /// </summary>
         /// <value>The expression.</value>
-        public IExpression Expression { get; set; }
+        /// <summary>
+        public IExpression Expression {
+            get { return expression; }
+            set {
+                if (expression != value) {
+                    expression = value;
+                    this.PropertyChanged?.Invoke (
+                        this, new PropertyChangedEventArgs (
+                            nameof (Expression)));
+
+                    // update the simplified expression
+                    //this.SimplifiedExpression = expression?.Analyze (this.Simplifier);
+                    this.PropertyChanged?.Invoke (
+                        this, new PropertyChangedEventArgs (
+                            nameof (SimplifiedExpression)));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the simplified expression.
+        /// </summary>
+        /// <value>The simplified expression.</value>
+        public IExpression SimplifiedExpression { get; private set; }
 
         /// <summary>
         /// Gets or sets the derivative.
@@ -87,7 +151,7 @@ namespace xFunc.Maths.Analyzers {
         /// <summary>
         /// Gets or sets the intermediate step
         /// </summary>
-        /// <value>The expression of the intermediate step.</value>
+        /// <value>The intermediate step contains derivatives whose result has not been yet calculated.</value>
         public IExpression Intermediate { 
             get { return intermediate; } 
             set { 
@@ -169,6 +233,7 @@ namespace xFunc.Maths.Analyzers {
 
         private IExpression intermediate;
         private IExpression derivative;
+        private IExpression expression;
     }
 
     public enum DerivationRule {
@@ -182,6 +247,8 @@ namespace xFunc.Maths.Analyzers {
         Chain,      // Kettenregel
         Power,      // Potenzregel
         Reciprocal, // Reziprogenregel
+        Simplify,   // Vereinfachen
         Other,
+
     }
 }

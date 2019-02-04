@@ -184,44 +184,94 @@ namespace xFunc.Maths.Analyzers
                 exp.Variable);
         }
 
-        public override IExpression Analyze(DefiniteIntegral exp)
-        {
-            return new Number(0);
+        public override IExpression Analyze(DefiniteIntegral exp) {
+            var currentStep = FindCurrentStep (exp);
+            currentStep.Rule = DerivationRule.Constant;
+            currentStep.Derivative = new Number (0);
+            return currentStep.Derivative;
         }
 
-        public override IExpression Analyze(Sign exp)
-        {
-            return new Number(0);
+        public override IExpression Analyze(Sign exp) {
+            var currentStep = FindCurrentStep (exp);
+            currentStep.Rule = DerivationRule.Constant;
+            currentStep.Derivative = new Number (0);
+            return currentStep.Derivative;
         }
 
-        public override IExpression Analyze(RoundUnary exp)
-        {
-            return new Number(0);
+        public override IExpression Analyze(RoundUnary exp) {
+            var currentStep = FindCurrentStep (exp);
+            currentStep.Rule = DerivationRule.Constant;
+            currentStep.Derivative = new Number (0);
+            return currentStep.Derivative;
         }
 
-        public override IExpression Analyze(Sum exp)
-        {
-            return new Sum(
-                exp.Body.Analyze(this),
-                exp.From,
-                exp.To,
-                exp.Increment,
-                exp.Variable);
+        public override IExpression Analyze(Sum exp) {
+            var currentStep = FindCurrentStep (exp);
+            currentStep.Rule = DerivationRule.Sum;
+
+            // check whether the given expression is a constant 
+            if (IsConstant (exp.Body)) {
+                currentStep.Rule = DerivationRule.Constant;
+                currentStep.Derivative = new Number (0);
+                return currentStep.Derivative;
+            }
+
+            var body        = exp.Body.Clone ();
+            var bodyDeriv   = body.AsDerivative (this);
+
+            currentStep.Intermediate = new Sum (
+                bodyDeriv,
+                exp.From.Clone(),
+                exp.To.Clone(),
+                exp.Increment.Clone(),
+                exp.Variable.Clone() as Variable);
+
+            currentStep.Derivative = new Sum (
+                currentStep.AddStep(exp.Body.Clone()),
+                exp.From.Clone(),
+                exp.To.Clone(),
+                exp.Increment.Clone(),
+                exp.Variable.Clone() as Variable);
+
+            return currentStep.SimplifiedDerivative;
         }
 
-        public override IExpression Analyze(MultiCondition exp)
-        {
-            var conditions = new List<Condition>();
-            foreach (var condition in exp.Arguments.OfType<Condition>())
-            {
+        public override IExpression Analyze(MultiCondition exp) {
+            var currentStep = FindCurrentStep (exp);
+
+            // check whether the given expression is a constant 
+            if (IsConstant (exp)) {
+                currentStep.Rule = DerivationRule.Constant;
+                currentStep.Derivative = new Number (0);
+                return currentStep.Derivative;
+            }
+
+            var conditions = new List<Condition> ();
+            foreach (var condition in exp.Arguments.OfType<Condition> ()) {
+                conditions.Add (
+                    new Condition (
+                        new []{
+                            condition.Expression.Clone().AsDerivative( 
+                                currentStep.Differentiator, 
+                                currentStep.Differentiator.Variable),
+                            condition.ConditionLogic.Clone()
+                        }, 2));
+            }
+
+            currentStep.Intermediate = new MultiCondition (conditions.ToArray ());
+
+            conditions = new List<Condition>();
+            foreach (var condition in exp.Arguments.OfType<Condition>()) {
                 conditions.Add(
                     new Condition(
                         new[]{
-                            condition.Expression.Analyze(this),
-                            condition.ConditionLogic
+                            currentStep.AddStep(condition.Expression.Clone()),
+                            condition.ConditionLogic.Clone()
                         }, 2));
             }
-            return new MultiCondition(conditions.ToArray());
+
+            currentStep.Derivative = new MultiCondition (conditions.ToArray ());
+            return currentStep.SimplifiedDerivative;
         }
 
         /// <summary>
@@ -531,15 +581,27 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Sqrt exp)
-        {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+        public override IExpression Analyze(Sqrt exp) {
+            var currentStep = FindCurrentStep (exp);
+            currentStep.Rule = DerivationRule.Power;
+
+            // check whether the given expression is a constant 
+            if (IsConstant (exp)) {
+                currentStep.Rule = DerivationRule.Constant;
+                currentStep.Derivative = new Number (0);
+                return currentStep.Derivative;
+            }
 
             var mul = new Mul(new Number(2), exp.Clone());
-            var div = new Div(exp.Argument.Clone().Analyze(this), mul);
+            var div = new Div(exp.Argument.Clone().AsDerivative(this), mul);
 
-            return div;
+            currentStep.Intermediate = div;
+
+            mul = new Mul (new Number (2), exp.Clone ());
+            div = new Div (currentStep.AddStep (exp.Argument.Clone ()), mul);
+
+            currentStep.Derivative = div;
+            return currentStep.SimplifiedDerivative;
         }
 
         /// <summary>
@@ -788,16 +850,33 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Cos exp)
-        {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+        public override IExpression Analyze(Cos exp) {
+            var currentStep = FindCurrentStep (exp);
+            currentStep.Rule = DerivationRule.Chain;
 
-            var sine = new Sin(exp.Argument.Clone());
-            var multiplication = new Mul(sine, exp.Argument.Clone().Analyze(this));
-            var unMinus = new UnaryMinus(multiplication);
+            // check whether the given expression is a constant 
+            if (IsConstant (exp)) {
+                currentStep.Rule = DerivationRule.Constant;
+                currentStep.Derivative = new Number (0);
+                return currentStep.Derivative;
+            }
 
-            return unMinus;
+            var sine            = new Sin (exp.Argument.Clone ());
+            var multiplication  = new Mul (
+                sine, exp.Argument.Clone ().AsDerivative(
+                    currentStep.Differentiator, 
+                    currentStep.Differentiator.Variable));
+
+            var unMinus         = new UnaryMinus (multiplication);
+
+            currentStep.Intermediate = unMinus;
+
+            sine            = new Sin(exp.Argument.Clone());
+            multiplication  = new Mul (sine, currentStep.AddStep (exp.Argument.Clone ()));
+            unMinus         = new UnaryMinus(multiplication);
+
+            currentStep.Derivative = unMinus;
+            return currentStep.SimplifiedDerivative;
         }
 
         /// <summary>
@@ -847,8 +926,15 @@ namespace xFunc.Maths.Analyzers
         /// </returns>
         public override IExpression Analyze(Sec exp)
         {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+            var currentStep = FindCurrentStep (exp);
+            currentStep.Rule = DerivationRule.Chain;
+
+            // check whether the given expression is a constant 
+            if (IsConstant (exp)) {
+                currentStep.Rule = DerivationRule.Constant;
+                currentStep.Derivative = new Number (0);
+                return currentStep.Derivative;
+            }
 
             var tan = new Tan(exp.Argument.Clone());
             var sec = new Sec(exp.Argument.Clone());
@@ -865,15 +951,29 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Sin exp)
-        {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+        public override IExpression Analyze(Sin exp) {
+            var currentStep = FindCurrentStep (exp);
+            currentStep.Rule = DerivationRule.Chain;
 
-            var cos = new Cos(exp.Argument.Clone());
-            var mul = new Mul(cos, exp.Argument.Clone().Analyze(this));
+            // check whether the given expression is a constant 
+            if (IsConstant (exp)) {
+                currentStep.Rule = DerivationRule.Constant;
+                currentStep.Derivative = new Number (0);
+                return currentStep.Derivative;
+            }
 
-            return mul;
+            var cos = new Cos (exp.Argument.Clone ());
+            var mul = new Mul (cos, exp.Argument.Clone ().AsDerivative(
+                currentStep.Differentiator, 
+                currentStep.Differentiator.Variable));
+
+            currentStep.Intermediate = mul;
+
+            cos = new Cos(exp.Argument.Clone());
+            mul = new Mul(cos, currentStep.AddStep( exp.Argument.Clone()));
+
+            currentStep.Derivative = mul;
+            return currentStep.SimplifiedDerivative;
         }
 
         /// <summary>
@@ -1122,16 +1222,28 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Tanh exp)
-        {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+        public override IExpression Analyze(Tanh exp) {
+            var currentStep = FindCurrentStep (exp);
+  
+            // check whether the given expression is a constant 
+            if (IsConstant (exp)) {
+                currentStep.Rule = DerivationRule.Constant;
+                currentStep.Derivative = new Number (0);
+                return currentStep.Derivative;
+            }
 
-            var cosh = new Cosh(exp.Argument.Clone());
-            var inv = new Pow(cosh, new Number(2));
-            var div = new Div(exp.Argument.Clone().Analyze(this), inv);
+            var cosh    = new Cosh (exp.Argument.Clone ());
+            var inv     = new Pow (cosh, new Number (2));
+            var div     = new Div (exp.Argument.Clone ().AsDerivative(this), inv);
 
-            return div;
+            currentStep.Intermediate = div;
+
+            cosh        = new Cosh(exp.Argument.Clone());
+            inv         = new Pow(cosh, new Number(2));
+            div         = new Div (currentStep.AddStep (exp.Argument.Clone ()), inv);
+
+            currentStep.Derivative = div;
+            return currentStep.SimplifiedDerivative;
         }
 
         #endregion Hyperbolic
@@ -1156,7 +1268,10 @@ namespace xFunc.Maths.Analyzers
 
     public static class MathExtensions {
         public static Derivative AsDerivative(this IExpression expression, Differentiator differentiator) {
-            return new Derivative(differentiator, simplifier, expression);
+            var variable    = new Variable (differentiator.Variable.Name);
+            var derivative = new Derivative (differentiator, simplifier, expression, variable);
+            variable.Parent = derivative;
+            return derivative;
         }
 
         public static Derivative AsDerivative(this IExpression expression, Differentiator differentiator, Variable variable) {
