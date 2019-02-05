@@ -1284,6 +1284,14 @@ namespace xFunc.Tests.Analyzers
             SimpleTest(exp, expected);
         }
 
+
+        [Fact]
+        public void SquareInsideSquareRoot () {
+            var exp         = new Sqrt (new Pow (new Variable ("x"), new Number (2)));
+            var expected    = new Abs (new Variable ("x"));
+
+            SimpleTest (exp, expected);
+        }
     }
 
 }

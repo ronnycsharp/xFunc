@@ -700,6 +700,10 @@ namespace xFunc.Maths.Analyzers {
         /// </returns>
         [ExcludeFromCodeCoverage]
         public virtual IExpression Analyze(Sqrt exp) {
+            // Simplify (sqrt(x^2))'=|x| 
+            if ( exp.Argument is Pow pow && pow.Right is Number number && number == 2 ) {
+                return new Abs (pow.Left.Analyze(this));
+            }
             return AnalyzeUnary(exp);
         }
 

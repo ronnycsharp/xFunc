@@ -162,7 +162,7 @@ namespace xFunc.Maths.Analyzers {
                             nameof (Intermediate)));
 
                     // update the simplified intermediate step
-                    this.SimplifiedIntermediate = intermediate?.Analyze (this.Simplifier);
+                    this.SimplifiedIntermediate = intermediate?.Clone().Analyze (this.Simplifier);
                         this.PropertyChanged?.Invoke (
                             this, new PropertyChangedEventArgs (
                                 nameof (SimplifiedIntermediate)));

@@ -102,15 +102,31 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Abs exp)
-        {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+        public override IExpression Analyze(Abs exp) {
+            var currentStep = FindCurrentStep (exp);
+
+            // check whether the given expression is a constant 
+            if (IsConstant (exp)) {
+                currentStep.Rule = DerivationRule.Constant;
+                currentStep.Derivative = new Number (0);
+                return currentStep.Derivative;
+            }
 
             var div = new Div(exp.Argument.Clone(), exp.Clone());
-            var mul = new Mul(exp.Argument.Clone().Analyze(this), div);
+            var mul = new Mul(exp.Argument.Clone().AsDerivative(
+                    currentStep.Differentiator, 
+                    currentStep.Differentiator.Variable),
+                div);
 
-            return mul;
+            currentStep.Intermediate = mul;
+
+            div = new Div (exp.Argument.Clone (), exp.Clone ());
+            mul = new Mul (
+                currentStep.AddStep(exp.Argument.Clone ()),
+                div);
+
+            currentStep.Derivative = mul;
+            return currentStep.SimplifiedDerivative;
         }
 
         /// <summary>
@@ -131,10 +147,10 @@ namespace xFunc.Maths.Analyzers
                 return currentStep.Derivative;
             }
 
-            var first   = Helpers.HasVariable(exp.Left, Variable);
-            var second  = Helpers.HasVariable(exp.Right, Variable);
+            //var first   = Helpers.HasVariable(exp.Left, Variable);
+            //var second  = Helpers.HasVariable(exp.Right, Variable);
 
-            if (first && second) {
+            //if (first && second) {
                 var left = exp.Left.Clone();
                 var right = exp.Right.Clone();
 
@@ -147,13 +163,14 @@ namespace xFunc.Maths.Analyzers
                                                 currentStep.AddStep(right));
                                                 
                 return currentStep.SimplifiedDerivative;
-            }
+           /*
+             }
 
             if (first) {
                 return currentStep.AddStep(exp.Left.Clone());
             }
 
-            return currentStep.AddStep( exp.Right.Clone());
+            return currentStep.AddStep( exp.Right.Clone());*/
         }
 
         /// <summary>
@@ -465,9 +482,11 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Number exp)
-        {
-            return new Number(0);
+        public override IExpression Analyze(Number exp) {
+            var step = FindCurrentStep (exp);
+            step.Rule = DerivationRule.Constant;
+            step.Derivative = new Number (0);
+            return step.Derivative;
         }
 
         DerivationStep FindCurrentStep(IExpression exp)
@@ -513,21 +532,41 @@ namespace xFunc.Maths.Analyzers
             }
 
             if (Helpers.HasVariable(exp.Left, Variable)) {
-                var sub     = new Sub(exp.Right.Clone(), new Number(1));
-                var inv     = new Pow(exp.Left.Clone(), sub);
-                var mul1    = new Mul(exp.Right.Clone(), inv);
-                var mul2    = new Mul(exp.Left.Clone().AsDerivative(this), mul1);
+                if ( exp.Left is Variable /* without constant multiplier */ ) {
+                    // Power-Rule like x^2 or x^3
 
-                currentStep.Rule            = DerivationRule.Chain;
-                currentStep.Intermediate    = mul2;    // Intermediate Step
+                    var sub     = new Sub (exp.Right.Clone (), new Number (1));
+                    var inv     = new Pow (exp.Left.Clone (), sub);
+                    var mul1    = new Mul (exp.Right.Clone (), inv);
 
-                sub     = new Sub(exp.Right.Clone(), new Number(1));
-                inv     = new Pow(exp.Left.Clone(), sub);
-                mul1    = new Mul(exp.Right.Clone(), inv);
-                mul2    = new Mul(currentStep.AddStep(exp.Left.Clone()), mul1);
+                    currentStep.Rule            = DerivationRule.Power;
+                    currentStep.Intermediate    = mul1;    // Intermediate Step
 
-                currentStep.Derivative = mul2;
-                return currentStep.Derivative;
+                    sub     = new Sub (exp.Right.Clone (), new Number (1));
+                    inv     = new Pow (exp.Left.Clone (), sub);
+                    mul1    = new Mul (exp.Right.Clone (), inv);
+
+                    currentStep.Derivative = mul1;
+                    return currentStep.SimplifiedDerivative;
+                } else {
+                    // Chain-Rule like 2x^2
+
+                    var sub = new Sub (exp.Right.Clone (), new Number (1));
+                    var inv = new Pow (exp.Left.Clone (), sub);
+                    var mul1 = new Mul (exp.Right.Clone (), inv);
+                    var mul2 = new Mul (exp.Left.Clone ().AsDerivative (this, this.Variable), mul1);
+
+                    currentStep.Rule = DerivationRule.Chain;
+                    currentStep.Intermediate = mul2;    // Intermediate Step
+
+                    sub = new Sub (exp.Right.Clone (), new Number (1));
+                    inv = new Pow (exp.Left.Clone (), sub);
+                    mul1 = new Mul (exp.Right.Clone (), inv);
+                    mul2 = new Mul (currentStep.AddStep (exp.Left.Clone ()), mul1);
+
+                    currentStep.Derivative = mul2;
+                    return currentStep.SimplifiedDerivative;
+                }
             }
 
             // if (Helpers.HasVar(exp.Right, variable))
@@ -536,7 +575,7 @@ namespace xFunc.Maths.Analyzers
             var mul4    = new Mul(mul3, currentStep.AddStep(exp.Right.Clone()));
 
             currentStep.Derivative = mul4;
-            return currentStep.Derivative;
+            return currentStep.SimplifiedDerivative;
         }
 
         Simplifier simplifier = new Simplifier();
@@ -886,48 +925,9 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Cot exp)
-        {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
-
-            var sine = new Sin(exp.Argument.Clone());
-            var involution = new Pow(sine, new Number(2));
-            var division = new Div(exp.Argument.Clone().Analyze(this), involution);
-            var unMinus = new UnaryMinus(division);
-
-            return unMinus;
-        }
-
-        /// <summary>
-        /// Analyzes the specified expression.
-        /// </summary>
-        /// <param name="exp">The expression.</param>
-        /// <returns>
-        /// The result of analysis.
-        /// </returns>
-        public override IExpression Analyze(Csc exp)
-        {
-            var unary = new UnaryMinus(exp.Argument.Clone().Analyze(this));
-            var cot = new Cot(exp.Argument.Clone());
-            var csc = new Csc(exp.Argument.Clone());
-            var mul1 = new Mul(cot, csc);
-            var mul2 = new Mul(unary, mul1);
-
-            return mul2;
-        }
-
-        /// <summary>
-        /// Analyzes the specified expression.
-        /// </summary>
-        /// <param name="exp">The expression.</param>
-        /// <returns>
-        /// The result of analysis.
-        /// </returns>
-        public override IExpression Analyze(Sec exp)
-        {
+        public override IExpression Analyze(Cot exp) {
             var currentStep = FindCurrentStep (exp);
-            currentStep.Rule = DerivationRule.Chain;
+            currentStep.Rule = DerivationRule.Other;
 
             // check whether the given expression is a constant 
             if (IsConstant (exp)) {
@@ -936,10 +936,72 @@ namespace xFunc.Maths.Analyzers
                 return currentStep.Derivative;
             }
 
-            var tan = new Tan(exp.Argument.Clone());
-            var sec = new Sec(exp.Argument.Clone());
-            var mul1 = new Mul(tan, sec);
-            var mul2 = new Mul(exp.Argument.Clone().Analyze(this), mul1);
+            var sine        = new Sin(exp.Argument.Clone());
+            var involution  = new Pow(sine, new Number(2));
+            var division    = new Div(exp.Argument.Clone().AsDerivative(this), involution);
+            var unMinus     = new UnaryMinus(division);
+
+            currentStep.Intermediate = unMinus;
+
+            sine            = new Sin (exp.Argument.Clone ());
+            involution      = new Pow (sine, new Number (2));
+            division        = new Div (currentStep.AddStep(exp.Argument.Clone ()), involution);
+            unMinus         = new UnaryMinus (division);
+
+            currentStep.Derivative = unMinus;
+            return currentStep.SimplifiedDerivative;
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        public override IExpression Analyze(Csc exp) {
+            var currentStep = FindCurrentStep (exp);
+            currentStep.Rule = DerivationRule.Other;
+
+            // check whether the given expression is a constant 
+            if (IsConstant (exp)) {
+                currentStep.Rule = DerivationRule.Constant;
+                currentStep.Derivative = new Number (0);
+                return currentStep.Derivative;
+            }
+
+            var unary   = new UnaryMinus(currentStep.AddStep(exp.Argument.Clone()));
+            var cot     = new Cot(exp.Argument.Clone());
+            var csc     = new Csc(exp.Argument.Clone());
+            var mul1    = new Mul(cot, csc);
+            var mul2    = new Mul(unary, mul1);
+
+            currentStep.Derivative = mul2;
+            return currentStep.SimplifiedDerivative;
+        }
+
+        /// <summary>
+        /// Analyzes the specified expression.
+        /// </summary>
+        /// <param name="exp">The expression.</param>
+        /// <returns>
+        /// The result of analysis.
+        /// </returns>
+        public override IExpression Analyze(Sec exp) {
+            var currentStep = FindCurrentStep (exp);
+            currentStep.Rule = DerivationRule.Other;
+
+            // check whether the given expression is a constant 
+            if (IsConstant (exp)) {
+                currentStep.Rule        = DerivationRule.Constant;
+                currentStep.Derivative  = new Number (0);
+                return currentStep.Derivative;
+            }
+
+            var tan     = new Tan(exp.Argument.Clone());
+            var sec     = new Sec(exp.Argument.Clone());
+            var mul1    = new Mul(tan, sec);
+            var mul2    = new Mul(currentStep.AddStep(exp.Argument.Clone()), mul1);
 
             return mul2;
         }
@@ -953,7 +1015,7 @@ namespace xFunc.Maths.Analyzers
         /// </returns>
         public override IExpression Analyze(Sin exp) {
             var currentStep = FindCurrentStep (exp);
-            currentStep.Rule = DerivationRule.Chain;
+            currentStep.Rule = DerivationRule.Other;
 
             // check whether the given expression is a constant 
             if (IsConstant (exp)) {
@@ -983,16 +1045,29 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Tan exp)
-        {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+        public override IExpression Analyze(Tan exp) {
+            var currentStep = FindCurrentStep (exp);
+            currentStep.Rule = DerivationRule.Other;
 
-            var cos = new Cos(exp.Argument.Clone());
-            var inv = new Pow(cos, new Number(2));
-            var div = new Div(exp.Argument.Clone().Analyze(this), inv);
+            // check whether the given expression is a constant 
+            if (IsConstant (exp)) {
+                currentStep.Rule = DerivationRule.Constant;
+                currentStep.Derivative = new Number (0);
+                return currentStep.Derivative;
+            }
 
-            return div;
+            var cos = new Cos (exp.Argument.Clone ());
+            var inv = new Pow (cos, new Number (2));
+            var div = new Div (exp.Argument.Clone ().AsDerivative(this), inv);
+
+            currentStep.Intermediate = div;
+
+            cos = new Cos(exp.Argument.Clone());
+            inv = new Pow(cos, new Number(2));
+            div = new Div(currentStep.AddStep(exp.Argument.Clone()), inv);
+
+            currentStep.Derivative = div;
+            return currentStep.SimplifiedDerivative;
         }
 
         #endregion
@@ -1006,17 +1081,31 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Arcosh exp)
-        {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+        public override IExpression Analyze(Arcosh exp) {
+            var currentStep = FindCurrentStep (exp);
+            currentStep.Rule = DerivationRule.Other;
 
-            var sqr = new Pow(exp.Argument.Clone(), new Number(2));
-            var sub = new Sub(sqr, new Number(1));
-            var sqrt = new Sqrt(sub);
-            var div = new Div(exp.Argument.Clone().Analyze(this), sqrt);
+            // check whether the given expression is a constant 
+            if (IsConstant (exp)) {
+                currentStep.Rule = DerivationRule.Constant;
+                currentStep.Derivative = new Number (0);
+                return currentStep.Derivative;
+            }
 
-            return div;
+            var sqr     = new Pow (exp.Argument.Clone (), new Number (2));
+            var sub     = new Sub (sqr, new Number (1));
+            var sqrt    = new Sqrt (sub);
+            var div     = new Div (exp.Argument.Clone ().AsDerivative (this), sqrt);
+
+            currentStep.Intermediate = div;
+
+            sqr     = new Pow(exp.Argument.Clone(), new Number(2));
+            sub     = new Sub(sqr, new Number(1));
+            sqrt    = new Sqrt(sub);
+            div     = new Div(currentStep.AddStep(exp.Argument.Clone()), sqrt);
+
+            currentStep.Derivative = div;
+            return currentStep.SimplifiedDerivative;
         }
 
         /// <summary>
@@ -1026,16 +1115,29 @@ namespace xFunc.Maths.Analyzers
         /// <returns>
         /// The result of analysis.
         /// </returns>
-        public override IExpression Analyze(Arcoth exp)
-        {
-            if (!Helpers.HasVariable(exp, Variable))
-                return new Number(0);
+        public override IExpression Analyze(Arcoth exp) {
+            var currentStep = FindCurrentStep (exp);
+            currentStep.Rule = DerivationRule.Other;
+
+            // check whether the given expression is a constant 
+            if (IsConstant (exp)) {
+                currentStep.Rule = DerivationRule.Constant;
+                currentStep.Derivative = new Number (0);
+                return currentStep.Derivative;
+            }
 
             var sqr = new Pow(exp.Argument.Clone(), new Number(2));
             var sub = new Sub(new Number(1), sqr);
-            var div = new Div(exp.Argument.Clone().Analyze(this), sub);
+            var div = new Div(exp.Argument.Clone().AsDerivative(this), sub);
 
-            return div;
+            currentStep.Intermediate = div;
+
+            sqr = new Pow (exp.Argument.Clone (), new Number (2));
+            sub = new Sub (new Number (1), sqr);
+            div = new Div (currentStep.AddStep(exp.Argument.Clone ()), sub);
+
+            currentStep.Derivative = div;
+            return currentStep.SimplifiedDerivative;
         }
 
         /// <summary>
