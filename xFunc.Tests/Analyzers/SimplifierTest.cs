@@ -1292,6 +1292,31 @@ namespace xFunc.Tests.Analyzers
 
             SimpleTest (exp, expected);
         }
+
+        [Fact]
+        public void AddDivAndNumber () {
+            var exp         = new Add (new Div (new Number (1), new Number (3)), new Number (1));
+            var expected    = new Div (new Number(4), new Number(3));
+
+            SimpleTest (exp, expected);
+        }
+
+        [Fact]
+        public void SubDivAndNumber () {
+            var exp = new Sub (new Div (new Number (1), new Number (3)), new Number (1));
+            var expected = new UnaryMinus (new Div (new Number (2), new Number (3)));
+
+            SimpleTest (exp, expected);
+        }
+
+        [Fact]
+        public void AddDivAndDiv ()
+        {
+            var exp = new Add (new Div (new Number (1), new Number (3)), new Div(new Number (1), new Number(3)));
+            var expected = new Div (new Number (2), new Number (3));
+
+            SimpleTest (exp, expected);
+        }
     }
 
 }

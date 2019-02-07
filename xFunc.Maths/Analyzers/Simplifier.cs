@@ -206,10 +206,65 @@ namespace xFunc.Maths.Analyzers {
 
                 if (multiplier == 1)
                     return varMultiplier;
+
                 if (multiplier == -1)
                     return new UnaryMinus(varMultiplier);
 
                 return new Mul(new Number(multiplier), varMultiplier);
+            }
+
+            if ( exp.Left is Div leftDiv 
+                    && leftDiv.Left is Number numerator 
+                    && leftDiv.Right is Number denominator) {
+
+                if ( numerator.Value == (int)numerator.Value 
+                        && denominator.Value == (int)denominator.Value) {
+
+                    var leftFract   = new Fraction ((int)numerator.Value, (int)denominator.Value);
+                    var rightFract  = new Fraction { };
+
+                    if (exp.Right is Number number && number.Value == (int)number.Value) {
+
+                        rightFract.Numerator    = (int)number.Value;
+                        rightFract.Denominator  = 1;
+
+                        // simplify fraction
+                        var result = (leftFract + rightFract).Simplify ();
+
+                        if ( result.Denominator == 1) {
+                            return new Number (result.Numerator);
+                        } else if ( result.Numerator == 0) {
+                            return new Number (0);
+                        }
+
+                        return new Div (
+                            new Number (result.Numerator), 
+                            new Number (result.Denominator));
+
+                    } else if (exp.Right is Div rightDiv 
+                            && rightDiv.Left is Number num 
+                            && num.Value == (int)num.Value
+                            && rightDiv.Right is Number denom
+                            && denom.Value == (int)denom.Value) {
+
+                        rightFract.Numerator    = (int)num.Value;
+                        rightFract.Denominator  = (int)denom.Value;
+
+                        // simplify fraction
+                        var result = (leftFract + rightFract).Simplify ();
+
+                        if (result.Denominator == 1) {
+                            return new Number (result.Numerator);
+                        } else if (result.Numerator == 0) {
+                            return new Number (0);
+                        }
+
+                        return new Div (
+                            new Number (result.Numerator),
+                            new Number (result.Denominator));
+
+                    }
+                }
             }
 
             return exp;
@@ -296,10 +351,22 @@ namespace xFunc.Maths.Analyzers {
             if (exp.Right.Equals(one))
                 return exp.Left;
 
-            if (exp.Left is Number && exp.Right is Number)
-                return new Number((double)exp.Execute());
+            if (exp.Left is Number numerator && exp.Right is Number denominator) {
 
-            if (exp.Left is Variable && exp.Right is Variable)
+                // TODO Check if the result is a periodic number like 1/3 = 0.33333 or 2/3 = 0.66666
+                return exp;
+
+                /*
+                if (numerator.Value == (int)numerator.Value 
+                        && denominator.Value == (int)denominator.Value) {
+
+
+
+                }
+                return new Number ((double)exp.Execute ());*/
+            }
+
+            if (exp.Left is Variable var1 && exp.Right is Variable var2 && var1.Equals(var2))
                 return one;
 
             // (2 * x) / 2

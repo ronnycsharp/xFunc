@@ -59,9 +59,6 @@ namespace xFunc.Maths.Analyzers {
                 case DerivationRule.Difference: {
                         return "Differenzregel anwenden";
                     }
-                case DerivationRule.Simplify: {
-                        return "Vereinfachung";
-                    }
                 }
                 return "Nebenrechnung";
             }
@@ -104,21 +101,9 @@ namespace xFunc.Maths.Analyzers {
                     this.PropertyChanged?.Invoke (
                         this, new PropertyChangedEventArgs (
                             nameof (Expression)));
-
-                    // update the simplified expression
-                    //this.SimplifiedExpression = expression?.Analyze (this.Simplifier);
-                    this.PropertyChanged?.Invoke (
-                        this, new PropertyChangedEventArgs (
-                            nameof (SimplifiedExpression)));
                 }
             }
         }
-
-        /// <summary>
-        /// Gets the simplified expression.
-        /// </summary>
-        /// <value>The simplified expression.</value>
-        public IExpression SimplifiedExpression { get; private set; }
 
         /// <summary>
         /// Gets or sets the derivative.
@@ -134,7 +119,7 @@ namespace xFunc.Maths.Analyzers {
                             nameof (Derivative)));
 
                     // update the simplified derivative
-                    this.SimplifiedDerivative = derivative?.Analyze (this.Simplifier);
+                    this.SimplifiedDerivative = derivative?.Clone().Analyze (this.Simplifier);
                     this.PropertyChanged?.Invoke (
                         this, new PropertyChangedEventArgs (
                             nameof (SimplifiedDerivative)));
@@ -247,7 +232,6 @@ namespace xFunc.Maths.Analyzers {
         Chain,      // Kettenregel
         Power,      // Potenzregel
         Reciprocal, // Reziprogenregel
-        Simplify,   // Vereinfachen
         Other,
 
     }
