@@ -99,5 +99,49 @@ namespace xFunc.Maths {
         public override string ToString () {
             return string.Format ("{0}/{1}", Numerator, Denominator);
         }
+
+        public static bool TryConvert (IExpression exp, out Fraction fraction) {
+            if (exp is Number number && number.Value == (int)number.Value) {
+                fraction = new Fraction { 
+                        Numerator = (int)number.Value, 
+                        Denominator = 1 
+                    };
+                return true;
+            } else if (exp is Div div && div.Left is Number num && div.Right is Number denom
+                            && num.Value == (int)num.Value
+                            && denom.Value == (int)denom.Value) {
+
+                fraction = new Fraction {
+                    Numerator   = (int)num.Value,
+                    Denominator = (int)denom.Value
+                };
+                return true;
+            }
+            fraction = new Fraction ();
+            return false;
+        }
+
+        public IExpression ToExpression () {
+            if (this.Numerator == 0)
+                return new Number (0);
+            else {
+                if (this.Denominator == 1)
+                    return new Number (this.Numerator);
+
+                if ((this.Numerator < 0) ^ (this.Denominator < 0)) {
+                    // the numerator and denominator should be visualized without a negative value,
+                    // instead the div-expression should be a child of a unary minus expression.
+
+                    return new UnaryMinus (
+                        new Div (
+                            new Number (Math.Abs(this.Numerator)),
+                            new Number (Math.Abs(this.Denominator))));
+                }
+                return new Div (
+                    new Number (this.Numerator), 
+                    new Number (this.Denominator));
+
+            }
+        }
     }
 }

@@ -21,12 +21,34 @@ using xFunc.Maths.Tokenization.Tokens;
 
 namespace xFunc.Maths
 {
-
     /// <summary>
     /// The helper class with additional methods.
     /// </summary>
-    public static class Helpers
-    {
+    public static class Helpers{
+
+        /// <summary>
+        /// Returns true if the given expression or any of it's children is an expression of type T, otherwise false.
+        /// </summary>
+        /// <returns>The contains.</returns>
+        /// <param name="expression">Expression.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public static bool Contains<T> (IExpression expression) where T:IExpression {
+            if (expression is T)
+                return true;
+
+            if (expression is BinaryExpression bin)
+                return Contains<T> (bin.Left) || Contains<T> (bin.Right);
+
+            if (expression is UnaryExpression unary)
+                return Contains<T> (unary.Argument);
+
+            if (expression is DifferentParametersExpression different)
+                return different.Arguments.Any (d => Contains<T> (d));
+
+            return false;
+        }
+
+
         /// <summary>
         /// Checks that <paramref name="expression"/> has  the <paramref name="arg"/> variable.
         /// </summary>

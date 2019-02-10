@@ -213,60 +213,18 @@ namespace xFunc.Maths.Analyzers {
                 return new Mul(new Number(multiplier), varMultiplier);
             }
 
-            if ( exp.Left is Div leftDiv 
-                    && leftDiv.Left is Number numerator 
-                    && leftDiv.Right is Number denominator) {
+            if (!Helpers.Contains<Variable>(exp) 
+                    && (exp.Left is Div || exp.Right is Div)) {
 
-                if ( numerator.Value == (int)numerator.Value 
-                        && denominator.Value == (int)denominator.Value) {
+                // simplify fraction if at least one part of the add-expression is a div-expression.
+                // for example 2/3 + 1
+                if ( Fraction.TryConvert (exp.Left, out Fraction leftFraction)
+                        && Fraction.TryConvert (exp.Right, out Fraction rightFraction)) {
 
-                    var leftFract   = new Fraction ((int)numerator.Value, (int)denominator.Value);
-                    var rightFract  = new Fraction { };
-
-                    if (exp.Right is Number number && number.Value == (int)number.Value) {
-
-                        rightFract.Numerator    = (int)number.Value;
-                        rightFract.Denominator  = 1;
-
-                        // simplify fraction
-                        var result = (leftFract + rightFract).Simplify ();
-
-                        if ( result.Denominator == 1) {
-                            return new Number (result.Numerator);
-                        } else if ( result.Numerator == 0) {
-                            return new Number (0);
-                        }
-
-                        return new Div (
-                            new Number (result.Numerator), 
-                            new Number (result.Denominator));
-
-                    } else if (exp.Right is Div rightDiv 
-                            && rightDiv.Left is Number num 
-                            && num.Value == (int)num.Value
-                            && rightDiv.Right is Number denom
-                            && denom.Value == (int)denom.Value) {
-
-                        rightFract.Numerator    = (int)num.Value;
-                        rightFract.Denominator  = (int)denom.Value;
-
-                        // simplify fraction
-                        var result = (leftFract + rightFract).Simplify ();
-
-                        if (result.Denominator == 1) {
-                            return new Number (result.Numerator);
-                        } else if (result.Numerator == 0) {
-                            return new Number (0);
-                        }
-
-                        return new Div (
-                            new Number (result.Numerator),
-                            new Number (result.Denominator));
-
-                    }
+                    // simplify fraction and return expression
+                    return (leftFraction + rightFraction).Simplify ().ToExpression ();
                 }
             }
-
             return exp;
         }
 
@@ -882,6 +840,20 @@ namespace xFunc.Maths.Analyzers {
                     return varMultiplier;
 
                 return new Mul(new Number(multiplier), varMultiplier);
+            }
+
+            if (!Helpers.Contains<Variable> (exp)
+                    && (exp.Left is Div || exp.Right is Div)) {
+
+                // simplify fraction if at least one part of the add-expression is a div-expression.
+                // for example 2/3 + 1
+                if (Fraction.TryConvert (exp.Left, out Fraction leftFraction)
+                        && Fraction.TryConvert (exp.Right, out Fraction rightFraction)) {
+
+                    // simplify fraction and return expression
+                    var simplified = (leftFraction - rightFraction).Simplify ().ToExpression ();
+                    return simplified;
+                }
             }
 
             return exp;

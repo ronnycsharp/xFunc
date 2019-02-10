@@ -60,7 +60,7 @@ namespace xFunc.Maths.Analyzers {
                         return "Differenzregel anwenden";
                     }
                 }
-                return "Nebenrechnung";
+                return "Ableitungsregel anwenden";
             }
         }
 
