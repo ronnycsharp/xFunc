@@ -1215,6 +1215,9 @@ namespace xFunc.Maths.Analyzers {
         /// </returns>
         [ExcludeFromCodeCoverage]
         public virtual IExpression Analyze(Cos exp) {
+            if (exp.Argument is Number number && number.Value == 0)
+                return new Number (1);
+
             return AnalyzeTrigonometric<Arccos>(exp);
         }
 
