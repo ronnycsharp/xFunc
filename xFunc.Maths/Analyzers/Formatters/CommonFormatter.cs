@@ -301,12 +301,16 @@ namespace xFunc.Maths.Analyzers.Formatters
         /// </summary>
         /// <param name="exp">The expression.</param>
         /// <returns>The result of analysis.</returns>
-        public string Analyze(Pow exp)
+        public string Analyze(Pow exp) 
         {
+            /*
             if (exp.Parent is BinaryExpression && !(exp.Parent is Add || exp.Parent is Sub || exp.Parent is Mul))
                 return ToString(exp, "({0} ^ {1})");
 
             return ToString(exp, "{0} ^ {1}");
+            */
+
+            return ToString (exp, "pow({0}, {1})");
         }
 
         /// <summary>
