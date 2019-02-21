@@ -191,12 +191,16 @@ namespace xFunc.Maths.Analyzers
                 return currentStep.Derivative;
             }
 
-            var diff = currentStep.AddStep (exp.Expression);
-            if (exp.Parent is Derivative)   // TODO ??
-                diff = diff.Analyze(this);
+            currentStep.Intermediate = new NDerivative (
+                exp.Expression, 
+                new Number(2),  // degree
+                new Variable(exp.Variable.Name));
 
-            currentStep.Derivative = diff;
-            return currentStep.Derivative;
+            var derivative = currentStep.AddStep (exp.Expression);
+            derivative = currentStep.AddStep (derivative);
+
+            currentStep.Derivative = derivative;
+            return currentStep.SimplifiedDerivative;
         }
 
         public override IExpression Analyze(NDerivative exp) {
