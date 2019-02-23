@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using xFunc.Maths.Expressions;
+using xFunc.Maths.Resources;
 
 namespace xFunc.Maths.Analyzers {
     public class DerivationStep : INotifyPropertyChanged {
@@ -60,7 +61,7 @@ namespace xFunc.Maths.Analyzers {
                         return "Differenzregel anwenden";
                     }
                 }
-                return "Ableitungsregel anwenden";
+                return Resource.ApplyDerivationRule;
             }
         }
 

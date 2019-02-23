@@ -987,7 +987,7 @@ namespace xFunc.Maths.Analyzers {
         /// </returns>
         [ExcludeFromCodeCoverage]
         public virtual IExpression Analyze (Rand exp) {
-            return exp.Analyze (this);
+            return exp;
         }
 
         #endregion Standard

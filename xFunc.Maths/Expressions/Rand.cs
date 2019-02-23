@@ -25,7 +25,9 @@ namespace xFunc.Maths.Expressions {
         /// <summary>
         /// Initializes a new instance of the <see cref="Rand"/> class.
         /// </summary>
-        public Rand() : base(0) { }
+        public Rand() : base(0) {
+            Arguments = new IExpression [0];
+        }
 
         public override int MinParameters => 0;
 

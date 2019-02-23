@@ -202,5 +202,11 @@ namespace xFunc.Maths.Resources {
                 return ResourceManager.GetString("SequenceNullValuesError", resourceCulture);
             }
         }
+        
+        internal static string ApplyDerivationRule {
+            get {
+                return ResourceManager.GetString("ApplyDerivationRule", resourceCulture);
+            }
+        }
     }
 }

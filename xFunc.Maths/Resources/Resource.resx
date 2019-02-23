@@ -195,4 +195,8 @@
   <data name="SequenceNullValuesError" xml:space="preserve">
     <value>The sequence cannot contain null values.</value>
   </data>
+    
+  <data name="ApplyDerivationRule" xml:space="preserve">
+    <value>Apply derivation rule</value>
+  </data>
 </root>
